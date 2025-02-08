@@ -1,4 +1,12 @@
 Rails.application.routes.draw do
+  get 'user_equipments/create'
+  get 'travel_plans/new'
+  get 'travel_plans/create'
+  get 'travel_plans/show'
+  get 'adventures/index'
+  get 'adventures/show'
+  get 'locations/index'
+  get 'locations/show'
   devise_for :users
   root 'pages#home'
 
