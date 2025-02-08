@@ -10,9 +10,55 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_02_08_044756) do
+ActiveRecord::Schema[7.1].define(version: 2025_02_08_070547) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "adventures", force: :cascade do |t|
+    t.string "name"
+    t.string "details"
+    t.string "tips"
+    t.string "warnings"
+    t.string "skills"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "locations", force: :cascade do |t|
+    t.string "name"
+    t.string "details"
+    t.string "city"
+    t.string "prefecture"
+    t.string "tips"
+    t.string "warnings"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "locations_adventures", force: :cascade do |t|
+    t.bigint "adventure_id", null: false
+    t.bigint "location_id", null: false
+    t.text "additionaldetails"
+    t.text "warnings"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["adventure_id"], name: "index_locations_adventures_on_adventure_id"
+    t.index ["location_id"], name: "index_locations_adventures_on_location_id"
+  end
+
+  create_table "travel_plans", force: :cascade do |t|
+    t.string "title"
+    t.string "content"
+    t.string "status"
+    t.bigint "adventure_id"
+    t.bigint "location_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["adventure_id"], name: "index_travel_plans_on_adventure_id"
+    t.index ["location_id"], name: "index_travel_plans_on_location_id"
+    t.index ["user_id"], name: "index_travel_plans_on_user_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -26,4 +72,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_08_044756) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "locations_adventures", "adventures"
+  add_foreign_key "locations_adventures", "locations"
+  add_foreign_key "travel_plans", "adventures"
+  add_foreign_key "travel_plans", "locations"
+  add_foreign_key "travel_plans", "users"
 end
