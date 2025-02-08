@@ -7,9 +7,6 @@ class LocationsController < ApplicationController
     @location = Location.find(params[:id])
   end
 
-  # def edit
-  # end
-
-  # def update
-  # end
-end
+  def search
+    @locations = Location.where("name LIKE ?", "%#{params[:query]}%")
+  end
