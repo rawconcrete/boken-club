@@ -29,3 +29,18 @@ yamanashi_rock_climbing = Location.create(name: 'Yamanashi Rock Climbing', city:
 camping = Adventure.create(name: 'Camping', details: 'Enjoy the wilderness by setting up camp at the base of a mountain or in a national park.', id_location: mount_fuji_campsite.id)
 hiking = Adventure.create(name: 'Hiking', details: 'Explore the breathtaking hiking trails around Japan’s most famous mountains.', id_location: hakone_hiking.id)
 rock_climbing = Adventure.create(name: 'Rock Climbing', details: 'Challenge yourself with rock climbing routes in some of Japan’s best climbing spots.', id_location: iwate_rock_climbing.id)
+
+# Skills
+fire_skill = Skill.create(title: 'Start a Fire', content: 'How to build a fire with sticks and flint.', video: 'video_link_here', image: 'image_link_here')
+tent_skill = Skill.create(title: 'Pitch a Tent', content: 'Step-by-step guide to pitching a tent.', video: 'video_link_here', image: 'image_link_here')
+climbing_skill = Skill.create(title: 'Rock Climbing', content: 'Essential tips for rock climbing and bouldering.', video: 'video_link_here', image: 'image_link_here')
+
+# Adventure Skills
+AdventureSkill.create(id_adventures: camping.id, id_skills: fire_skill.id)
+AdventureSkill.create(id_adventures: hiking.id, id_skills: tent_skill.id)
+AdventureSkill.create(id_adventures: rock_climbing.id, id_skills: climbing_skill.id)
+
+# Travel Plans
+travel_plan1 = TravelPlan.create(id_users: user1.id, title: 'Mount Fuji Camping Trip', content: 'Camping trip at the base of Mount Fuji with breathtaking views.', status: 'Active', id_locations: mount_fuji_campsite.id, id_adventures: camping.id)
+travel_plan2 = TravelPlan.create(id_users: user2.id, title: 'Hakone Hiking Adventure', content: 'Explore the hiking trails around Mount Hakone.', status: 'Active', id_locations: hakone_hiking.id, id_adventures: hiking.id)
+travel_plan3 = TravelPlan.create(id_users: user1.id, title: 'Rock Climbing in Iwate', content: 'Challenge yourself with rock climbing in Iwate.', status: 'Active', id_locations: iwate_rock_climbing.id, id_adventures: rock_climbing.id)
