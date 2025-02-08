@@ -10,3 +10,4 @@ class LocationsController < ApplicationController
   def search
     @locations = Location.where("name LIKE ?", "%#{params[:query]}%")
   end
+end

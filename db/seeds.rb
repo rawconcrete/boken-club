@@ -14,16 +14,16 @@ user2 = User.create(email: 'user2@example.com', password: 'password')
 
 # Locations: Real places in Japan
 # Campsite Locations
-mount_fuji_campsite = Location.create(name: 'Mount Fuji Campsite', city: 'Fujiyoshida', prefecture: 'Yamanashi', details: 'A popular campsite located at the base of Mount Fuji with breathtaking views of the mountain.')
-nikko_campsite = Location.create(name: 'Nikko National Park', city: 'Nikko', prefecture: 'Tochigi', details: 'Beautiful campsite surrounded by lush forests and waterfalls.')
+mount_fuji_campsite = Location.create(name: 'Mount Fuji Campsite', city: 'Fujiyoshida', prefecture: 'Yamanashi', details: 'A popular campsite located at the base of Mount Fuji with breathtaking views of the mountain.', activity_name: 'Camping')
+nikko_campsite = Location.create(name: 'Nikko National Park', city: 'Nikko', prefecture: 'Tochigi', details: 'Beautiful campsite surrounded by lush forests and waterfalls.', activity_name: 'Camping')
 
 # Hiking Locations
-hakone_hiking = Location.create(name: 'Hakone Hiking Trails', city: 'Hakone', prefecture: 'Kanagawa', details: 'Famous hiking trails around Mount Hakone, known for its hot springs and scenic views.')
-kamigamo_hiking = Location.create(name: 'Kamigamo Hiking Trails', city: 'Kyoto', prefecture: 'Kyoto', details: 'Popular hiking trails that lead to shrines and temples in the historic city of Kyoto.')
+hakone_hiking = Location.create(name: 'Hakone Hiking Trails', city: 'Hakone', prefecture: 'Kanagawa', details: 'Famous hiking trails around Mount Hakone, known for its hot springs and scenic views.', activity_name: 'Hiking')
+kamigamo_hiking = Location.create(name: 'Kamigamo Hiking Trails', city: 'Kyoto', prefecture: 'Kyoto', details: 'Popular hiking trails that lead to shrines and temples in the historic city of Kyoto.', activity_name: 'Hiking')
 
 # Rock Climbing Locations
-iwate_rock_climbing = Location.create(name: 'Iwate Rock Climbing', city: 'Iwate', prefecture: 'Iwate', details: 'A well-known climbing area offering a variety of routes with amazing views.')
-yamanashi_rock_climbing = Location.create(name: 'Yamanashi Rock Climbing', city: 'Kofu', prefecture: 'Yamanashi', details: 'Offers some of the best rock climbing routes in the Yamanashi prefecture with stunning mountain views.')
+iwate_rock_climbing = Location.create(name: 'Iwate Rock Climbing', city: 'Iwate', prefecture: 'Iwate', details: 'A well-known climbing area offering a variety of routes with amazing views.', activity_name: 'Rock Climbing')
+yamanashi_rock_climbing = Location.create(name: 'Yamanashi Rock Climbing', city: 'Kofu', prefecture: 'Yamanashi', details: 'Offers some of the best rock climbing routes in the Yamanashi prefecture with stunning mountain views.', activity_name: 'Rock Climbing')
 
 # Adventures
 camping = Adventure.create(name: 'Camping', details: 'Enjoy the wilderness by setting up camp at the base of a mountain or in a national park.', location_id: mount_fuji_campsite.id)
