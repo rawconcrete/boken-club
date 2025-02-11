@@ -1,4 +1,3 @@
-#locations_controller.rb
 class LocationsController < ApplicationController
   def index
     @locations = Location.all
@@ -6,7 +5,7 @@ class LocationsController < ApplicationController
 
   def show
     @location = Location.find(params[:id])
-    @adventures = @location.adventures.includes(:locations_adventures)
+    @adventures = @location.adventures  # removed includes
   end
 
   def search
