@@ -23,8 +23,8 @@ yamanashi_rock_climbing = Location.create!(name: 'Yamanashi Rock Climbing', city
 
 # Adventures
 camping = Adventure.create!(name: 'Camping', details: 'Enjoy the wilderness by setting up camp at the base of a mountain or in a national park.', location_id: mount_fuji_campsite.id)
-hiking = Adventure.create!(name: 'Hiking', details: 'Explore the breathtaking hiking trails around Japan's most famous mountains.', location_id: hakone_hiking.id)
-rock_climbing = Adventure.create!(name: 'Rock Climbing', details: 'Challenge yourself with rock climbing routes in some of Japan's best climbing spots.', location_id: iwate_rock_climbing.id)
+hiking = Adventure.create!(name: 'Hiking', details: 'Explore the breathtaking hiking trails around mountains from Japan.', location_id: hakone_hiking.id)
+rock_climbing = Adventure.create!(name: 'Rock Climbing', details: "Challenge yourself with rock climbing routes in some of Japan`s best climbing spots.", location_id: iwate_rock_climbing.id)
 
 # Travel Plans - Changed status from 'Active' to 'pending'
 travel_plan1 = TravelPlan.create!(user_id: user1.id, title: 'Mount Fuji Camping Trip', content: 'Camping trip at the base of Mount Fuji with breathtaking views.', status: 'pending', location_id: mount_fuji_campsite.id, adventure_id: camping.id)

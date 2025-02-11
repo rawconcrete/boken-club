@@ -9,6 +9,6 @@ class LocationsController < ApplicationController
   end
 
   def search
-    @locations = Location.where("name LIKE ?", "%#{params[:query]}%")
+    @locations = Location.where("LOWER(name) LIKE ?", "%#{params[:query].downcase}%")
   end
 end
