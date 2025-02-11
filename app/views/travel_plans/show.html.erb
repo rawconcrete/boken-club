@@ -1,2 +1,25 @@
-<h1>TravelPlans#show</h1>
-<p>Find me in app/views/travel_plans/show.html.erb</p>
+<div class="container mx-auto px-4">
+  <h1 class="text-2xl font-bold mb-4"><%= @travel_plan.title %></h1>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <%# Location Details %>
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-xl font-semibold mb-3">Location</h2>
+      <p><strong>Name:</strong> <%= @location.name %></p>
+      <p><strong>City:</strong> <%= @location.city %></p>
+      <p><strong>Prefecture:</strong> <%= @location.prefecture %></p>
+      <p><strong>Details:</strong> <%= @location.details %></p>
+    </div>
+    <%# Adventure Details %>
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-xl font-semibold mb-3">Adventure</h2>
+      <p><strong>Type:</strong> <%= @adventure.name %></p>
+      <p><strong>Details:</strong> <%= @adventure.details %></p>
+    </div>
+  </div>
+  <%# Travel Plan Details %>
+  <div class="mt-6 bg-white rounded-lg shadow p-6">
+    <h2 class="text-xl font-semibold mb-3">Trip Details</h2>
+    <p><strong>Status:</strong> <%= @travel_plan.status %></p>
+    <p><strong>Notes:</strong> <%= @travel_plan.content %></p>
+  </div>
+</div>
