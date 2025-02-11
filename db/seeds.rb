@@ -44,3 +44,15 @@ rock_climbing = Adventure.create(name: 'Rock Climbing', details: 'Challenge your
 travel_plan1 = TravelPlan.create(user_id: user1.id, title: 'Mount Fuji Camping Trip', content: 'Camping trip at the base of Mount Fuji with breathtaking views.', status: 'Active', location_id: mount_fuji_campsite.id, adventure_id: camping.id)
 travel_plan2 = TravelPlan.create(user_id: user2.id, title: 'Hakone Hiking Adventure', content: 'Explore the hiking trails around Mount Hakone.', status: 'Active', location_id: hakone_hiking.id, adventure_id: hiking.id)
 travel_plan3 = TravelPlan.create(user_id: user1.id, title: 'Rock Climbing in Iwate', content: 'Challenge yourself with rock climbing in Iwate.', status: 'Active', location_id: iwate_rock_climbing.id, adventure_id: rock_climbing.id)
+
+# Admin user seeds
+admins = [
+  { email: 'admin@admin.com', password: '123456', admin: true },  # generic admin
+  { email: 'sarah@admin.com', password: '123456', admin: true },
+  { email: 'nico@admin.com', password: '123456', admin: true },
+  { email: 'lio@admin.com', password: '123456', admin: true }
+]
+
+admins.each do |admin_data|
+  User.create!(admin_data)
+end
