@@ -1,5 +1,8 @@
-# app/controllers/travel_plans_controller.rb
 class TravelPlansController < ApplicationController
+  def index
+    @travel_plans = current_user.travel_plans
+  end
+
   def new
   end
 
