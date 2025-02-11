@@ -5,6 +5,7 @@ class LocationsController < ApplicationController
 
   def show
     @location = Location.find(params[:id])
+    @adventures = @location.adventures  # removed includes
   end
 
   def search
