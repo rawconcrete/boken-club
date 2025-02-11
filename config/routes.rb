@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'activities/search', to: 'activities#search', as: 'search_activities'
+
   get 'user_equipments/create'
   get 'travel_plans/new'
   get 'travel_plans/create'
