@@ -1,27 +1,13 @@
 Rails.application.routes.draw do
-  get 'activities/search', to: 'activities#search', as: 'search_activities'
-
-  get 'user_equipments/create'
-  get 'travel_plans/new'
-  get 'travel_plans/create'
-  get 'travel_plans/show'
-  get 'adventures/index'
-  get 'adventures/show'
-  get 'locations/index'
-  get 'locations/show'
   devise_for :users
   root 'pages#home'
 
-  get 'pages/home'
-
-  resources :travel_plans, only: [:show]
-
   resources :adventures, only: [:index, :show]
-
+  resources :travel_plans, only: [:index, :show, :new, :create]
   resources :locations, only: [:index, :show] do
     resources :travel_plans, only: [:new, :create]
     collection do
-      get 'search'  # Search route for locations here
+      get 'search'
     end
   end
 
