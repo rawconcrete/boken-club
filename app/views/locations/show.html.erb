@@ -1,2 +1,7 @@
-<h1>Locations#show</h1>
-<p>Find me in app/views/locations/show.html.erb</p>
+<h1><%= @location.name %></h1>
+<h2><%= "#{@location.city}, #{@location.prefecture}" %></h2>
+
+<p><%= @location.details %></p>
+
+<%= link_to 'Add to Travel Plans', new_location_travel_plan_path(@location) %> |
+<%= link_to 'Back to Locations', locations_path %>
