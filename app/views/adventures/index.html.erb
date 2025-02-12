@@ -2,28 +2,12 @@
 <div class="container">
   <h1>Adventures</h1>
   <div class="search-bar mb-4">
-    <%= form_with url: adventures_path, method: :get, data: { controller: "search-adventures", turbo_frame: "adventures-list" } do |f| %>
-      <%= f.text_field :query,
-          class: "form-control",
-          placeholder: "Search adventures...",
-          data: {
-            action: "input->search-adventures#search",
-            search_adventures_target: "input"
-          } %>
+    <%= form_with url: adventures_path, method: :get,
+    data: { controller: "search-adventures", turbo_frame: "adventures-list" } do |f| %>
+      <%= f.text_field :query, class: "form-control", placeholder: "Search adventures..." %>
     <% end %>
   </div>
-  <%= turbo_frame_tag "adventures-list" do %>
-    <div class="row">
-      <% @adventures.each do |adventure| %>
-        <div class="col-md-4 mb-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title"><%= adventure.name %></h5>
-              <p class="card-text"><%= adventure.details %></p>
-              <%= link_to "View Details", adventure_path(adventure), class: "btn btn-primary", data: { turbo_frame: "_top" } %>            </div>
-          </div>
-        </div>
-      <% end %>
-    </div>
-  <% end %>
+  <turbo-frame id="adventures-list">
+    <%= render "adventures/list", adventures: @adventures %>
+  </turbo-frame>
 </div>

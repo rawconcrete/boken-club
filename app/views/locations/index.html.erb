@@ -2,29 +2,12 @@
 <div class="container">
   <h1>Locations</h1>
   <div class="search-bar mb-4">
-    <%= form_with url: locations_path, method: :get, data: { controller: "search-locations", turbo_frame: "locations-list" } do |f| %>
-      <%= f.text_field :query,
-          class: "form-control",
-          placeholder: "Search locations...",
-          data: {
-            action: "input->search-locations#search",
-            search_locations_target: "input"
-          } %>
+    <%= form_with url: locations_path, method: :get,
+    data: { controller: "search-locations", turbo_frame: "locations-list" } do |f| %>
+      <%= f.text_field :query, class: "form-control", placeholder: "Search locations..." %>
     <% end %>
   </div>
-  <%= turbo_frame_tag "locations-list" do %>
-    <div class="row">
-      <% @locations.each do |location| %>
-        <div class="col-md-4 mb-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title"><%= location.name %></h5>
-              <p><%= location.city %>, <%= location.prefecture %></p>
-              <p class="card-text"><%= location.details %></p>
-              <%= link_to "View Details", location_path(location), class: "btn btn-primary", data: { turbo_frame: "_top" } %>            </div>
-          </div>
-        </div>
-      <% end %>
-    </div>
-  <% end %>
+  <turbo-frame id="locations-list">
+    <%= render "locations/list", locations: @locations %>
+  </turbo-frame>
 </div>

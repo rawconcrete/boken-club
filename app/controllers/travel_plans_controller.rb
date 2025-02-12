@@ -3,13 +3,15 @@ class TravelPlansController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @travel_plans = current_user.travel_plans.includes(:location, :adventure)
+    @travcel_plans = current_user.travel_plans.includes(:locations, :adventures)
   end
 
   def new
     @travel_plan = current_user.travel_plans.new
-    @location = Location.find_by(id: params[:location_id]) if params[:location_id].present?
-    @adventure = Adventure.find_by(id: params[:adventure_id]) if params[:adventure_id].present?
+
+    # prepopulate location/adventure if provided in params
+    @travel_plan.locations << Location.find_by(id: params[:location_id]) if params[:location_id].present?
+    @travel_plan.adventures << Adventure.find_by(id: params[:adventure_id]) if params[:adventure_id].present?
   end
 
   def create
@@ -17,19 +19,24 @@ class TravelPlansController < ApplicationController
     if @travel_plan.save
       redirect_to @travel_plan, notice: 'Travel plan was successfully created.'
     else
-      @location = Location.find_by(id: params[:travel_plan][:location_id]) if params[:travel_plan][:location_id].present?
-      @adventure = Adventure.find_by(id: params[:travel_plan][:adventure_id]) if params[:travel_plan][:adventure_id].present?
-      render :new
+      render :new, status: :unprocessable_entity
     end
   end
 
   def show
-    @travel_plan = TravelPlan.includes(:location, :adventure).find(params[:id])
+    @travel_plan = TravelPlan.includes(:locations, :adventures).find_by(id: params[:id])
+    return redirect_to travel_plans_path, alert: "Travel Plan not found." unless @travel_plan
   end
 
   private
 
   def travel_plan_params
-    params.require(:travel_plan).permit(:title, :content, :status, :location_id, :adventure_id)
+    params.require(:travel_plan).permit(
+      :title,
+      :content,
+      :status,
+      location_ids: [],
+      adventure_ids: []
+    )
   end
 end

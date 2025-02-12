@@ -6,9 +6,11 @@ class AdventuresController < ApplicationController
                   else
                     Adventure.all
                   end
-  end
 
-  def show
-    @adventure = Adventure.includes(:locations).find(params[:id])
+    respond_to do |format|
+      format.html
+      format.json { render json: @adventures }
+      format.turbo_stream { render turbo_stream: turbo_stream.replace("adventures-list", partial: "adventures/list", locals: { adventures: @adventures }) }
+    end
   end
 end

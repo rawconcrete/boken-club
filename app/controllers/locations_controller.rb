@@ -1,17 +1,19 @@
 # app/controllers/locations_controller.rb
 class LocationsController < ApplicationController
   def index
-    if params[:query].present?
-      @locations = Location.where("name ILIKE ? OR city ILIKE ? OR prefecture ILIKE ?",
-                                "%#{params[:query]}%",
-                                "%#{params[:query]}%",
-                                "%#{params[:query]}%")
-    else
-      @locations = Location.all
-    end
-  end
+    @locations = if params[:query].present?
+                   Location.where("name ILIKE ? OR city ILIKE ? OR prefecture ILIKE ?",
+                                 "%#{params[:query]}%",
+                                 "%#{params[:query]}%",
+                                 "%#{params[:query]}%")
+                 else
+                   Location.all
+                 end
 
-  def show
-    @location = Location.includes(:adventures).find(params[:id])
+      respond_to do |format|
+      format.html
+      format.json { render json: @adventures }
+      format.turbo_stream { render turbo_stream: turbo_stream.replace("adventures-list", partial: "adventures/list", locals: { adventures: @adventures }) }
+    end
   end
 end

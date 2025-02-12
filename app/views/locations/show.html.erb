@@ -1,7 +1,8 @@
 <%# app/views/locations/show.html.erb %>
 <div class="container">
-  <h1><%= @location.name %></h1>
-  <div class="row mt-4">
+  <h1 class="mb-4"><%= @location.name %></h1>
+  <div class="row">
+    <!-- Location Details Section -->
     <div class="col-md-8">
       <div class="card">
         <div class="card-body">
@@ -9,31 +10,33 @@
           <p><strong>Prefecture:</strong> <%= @location.prefecture %></p>
           <p><strong>Adventure Type:</strong> <%= @location.adventure_name %></p>
           <p><strong>Details:</strong> <%= @location.details %></p>
-          <% if @location.tips.present? %>
-            <p><strong>Tips:</strong> <%= @location.tips %></p>
-          <% end %>
-          <% if @location.warnings.present? %>
-            <p><strong>Warnings:</strong> <%= @location.warnings %></p>
-          <% end %>
+          <%= content_tag(:p, "<strong>Tips:</strong> #{@location.tips}".html_safe) if @location.tips.present? %>
+          <%= content_tag(:p, "<strong>Warnings:</strong> #{@location.warnings}".html_safe, class: "text-danger") if @location.warnings.present? %>
         </div>
       </div>
     </div>
+    <!-- Available Adventures Section -->
     <div class="col-md-4">
       <div class="card">
         <div class="card-body">
-          <h5>Available Adventures</h5>
+          <h5 class="mb-3">Available Adventures</h5>
           <% @location.adventures.each do |adventure| %>
             <div class="mb-3 p-3 border rounded">
               <h6 class="mb-2"><%= adventure.name %></h6>
-              <p class="small mb-2"><%= adventure.details %></p>
-              <%= link_to "View Adventure", adventure_path(adventure),
-                  class: "btn btn-primary btn-sm",
-                  data: { turbo_frame: "_top" } %>
-              <%= link_to "Plan a Trip Here", new_travel_plan_path(location_id: @location.id),
-                  class: "btn btn-primary mt-3",
-                  data: { turbo_frame: "_top" } %>
-              data: { turbo_frame: "_top" } %>
+              <p class="small mb-3"><%= adventure.details %></p>
+              <!-- Button Alignment Fix: Flexbox -->
+              <div class="d-flex gap-2">
+                <%= link_to "View Adventure", adventure_path(adventure),
+                    class: "btn btn-primary btn-sm flex-fill",
+                    data: { turbo_frame: "_top" } %>
+                <%= link_to "Plan a Trip Here", new_travel_plan_path(location_id: @location.id),
+                    class: "btn btn-outline-primary btn-sm flex-fill",
+                    data: { turbo_frame: "_top" } %>
+              </div>
             </div>
+          <% end %>
+          <% if @location.adventures.empty? %>
+            <p class="text-muted">No adventures available for this location.</p>
           <% end %>
         </div>
       </div>

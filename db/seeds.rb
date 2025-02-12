@@ -98,23 +98,22 @@ user1 = User.first
 user2 = User.second
 
 TravelPlan.create!([
- {
-   user: user1,
-   title: 'Weekend at Ogawayama',
-   content: 'Multi-pitch climbing trip',
-   status: 'pending',
-   location: Location.find_by(name: 'Ogawayama'),
-   adventure: Adventure.find_by(name: 'Rock Climbing')
- },
- {
-   user: user2,
-   title: 'Mount Takao Day Hike',
-   content: 'Day trip hiking various trails',
-   status: 'pending',
-   location: Location.find_by(name: 'Mount Takao'),
-   adventure: Adventure.find_by(name: 'Hiking')
- }
-])
+  {
+    user: user1,
+    title: 'Weekend at Ogawayama',
+    content: 'Multi-pitch climbing trip',
+    status: 'pending'
+  },
+  {
+    user: user2,
+    title: 'Mount Takao Day Hike',
+    content: 'Day trip hiking various trails',
+    status: 'pending'
+  }
+]).each_with_index do |plan, index|
+  plan.locations << (index.zero? ? Location.find_by(name: 'Ogawayama') : Location.find_by(name: 'Mount Takao'))
+  plan.adventures << (index.zero? ? Adventure.find_by(name: 'Rock Climbing') : Adventure.find_by(name: 'Hiking'))
+end
 
 # admin/debugging accounts
 [
