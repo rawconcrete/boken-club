@@ -2,7 +2,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["locationSearch", "locationResults", "selectedLocations", "selectedAdventures"]
+  static targets = ["locationSearch", "locationResults", "selectedLocations", "selectedAdventures", "adventureSearch", "adventureResults"]
 
   connect() {
     this.selectedLocations = new Set()
@@ -17,6 +17,17 @@ export default class extends Controller {
 
     if (locationId) await this.fetchAndAddLocation(locationId)
     if (adventureId) await this.fetchAndAddAdventure(adventureId)
+  }
+
+  async searchAdventures(event) {
+    const query = event.target.value.trim()
+    this.adventureResultsTarget.innerHTML = ''
+
+    if (query.length < 2) return
+
+    const response = await fetch(`/adventures.json?query=${encodeURIComponent(query)}`)
+    const adventures = await response.json()
+    this.renderAdventureResults(adventures)
   }
 
   async searchLocations(event) {
@@ -39,35 +50,50 @@ export default class extends Controller {
     `).join('')
   }
 
+  renderAdventureResults(adventures) {
+    this.adventureResultsTarget.innerHTML = adventures.map(adventure => `
+      <div class="list-group-item" data-action="click->travel-plan#selectAdventure"
+           data-adventure='${JSON.stringify(adventure)}'>
+        ${adventure.name}
+      </div>
+    `).join('')
+  }
+
   updateAvailableAdventures() {
-    if (this.selectedLocations.size === 0) {
-      // show all adventures if no locations selected
-      fetch('/adventures.json')
-        .then(response => response.json())
-        .then(adventures => {
-          this.selectedAdventuresTarget.innerHTML = adventures.map(adventure => `
+    const locationIds = Array.from(this.selectedLocations).join(',')
+    const query = locationIds ? `?location_ids=${locationIds}` : ''
+
+    Promise.all([
+      fetch(`/adventures.json${query}`),
+      fetch('/locations.json')
+    ])
+      .then(([adventuresRes, locationsRes]) =>
+        Promise.all([adventuresRes.json(), locationsRes.json()]))
+      .then(([adventures, locations]) => {
+        const selectedLocations = new Map(
+          locations.filter(l => this.selectedLocations.has(l.id))
+            .map(l => [l.id, l])
+        )
+
+        const availableHTML = adventures.map(adventure => {
+          const unavailableLocations = Array.from(selectedLocations.values())
+            .filter(location => !adventure.available_locations?.includes(location.id))
+            .map(l => l.name)
+            .join(', ')
+
+          return `
             <div class="list-group-item" data-action="click->travel-plan#selectAdventure"
                  data-adventure='${JSON.stringify(adventure)}'>
               ${adventure.name}
+              ${unavailableLocations ?
+                `<small class="d-block text-muted">Not available at: ${unavailableLocations}</small>` :
+                ''}
             </div>
-          `).join('')
-        })
-    } else {
-      // existing filtered adventures logic
-      const locationIds = Array.from(this.selectedLocations).join(',')
-      fetch(`/adventures.json?location_ids=${locationIds}`)
-        .then(response => response.json())
-        .then(adventures => {
-          this.selectedAdventuresTarget.innerHTML = adventures.map(adventure => `
-            <div class="list-group-item ${!adventure.available ? 'text-muted' : ''}"
-                 ${adventure.available ? `data-action="click->travel-plan#selectAdventure"` : ''}
-                 data-adventure='${JSON.stringify(adventure)}'>
-              ${adventure.name}
-              ${!adventure.available ? ' (not available at current locations)' : ''}
-            </div>
-          `).join('')
-        })
-    }
+          `
+        }).join('')
+
+        this.adventureResultsTarget.innerHTML = availableHTML
+      })
   }
 
   async fetchAndAddLocation(id) {

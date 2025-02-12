@@ -39,7 +39,14 @@ class AdventuresController < ApplicationController
 
     respond_to do |format|
       format.html
-      format.json { render json: { id: @adventure.id, name: @adventure.name, details: @adventure.details } }
+      format.json {
+        render json: {
+          id: @adventure.id,
+          name: @adventure.name,
+          details: @adventure.details,
+          available_locations: @adventure.location_ids
+        }
+      }
     end
   end
 end

@@ -23,7 +23,13 @@
             <h5 class="mb-0">Available Adventures</h5>
           </div>
           <div class="card-body">
-            <div data-travel-plan-target="selectedAdventures" class="list-group"></div>
+            <div data-travel-plan-target="selectedAdventures" class="mb-3"></div>
+            <input type="text"
+                    class="form-control"
+                    placeholder="Search adventures..."
+                    data-travel-plan-target="adventureSearch"
+                    data-action="input->travel-plan#searchAdventures">
+            <div data-travel-plan-target="adventureResults" class="list-group mt-2"></div>
           </div>
         </div>
         <div class="d-flex justify-content-end gap-2">
