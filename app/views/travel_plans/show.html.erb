@@ -1,23 +1,31 @@
-<%# app/views/travel_plans_show.html.erb  %>
+<%# app/views/travel_plans/show.html.erb %>
 <div class="container mx-auto px-4">
   <h1 class="text-2xl font-bold mb-4"><%= @travel_plan.title %></h1>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <%# Location Details %>
+    <%# location details %>
     <div class="bg-white rounded-lg shadow p-6">
-      <h2 class="text-xl font-semibold mb-3">Location</h2>
-      <p><strong>Name:</strong> <%= @location.name %></p>
-      <p><strong>City:</strong> <%= @location.city %></p>
-      <p><strong>Prefecture:</strong> <%= @location.prefecture %></p>
-      <p><strong>Details:</strong> <%= @location.details %></p>
+      <h2 class="text-xl font-semibold mb-3">Locations</h2>
+      <% @travel_plan.locations.each do |location| %>
+        <div class="mb-4">
+          <p><strong>Name:</strong> <%= location.name %></p>
+          <p><strong>City:</strong> <%= location.city %></p>
+          <p><strong>Prefecture:</strong> <%= location.prefecture %></p>
+          <p><strong>Details:</strong> <%= location.details %></p>
+        </div>
+      <% end %>
     </div>
-    <%# Adventure Details %>
+    <%# adventure details %>
     <div class="bg-white rounded-lg shadow p-6">
-      <h2 class="text-xl font-semibold mb-3">Adventure</h2>
-      <p><strong>Type:</strong> <%= @adventure.name %></p>
-      <p><strong>Details:</strong> <%= @adventure.details %></p>
+      <h2 class="text-xl font-semibold mb-3">Adventures</h2>
+      <% @travel_plan.adventures.each do |adventure| %>
+        <div class="mb-4">
+          <p><strong>Type:</strong> <%= adventure.name %></p>
+          <p><strong>Details:</strong> <%= adventure.details %></p>
+        </div>
+      <% end %>
     </div>
   </div>
-  <%# Travel Plan Details %>
+  <%# travel plan details %>
   <div class="mt-6 bg-white rounded-lg shadow p-6">
     <h2 class="text-xl font-semibold mb-3">Trip Details</h2>
     <p><strong>Status:</strong> <%= @travel_plan.status %></p>

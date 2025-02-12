@@ -6,15 +6,26 @@
       <%= form_with(model: @travel_plan, local: true) do |f| %>
         <div class="card mb-4">
           <div class="card-header">
+            <h5 class="mb-0">Plan Details</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <%= f.label :title, class: "form-label" %>
+              <%= f.text_field :title, class: "form-control" %>
+            </div>
+          </div>
+        </div>
+        <div class="card mb-4">
+          <div class="card-header">
             <h5 class="mb-0">Locations</h5>
           </div>
           <div class="card-body">
             <div data-travel-plan-target="selectedLocations" class="mb-3"></div>
             <input type="text"
-                   class="form-control"
-                   placeholder="Search locations..."
-                   data-travel-plan-target="locationSearch"
-                   data-action="input->travel-plan#searchLocations">
+                  class="form-control"
+                  placeholder="Search locations..."
+                  data-travel-plan-target="locationSearch"
+                  data-action="input->travel-plan#searchLocations">
             <div data-travel-plan-target="locationResults" class="list-group mt-2"></div>
           </div>
         </div>
@@ -25,10 +36,10 @@
           <div class="card-body">
             <div data-travel-plan-target="selectedAdventures" class="mb-3"></div>
             <input type="text"
-                    class="form-control"
-                    placeholder="Search adventures..."
-                    data-travel-plan-target="adventureSearch"
-                    data-action="input->travel-plan#searchAdventures">
+                   class="form-control"
+                   placeholder="Search adventures..."
+                   data-travel-plan-target="adventureSearch"
+                   data-action="input->travel-plan#searchAdventures">
             <div data-travel-plan-target="adventureResults" class="list-group mt-2"></div>
           </div>
         </div>

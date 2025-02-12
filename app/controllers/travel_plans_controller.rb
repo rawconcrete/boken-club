@@ -8,10 +8,22 @@ class TravelPlansController < ApplicationController
 
   def new
     @travel_plan = current_user.travel_plans.new
+    title_parts = []
 
-    # prepopulate location/adventure if provided in params
-    @travel_plan.locations << Location.find_by(id: params[:location_id]) if params[:location_id].present?
-    @travel_plan.adventures << Adventure.find_by(id: params[:adventure_id]) if params[:adventure_id].present?
+    if params[:location_id].present?
+      location = Location.find_by(id: params[:location_id])
+      @travel_plan.locations << location if location
+      title_parts << location&.name
+    end
+
+    if params[:adventure_id].present?
+      adventure = Adventure.find_by(id: params[:adventure_id])
+      @travel_plan.adventures << adventure if adventure
+      title_parts << adventure&.name
+    end
+
+    title_parts << Time.current.strftime("%Y-%m-%d")
+    @travel_plan.title = title_parts.compact.join(" - ")
   end
 
   def create

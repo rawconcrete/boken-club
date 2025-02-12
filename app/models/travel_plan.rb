@@ -6,4 +6,6 @@ class TravelPlan < ApplicationRecord
   has_many :adventures, through: :travel_plans_adventures
 
   validates :status, inclusion: { in: ['pending', 'completed', 'cancelled'], message: "%{value} is not a valid status" }, allow_nil: true
+  validates :title, presence: true
+
 end
