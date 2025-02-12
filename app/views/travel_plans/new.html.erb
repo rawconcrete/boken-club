@@ -1,29 +1,29 @@
 <%# app/views/travel_plans/new.html.erb %>
-<div class="container">
+<div class="container" data-controller="travel-plan">
   <div class="row justify-content-center">
     <div class="col-md-8">
       <h1 class="mb-4">Create New Travel Plan</h1>
-      <%= form_with(model: @travel_plan, url: travel_plans_path, method: :post, data: { turbo_frame: "_top" }) do |f| %>
-        <!-- Locations Search & Tags -->
+      <%= form_with(model: @travel_plan, local: true) do |f| %>
         <div class="card mb-4">
           <div class="card-header">
             <h5 class="mb-0">Locations</h5>
           </div>
           <div class="card-body">
-            <div id="selected-locations"></div>
-            <input id="location-search" type="text" placeholder="Search Locations..." class="form-control mb-2">
-            <div id="location-results" class="list-group"></div>
+            <div data-travel-plan-target="selectedLocations" class="mb-3"></div>
+            <input type="text"
+                   class="form-control"
+                   placeholder="Search locations..."
+                   data-travel-plan-target="locationSearch"
+                   data-action="input->travel-plan#searchLocations">
+            <div data-travel-plan-target="locationResults" class="list-group mt-2"></div>
           </div>
         </div>
-        <!-- Adventures Search & Tags -->
         <div class="card mb-4">
           <div class="card-header">
-            <h5 class="mb-0">Adventures</h5>
+            <h5 class="mb-0">Available Adventures</h5>
           </div>
           <div class="card-body">
-            <div id="selected-adventures"></div>
-            <input id="adventure-search" type="text" placeholder="Search Adventures..." class="form-control mb-2">
-            <div id="adventure-results" class="list-group"></div>
+            <div data-travel-plan-target="selectedAdventures" class="list-group"></div>
           </div>
         </div>
         <div class="d-flex justify-content-end gap-2">
@@ -34,90 +34,3 @@
     </div>
   </div>
 </div>
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    let selectedLocations = [];
-    let selectedAdventures = [];
-
-    async function fetchLocations(query) {
-      const response = await fetch(`/locations.json?query=${query}`);
-      return response.json();
-    }
-
-    async function fetchAdventures(query) {
-      const response = await fetch(`/adventures.json?query=${query}&location_ids=${selectedLocations.join(",")}`);
-      return response.json();
-    }
-
-    function addTag(containerId, type, id, name) {
-      const container = document.getElementById(containerId);
-      const newTag = document.createElement('div');
-      newTag.classList.add('badge', 'bg-primary', 'p-2', 'm-1', 'd-inline-flex', 'align-items-center');
-      newTag.innerHTML = `${name} <button type="button" class="btn-close ms-2" onclick="removeTag('${containerId}', '${type}', ${id})"></button>`;
-      container.appendChild(newTag);
-
-      if (type === 'location') {
-        selectedLocations.push(id);
-        updateFilteredAdventures();
-      } else {
-        selectedAdventures.push(id);
-      }
-    }
-
-    function removeTag(containerId, type, id) {
-      document.getElementById(containerId).querySelectorAll(".badge").forEach(tag => {
-        if (tag.innerHTML.includes(`>${id}`)) tag.remove();
-      });
-
-      if (type === 'location') {
-        selectedLocations = selectedLocations.filter(tagId => tagId !== id);
-        updateFilteredAdventures();
-      } else {
-        selectedAdventures = selectedAdventures.filter(tagId => tagId !== id);
-      }
-    }
-
-    async function updateFilteredAdventures() {
-      document.getElementById("adventure-results").innerHTML = "";
-      const response = await fetch(`/adventures.json?location_ids=${selectedLocations.join(",")}`);
-      const adventures = await response.json();
-
-      const resultsContainer = document.getElementById("adventure-results");
-      resultsContainer.innerHTML = "";
-
-      adventures.forEach(adventure => {
-        const resultItem = document.createElement("div");
-        resultItem.classList.add("list-group-item");
-        resultItem.textContent = adventure.name;
-        if (adventure.available) {
-          resultItem.onclick = () => addTag("selected-adventures", "adventure", adventure.id, adventure.name);
-        } else {
-          resultItem.classList.add("text-muted");
-          resultItem.textContent += " (not available in selected locations)";
-        }
-        resultsContainer.appendChild(resultItem);
-      });
-    }
-
-    document.getElementById("location-search").addEventListener("input", async function() {
-      const query = this.value.trim();
-      const resultsContainer = document.getElementById("location-results");
-      resultsContainer.innerHTML = "";
-
-      if (query.length > 1) {
-        const locations = await fetchLocations(query);
-        locations.forEach(location => {
-          const resultItem = document.createElement("div");
-          resultItem.classList.add("list-group-item");
-          resultItem.textContent = location.name;
-          resultItem.onclick = () => addTag("selected-locations", "location", location.id, location.name);
-          resultsContainer.appendChild(resultItem);
-        });
-      }
-    });
-
-    document.getElementById("adventure-search").addEventListener("input", async function() {
-      updateFilteredAdventures();
-    });
-  });
-</script>

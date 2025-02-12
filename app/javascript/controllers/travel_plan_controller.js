@@ -2,152 +2,138 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [
-    "locationSearch", "locationResults", "selectedLocation", "locationId",
-    "adventureSearch", "adventureResults", "selectedAdventure", "adventureId",
-    "relatedInfo"
-  ]
+  static targets = ["locationSearch", "locationResults", "selectedLocations", "selectedAdventures"]
 
   connect() {
-    this.loadInitialData()
+    this.selectedLocations = new Set()
+    this.selectedAdventures = new Set()
+    this.loadInitialSelections()
   }
 
-  async loadInitialData() {
-    // Load initial tips and warnings if location/adventure is pre-selected
-    if (this.hasLocationIdTarget && this.locationIdTarget.value) {
-      await this.fetchLocationInfo(this.locationIdTarget.value)
-    }
-    if (this.hasAdventureIdTarget && this.adventureIdTarget.value) {
-      await this.fetchAdventureInfo(this.adventureIdTarget.value)
-    }
+  async loadInitialSelections() {
+    const urlParams = new URLSearchParams(window.location.search)
+    const locationId = urlParams.get('location_id')
+    const adventureId = urlParams.get('adventure_id')
+
+    if (locationId) await this.fetchAndAddLocation(locationId)
+    if (adventureId) await this.fetchAndAddAdventure(adventureId)
   }
 
   async searchLocations(event) {
-    const query = event.target.value
-    if (query.length < 2) {
-      this.locationResultsTarget.classList.add('hidden')
-      return
-    }
+    const query = event.target.value.trim()
+    this.locationResultsTarget.innerHTML = ''
 
-    const response = await fetch(`/locations/search?query=${encodeURIComponent(query)}`)
+    if (query.length < 2) return
+
+    const response = await fetch(`/locations.json?query=${encodeURIComponent(query)}`)
     const locations = await response.json()
+    this.renderLocationResults(locations)
+  }
 
+  renderLocationResults(locations) {
     this.locationResultsTarget.innerHTML = locations.map(location => `
-      <div class="p-3 hover:bg-gray-50 cursor-pointer" data-action="click->travel-plan#selectLocation" data-location-id="${location.id}">
-        <p class="font-medium">${location.name}</p>
-        <p class="text-sm text-gray-600">${location.city}, ${location.prefecture}</p>
+      <div class="list-group-item" data-action="click->travel-plan#selectLocation"
+           data-location='${JSON.stringify(location)}'>
+        ${location.name} - ${location.city}, ${location.prefecture}
       </div>
     `).join('')
-
-    this.locationResultsTarget.classList.remove('hidden')
   }
 
-  async searchAdventures(event) {
-    const query = event.target.value
-    if (query.length < 2) {
-      this.adventureResultsTarget.classList.add('hidden')
-      return
+  updateAvailableAdventures() {
+    if (this.selectedLocations.size === 0) {
+      // show all adventures if no locations selected
+      fetch('/adventures.json')
+        .then(response => response.json())
+        .then(adventures => {
+          this.selectedAdventuresTarget.innerHTML = adventures.map(adventure => `
+            <div class="list-group-item" data-action="click->travel-plan#selectAdventure"
+                 data-adventure='${JSON.stringify(adventure)}'>
+              ${adventure.name}
+            </div>
+          `).join('')
+        })
+    } else {
+      // existing filtered adventures logic
+      const locationIds = Array.from(this.selectedLocations).join(',')
+      fetch(`/adventures.json?location_ids=${locationIds}`)
+        .then(response => response.json())
+        .then(adventures => {
+          this.selectedAdventuresTarget.innerHTML = adventures.map(adventure => `
+            <div class="list-group-item ${!adventure.available ? 'text-muted' : ''}"
+                 ${adventure.available ? `data-action="click->travel-plan#selectAdventure"` : ''}
+                 data-adventure='${JSON.stringify(adventure)}'>
+              ${adventure.name}
+              ${!adventure.available ? ' (not available at current locations)' : ''}
+            </div>
+          `).join('')
+        })
     }
-
-    const response = await fetch(`/adventures/search?query=${encodeURIComponent(query)}`)
-    const adventures = await response.json()
-
-    this.adventureResultsTarget.innerHTML = adventures.map(adventure => `
-      <div class="p-3 hover:bg-gray-50 cursor-pointer" data-action="click->travel-plan#selectAdventure" data-adventure-id="${adventure.id}">
-        <p class="font-medium">${adventure.name}</p>
-        <p class="text-sm text-gray-600">${adventure.details}</p>
-      </div>
-    `).join('')
-
-    this.adventureResultsTarget.classList.remove('hidden')
   }
 
-  async selectLocation(event) {
-    const locationId = event.currentTarget.dataset.locationId
-    await this.fetchLocationInfo(locationId)
-    this.locationResultsTarget.classList.add('hidden')
-    this.locationSearchTarget.value = ''
-  }
-
-  async selectAdventure(event) {
-    const adventureId = event.currentTarget.dataset.adventureId
-    await this.fetchAdventureInfo(adventureId)
-    this.adventureResultsTarget.classList.add('hidden')
-    this.adventureSearchTarget.value = ''
-  }
-
-  async fetchLocationInfo(locationId) {
-    const response = await fetch(`/locations/${locationId}`)
+  async fetchAndAddLocation(id) {
+    const response = await fetch(`/locations/${id}.json`)
     const location = await response.json()
-
-    this.locationIdTarget.value = location.id
-    this.updateSelectedLocation(location)
-    this.updateRelatedInfo()
+    this.addLocationTag(location)
+    this.updateAvailableAdventures()
   }
 
-  async fetchAdventureInfo(adventureId) {
-    const response = await fetch(`/adventures/${adventureId}`)
+  async fetchAndAddAdventure(id) {
+    const response = await fetch(`/adventures/${id}.json`)
     const adventure = await response.json()
-
-    this.adventureIdTarget.value = adventure.id
-    this.updateSelectedAdventure(adventure)
-    this.updateRelatedInfo()
+    this.addAdventureTag(adventure)
   }
 
-  updateSelectedLocation(location) {
-    if (this.hasSelectedLocationTarget) {
-      this.selectedLocationTarget.innerHTML = `
-        <button type="button" class="absolute top-2 right-2 text-gray-400 hover:text-red-500"
-                data-action="click->travel-plan#removeLocation">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-        <p class="font-medium text-blue-900">${location.name}</p>
-        <p class="text-sm text-blue-700">${location.city}, ${location.prefecture}</p>
-      `
-    }
+  selectLocation(event) {
+    const location = JSON.parse(event.currentTarget.dataset.location)
+    this.addLocationTag(location)
+    this.updateAvailableAdventures()
   }
 
-  updateSelectedAdventure(adventure) {
-    if (this.hasSelectedAdventureTarget) {
-      this.selectedAdventureTarget.innerHTML = `
-        <button type="button" class="absolute top-2 right-2 text-gray-400 hover:text-red-500"
-                data-action="click->travel-plan#removeAdventure">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-        <p class="font-medium text-green-900">${adventure.name}</p>
-        <p class="text-sm text-green-700">${adventure.details}</p>
-      `
-    }
+  selectAdventure(event) {
+    const adventure = JSON.parse(event.currentTarget.dataset.adventure)
+    this.addAdventureTag(adventure)
   }
 
-  removeLocation() {
-    this.locationIdTarget.value = ''
-    if (this.hasSelectedLocationTarget) {
-      this.selectedLocationTarget.innerHTML = ''
-    }
-    this.updateRelatedInfo()
+  addLocationTag(location) {
+    if (this.selectedLocations.has(location.id)) return
+
+    this.selectedLocations.add(location.id)
+    this.selectedLocationsTarget.insertAdjacentHTML('beforeend', `
+      <div class="badge bg-primary p-2 m-1 d-inline-flex align-items-center">
+        ${location.name}
+        <button type="button" class="btn-close ms-2"
+                data-action="click->travel-plan#removeLocation"
+                data-location-id="${location.id}"></button>
+        <input type="hidden" name="travel_plan[location_ids][]" value="${location.id}">
+      </div>
+    `)
   }
 
-  removeAdventure() {
-    this.adventureIdTarget.value = ''
-    if (this.hasSelectedAdventureTarget) {
-      this.selectedAdventureTarget.innerHTML = ''
-    }
-    this.updateRelatedInfo()
+  addAdventureTag(adventure) {
+    if (this.selectedAdventures.has(adventure.id)) return
+
+    this.selectedAdventures.add(adventure.id)
+    this.selectedAdventuresTarget.insertAdjacentHTML('beforeend', `
+      <div class="badge bg-primary p-2 m-1 d-inline-flex align-items-center">
+        ${adventure.name}
+        <button type="button" class="btn-close ms-2"
+                data-action="click->travel-plan#removeAdventure"
+                data-adventure-id="${adventure.id}"></button>
+        <input type="hidden" name="travel_plan[adventure_ids][]" value="${adventure.id}">
+      </div>
+    `)
   }
 
-  async updateRelatedInfo() {
-    const locationId = this.locationIdTarget.value
-    const adventureId = this.adventureIdTarget.value
+  removeLocation(event) {
+    const locationId = event.currentTarget.dataset.locationId
+    this.selectedLocations.delete(locationId)
+    event.currentTarget.closest('.badge').remove()
+    this.updateAvailableAdventures()
+  }
 
-    if (!locationId && !adventureId) {
-      this.relatedInfoTarget.innerHTML = ''
-      return
-    }
-
-    const tips = []
-    const warnings
+  removeAdventure(event) {
+    const adventureId = event.currentTarget.dataset.adventureId
+    this.selectedAdventures.delete(adventureId)
+    event.currentTarget.closest('.badge').remove()
+  }
+}

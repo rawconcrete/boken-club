@@ -3,7 +3,7 @@ class TravelPlansController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @travcel_plans = current_user.travel_plans.includes(:locations, :adventures)
+    @travel_plans = current_user.travel_plans.includes(:locations, :adventures)
   end
 
   def new
