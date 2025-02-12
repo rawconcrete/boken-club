@@ -1,47 +1,37 @@
-<%# app/views/locations/show.html.erb %>
-<div class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold mb-6"><%= @location.name %></h1>
-  <%# Location Details %>
-  <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
-    <h2 class="text-xl font-semibold mb-4">Location Details</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <p><strong>City:</strong> <%= @location.city %></p>
-        <p><strong>Prefecture:</strong> <%= @location.prefecture %></p>
-        <p><strong>Adventure:</strong> <%= @location.adventure_name %></p>
-        <%# changed above line from activity to adventure %>
-      </div>
-      <div>
-        <p><strong>Details:</strong> <%= @location.details %></p>
-        <% if @location.tips.present? %>
-          <p><strong>Tips:</strong> <%= @location.tips %></p>
-        <% end %>
-        <% if @location.warnings.present? %>
-          <p><strong>Warnings:</strong> <%= @location.warnings %></p>
-        <% end %>
+<div class="container">
+  <h1><%= @location.name %></h1>
+  <div class="row mt-4">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <p><strong>City:</strong> <%= @location.city %></p>
+          <p><strong>Prefecture:</strong> <%= @location.prefecture %></p>
+          <p><strong>Adventure Type:</strong> <%= @location.adventure_name %></p>
+          <p><strong>Details:</strong> <%= @location.details %></p>
+          <% if @location.tips.present? %>
+            <p><strong>Tips:</strong> <%= @location.tips %></p>
+          <% end %>
+          <% if @location.warnings.present? %>
+            <p><strong>Warnings:</strong> <%= @location.warnings %></p>
+          <% end %>
+        </div>
       </div>
     </div>
-  </div>
-  <%# Adventures Section %>
-  <div class="bg-white rounded-lg shadow-lg p-6">
-    <h2 class="text-xl font-semibold mb-4">Available Adventures</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <% @location.adventures.each do |adventure| %>
-        <div class="border rounded-lg p-4">
-          <h3 class="text-lg font-semibold mb-2"><%= adventure.name %></h3>
-          <p class="mb-2"><%= adventure.details %></p>
-          <% if adventure.tips.present? %>
-            <p class="text-sm"><strong>Tips:</strong> <%= adventure.tips %></p>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5>Available Adventures</h5>
+          <% @location.adventures.each do |adventure| %>
+            <div class="mb-3 p-3 border rounded">
+              <h6 class="mb-2"><%= adventure.name %></h6>
+              <p class="small mb-2"><%= adventure.details %></p>
+              <%= link_to "Plan This Adventure",
+                  new_location_travel_plan_path(@location, adventure_id: adventure.id),
+                  class: "btn btn-primary btn-sm" %>
+            </div>
           <% end %>
-          <% if adventure.warnings.present? %>
-            <p class="text-sm text-red-600"><strong>Warnings:</strong> <%= adventure.warnings %></p>
-          <% end %>
-          <% if adventure.skills.present? %>
-            <p class="text-sm"><strong>Required Skills:</strong> <%= adventure.skills %></p>
-          <% end %>
-          <%= link_to "Plan This Adventure", new_location_travel_plan_path(@location, adventure_id: adventure.id), class: "mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" %>
         </div>
-      <% end %>
+      </div>
     </div>
   </div>
 </div>
