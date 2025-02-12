@@ -63,12 +63,8 @@ export default class extends Controller {
     const locationIds = Array.from(this.selectedLocations).join(',')
     const query = locationIds ? `?location_ids=${locationIds}` : ''
 
-    Promise.all([
-      fetch(`/adventures.json${query}`),
-      fetch('/locations.json')
-    ])
-      .then(([adventuresRes, locationsRes]) =>
-        Promise.all([adventuresRes.json(), locationsRes.json()]))
+    Promise.all([fetch(`/adventures.json${query}`), fetch('/locations.json')])
+      .then(([adventuresRes, locationsRes]) => Promise.all([adventuresRes.json(), locationsRes.json()]))
       .then(([adventures, locations]) => {
         const selectedLocations = new Map(
           locations.filter(l => this.selectedLocations.has(l.id))
@@ -82,12 +78,25 @@ export default class extends Controller {
             .join(', ')
 
           return `
-            <div class="list-group-item" data-action="click->travel-plan#selectAdventure"
-                 data-adventure='${JSON.stringify(adventure)}'>
+            <div class="list-group-item">
               ${adventure.name}
               ${unavailableLocations ?
-                `<small class="d-block text-muted">Not available at: ${unavailableLocations}</small>` :
-                ''}
+                `<div class="mt-2">
+                  <small class="text-muted">Not available at: ${unavailableLocations}</small>
+                  <button type="button"
+                          class="btn btn-sm btn-outline-primary float-end"
+                          data-action="click->travel-plan#selectAdventure"
+                          data-adventure='${JSON.stringify(adventure)}'>
+                    Add Anyway
+                  </button>
+                 </div>` :
+                `<button type="button"
+                         class="btn btn-sm btn-primary float-end"
+                         data-action="click->travel-plan#selectAdventure"
+                         data-adventure='${JSON.stringify(adventure)}'>
+                   Add
+                 </button>`
+              }
             </div>
           `
         }).join('')
