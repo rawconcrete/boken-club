@@ -8,8 +8,28 @@ export default class extends Controller {
     this.selectedLocations = new Set()
     this.selectedAdventures = new Set()
     this.loadInitialSelections()
+    this.initializeExistingSelections()
   }
 
+  async initializeExistingSelections() {
+    const form = this.element.querySelector('form')
+    if (!form) return
+
+    const formId = form.getAttribute('id')
+    if (!formId?.includes('edit')) return
+
+    const travelPlanId = window.location.pathname.split('/').filter(Boolean).pop()
+    if (!travelPlanId) return
+
+    const response = await fetch(`/travel_plans/${travelPlanId}.json`)
+    const travelPlan = await response.json()
+
+    travelPlan.locations?.forEach(location => this.addLocationTag(location))
+    travelPlan.adventures?.forEach(adventure => this.addAdventureTag(adventure))
+    this.updateAvailableAdventures()
+  }
+
+  // Rest of the existing methods remain unchanged
   async loadInitialSelections() {
     const urlParams = new URLSearchParams(window.location.search)
     const locationId = urlParams.get('location_id')
@@ -133,7 +153,7 @@ export default class extends Controller {
     event.stopPropagation()
     const adventure = JSON.parse(event.currentTarget.dataset.adventure)
     this.addAdventureTag(adventure)
-}
+  }
 
   addLocationTag(location) {
     if (this.selectedLocations.has(location.id)) return

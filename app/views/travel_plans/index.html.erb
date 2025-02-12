@@ -10,12 +10,12 @@
           <p class="mt-2">
             <span class="font-medium">Status:</span>
             <span class="px-2 py-1 rounded text-sm
-             <%= case plan.status
-                 when 'pending' then 'bg-yellow-100 text-yellow-800'
-                 when 'completed' then 'bg-green-100 text-green-800'
-                 when 'cancelled' then 'bg-red-100 text-red-800'
-                 else 'bg-gray-100 text-gray-800'
-                 end %>">
+              <%= case plan.status
+                  when 'pending' then 'bg-yellow-100 text-yellow-800'
+                  when 'completed' then 'bg-green-100 text-green-800'
+                  when 'cancelled' then 'bg-red-100 text-red-800'
+                  else 'bg-gray-100 text-gray-800'
+                  end %>">
               <%= plan.status&.capitalize || 'Not Set' %>
             </span>
           </p>
@@ -24,14 +24,14 @@
           <p><strong>Locations:</strong> <%= plan.locations.map(&:name).join(", ") %></p>
           <p><strong>Adventures:</strong> <%= plan.adventures.map(&:name).join(", ") %></p>
         </div>
-        <div class="space-x-2">
+        <div class="grid grid-cols-3 gap-2">
           <%= link_to "View Details", travel_plan_path(plan),
-            class: "inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" %>
+              class: "block text-center bg-blue-600 text-white font-medium px-4 py-2 rounded hover:bg-blue-700" %>
           <%= link_to "Edit", edit_travel_plan_path(plan),
-            class: "inline-block bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600" %>
+              class: "block text-center bg-yellow-600 text-white font-medium px-4 py-2 rounded hover:bg-yellow-700" %>
           <%= button_to "Delete", travel_plan_path(plan), method: :delete,
-            class: "inline-block bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600",
-            data: { turbo_confirm: "Are you sure?" } %>
+              class: "w-full bg-red-600 text-white font-medium px-4 py-2 rounded hover:bg-red-700",
+              data: { turbo_confirm: "Are you sure?" } %>
         </div>
       </div>
     <% end %>
@@ -40,7 +40,7 @@
     <div class="text-center py-8">
       <p class="text-gray-600">You haven't created any travel plans yet.</p>
       <%= link_to "Explore Locations", locations_path,
-         class: "mt-4 inline-block bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600" %>
+          class: "mt-4 inline-block bg-blue-600 text-white font-medium px-6 py-2 rounded hover:bg-blue-700" %>
     </div>
   <% end %>
 </div>
