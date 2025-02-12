@@ -1,3 +1,4 @@
+# app/controllers/travel_plans_controller.rb
 class TravelPlansController < ApplicationController
   before_action :authenticate_user!
 
@@ -7,8 +8,8 @@ class TravelPlansController < ApplicationController
 
   def new
     @travel_plan = current_user.travel_plans.new
-    @location = Location.find_by(id: params[:location_id])
-    @adventure = Adventure.find_by(id: params[:adventure_id])
+    @location = Location.find_by(id: params[:location_id]) if params[:location_id].present?
+    @adventure = Adventure.find_by(id: params[:adventure_id]) if params[:adventure_id].present?
   end
 
   def create
@@ -16,8 +17,8 @@ class TravelPlansController < ApplicationController
     if @travel_plan.save
       redirect_to @travel_plan, notice: 'Travel plan was successfully created.'
     else
-      @location = Location.find_by(id: params[:travel_plan][:location_id])
-      @adventure = Adventure.find_by(id: params[:travel_plan][:adventure_id])
+      @location = Location.find_by(id: params[:travel_plan][:location_id]) if params[:travel_plan][:location_id].present?
+      @adventure = Adventure.find_by(id: params[:travel_plan][:adventure_id]) if params[:travel_plan][:adventure_id].present?
       render :new
     end
   end
