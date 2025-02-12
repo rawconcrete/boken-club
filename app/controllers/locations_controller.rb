@@ -1,14 +1,17 @@
+# app/controllers/locations_controller.rb
 class LocationsController < ApplicationController
   def index
-    @locations = Location.all
+    if params[:query].present?
+      @locations = Location.where("name ILIKE ? OR city ILIKE ? OR prefecture ILIKE ?",
+                                "%#{params[:query]}%",
+                                "%#{params[:query]}%",
+                                "%#{params[:query]}%")
+    else
+      @locations = Location.all
+    end
   end
 
   def show
     @location = Location.find(params[:id])
-    @adventures = @location.adventures  # removed includes
-  end
-
-  def search
-    @locations = Location.where("LOWER(name) LIKE ?", "%#{params[:query].downcase}%")
   end
 end

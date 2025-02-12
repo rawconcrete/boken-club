@@ -1,15 +1,30 @@
-<h1>Search for Locations</h1>
-
-<%= form_with(url: search_locations_path, method: :get, local: true) do |form| %>
-  <%= form.text_field :query, placeholder: "Search by location name" %>
-  <%= form.submit "Search" %>
-<% end %>
-
-<h2>Locations</h2>
-
-<% @locations.each do |location| %>
-  <div class="location">
-    <h3><%= link_to location.name, location_path(location) %></h3>
-    <p><%= location.details %></p>
+<%# app/views/locations/index.html.erb %>
+<div class="container">
+  <h1>Locations</h1>
+  <div class="search-bar mb-4">
+    <%= form_with url: locations_path, method: :get, data: { controller: "search-locations", turbo_frame: "locations-list" } do |f| %>
+      <%= f.text_field :query,
+          class: "form-control",
+          placeholder: "Search locations...",
+          data: {
+            action: "input->search-locations#search",
+            search_locations_target: "input"
+          } %>
+    <% end %>
   </div>
-<% end %>
+  <%= turbo_frame_tag "locations-list" do %>
+    <div class="row">
+      <% @locations.each do |location| %>
+        <div class="col-md-4 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title"><%= location.name %></h5>
+              <p><%= location.city %>, <%= location.prefecture %></p>
+              <p class="card-text"><%= location.details %></p>
+              <%= link_to "View Details", location_path(location), class: "btn btn-primary", data: { turbo_frame: "_top" } %>            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
