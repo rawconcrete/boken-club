@@ -1,13 +1,14 @@
-# app/controllers/travel_plans_controller.rb
 class TravelPlansController < ApplicationController
+  before_action :authenticate_user!
+
   def index
     @travel_plans = current_user.travel_plans.includes(:location, :adventure)
   end
 
   def new
-    @travel_plan = TravelPlan.new
-    @location = Location.find(params[:location_id]) if params[:location_id]
-    @adventure = Adventure.find(params[:adventure_id]) if params[:adventure_id]
+    @travel_plan = current_user.travel_plans.new
+    @location = Location.find_by(id: params[:location_id])
+    @adventure = Adventure.find_by(id: params[:adventure_id])
   end
 
   def create
@@ -15,8 +16,8 @@ class TravelPlansController < ApplicationController
     if @travel_plan.save
       redirect_to @travel_plan, notice: 'Travel plan was successfully created.'
     else
-      @location = Location.find(params[:location_id]) if params[:location_id]
-      @adventure = Adventure.find(params[:adventure_id]) if params[:adventure_id]
+      @location = Location.find_by(id: params[:travel_plan][:location_id])
+      @adventure = Adventure.find_by(id: params[:travel_plan][:adventure_id])
       render :new
     end
   end
