@@ -1,4 +1,4 @@
-# model file should be travelplan, not travel_plans. the table will automatically become travel_plans.
+# app/models/travel_plan.rb
 class TravelPlan < ApplicationRecord
   belongs_to :adventure, optional: true
   belongs_to :location, optional: true
