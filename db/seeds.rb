@@ -1,44 +1,128 @@
-# Clear existing data first
-TravelPlan.destroy_all
-Adventure.destroy_all
-Location.destroy_all
-User.destroy_all
+# db/seeds.rb
+[TravelPlan, LocationsAdventure, Adventure, Location, User].each(&:destroy_all)
 
-# Users
-user1 = User.create!(email: 'user1@example.com', password: 'password')
-user2 = User.create!(email: 'user2@example.com', password: 'password')
+# basic users
+User.create!([
+ {email: 'user1@example.com', password: 'password'},
+ {email: 'user2@example.com', password: 'password'}
+])
 
-# Locations: Real places in Japan
-# Campsite Locations
-mount_fuji_campsite = Location.create!(name: 'Mount Fuji Campsite', city: 'Fujiyoshida', prefecture: 'Yamanashi', details: 'A popular campsite located at the base of Mount Fuji with breathtaking views of the mountain.', activity_name: 'Camping')
-nikko_campsite = Location.create!(name: 'Nikko National Park', city: 'Nikko', prefecture: 'Tochigi', details: 'Beautiful campsite surrounded by lush forests and waterfalls.', activity_name: 'Camping')
+# core adventures
+adventures = Adventure.create!([
+ {
+   name: 'Hiking',
+   details: 'Explore Japan\'s diverse mountain trails and natural scenery',
+   tips: 'Bring proper hiking boots and plenty of water',
+   warnings: 'Check weather conditions and trail closures before departing'
+ },
+ {
+   name: 'Rock Climbing',
+   details: 'Scale Japan\'s world-class climbing spots',
+   tips: 'Always climb with a partner and proper safety gear',
+   warnings: 'Verify route conditions and your skill level matches'
+ },
+ {
+   name: 'Camping',
+   details: 'Experience overnight stays in Japan\'s wilderness',
+   tips: 'Reserve campsites in advance during peak seasons',
+   warnings: 'Store food properly to avoid wildlife encounters'
+ }
+])
 
-# Hiking Locations
-hakone_hiking = Location.create!(name: 'Hakone Hiking Trails', city: 'Hakone', prefecture: 'Kanagawa', details: 'Famous hiking trails around Mount Hakone, known for its hot springs and scenic views.', activity_name: 'Hiking')
-kamigamo_hiking = Location.create!(name: 'Kamigamo Hiking Trails', city: 'Kyoto', prefecture: 'Kyoto', details: 'Popular hiking trails that lead to shrines and temples in the historic city of Kyoto.', activity_name: 'Hiking')
+# real locations
+locations = Location.create!([
+ {
+   name: 'Mount Fuji Fujiyoshida 5th Station',
+   city: 'Fujiyoshida',
+   prefecture: 'Yamanashi',
+   details: 'Popular starting point for Mount Fuji climbs with camping facilities',
+   adventure_name: 'Hiking',
+   tips: 'Best hiking season is July-August',
+   warnings: 'Altitude sickness possible above 2400m'
+ },
+ {
+   name: 'Ogawayama',
+   city: 'Saku',
+   prefecture: 'Nagano',
+   details: 'Premier granite climbing area with multi-pitch routes',
+   adventure_name: 'Rock Climbing',
+   tips: 'Spring and fall offer best climbing conditions',
+   warnings: 'Some routes require trad gear'
+ },
+ {
+   name: 'Mount Takao',
+   city: 'Hachioji',
+   prefecture: 'Tokyo',
+   details: 'Accessible mountain with multiple hiking trails',
+   adventure_name: 'Hiking',
+   tips: 'Trail 6 is least crowded',
+   warnings: 'Very busy during autumn leaves season'
+ },
+ {
+   name: 'Mitake Valley',
+   city: 'Ome',
+   prefecture: 'Tokyo',
+   details: 'River-side bouldering and top-rope climbing area',
+   adventure_name: 'Rock Climbing',
+   tips: 'Good shade for summer climbing',
+   warnings: 'Routes can be slippery after rain'
+ },
+ {
+   name: 'Nagatoro',
+   city: 'Nagatoro',
+   prefecture: 'Saitama',
+   details: 'Riverside climbing area with camping nearby',
+   adventure_name: 'Rock Climbing',
+   tips: 'Many beginner-friendly routes',
+   warnings: 'Check river levels during rainy season'
+ },
+ {
+   name: 'Lake Kawaguchiko',
+   city: 'Fujikawaguchiko',
+   prefecture: 'Yamanashi',
+   details: 'Lakeside campsites with Mt. Fuji views',
+   adventure_name: 'Camping',
+   tips: 'Book ahead for sites with best Fuji views',
+   warnings: 'High winds common in winter'
+ }
+])
 
-# Rock Climbing Locations
-iwate_rock_climbing = Location.create!(name: 'Iwate Rock Climbing', city: 'Iwate', prefecture: 'Iwate', details: 'A well-known climbing area offering a variety of routes with amazing views.', activity_name: 'Rock Climbing')
-yamanashi_rock_climbing = Location.create!(name: 'Yamanashi Rock Climbing', city: 'Kofu', prefecture: 'Yamanashi', details: 'Offers some of the best rock climbing routes in the Yamanashi prefecture with stunning mountain views.', activity_name: 'Rock Climbing')
+# link locations to adventures
+locations.each do |location|
+ matching_adventure = adventures.find { |a| a.name == location.adventure_name }
+ location.adventures << matching_adventure if matching_adventure
+end
 
-# Adventures
-camping = Adventure.create!(name: 'Camping', details: 'Enjoy the wilderness by setting up camp at the base of a mountain or in a national park.', location_id: mount_fuji_campsite.id)
-hiking = Adventure.create!(name: 'Hiking', details: 'Explore the breathtaking hiking trails around mountains from Japan.', location_id: hakone_hiking.id)
-rock_climbing = Adventure.create!(name: 'Rock Climbing', details: "Challenge yourself with rock climbing routes in some of Japan`s best climbing spots.", location_id: iwate_rock_climbing.id)
+# travel plans
+user1 = User.first
+user2 = User.second
 
-# Travel Plans - Changed status from 'Active' to 'pending'
-travel_plan1 = TravelPlan.create!(user_id: user1.id, title: 'Mount Fuji Camping Trip', content: 'Camping trip at the base of Mount Fuji with breathtaking views.', status: 'pending', location_id: mount_fuji_campsite.id, adventure_id: camping.id)
-travel_plan2 = TravelPlan.create!(user_id: user2.id, title: 'Hakone Hiking Adventure', content: 'Explore the hiking trails around Mount Hakone.', status: 'pending', location_id: hakone_hiking.id, adventure_id: hiking.id)
-travel_plan3 = TravelPlan.create!(user_id: user1.id, title: 'Rock Climbing in Iwate', content: 'Challenge yourself with rock climbing in Iwate.', status: 'pending', location_id: iwate_rock_climbing.id, adventure_id: rock_climbing.id)
+TravelPlan.create!([
+  {
+    user: user1,
+    title: 'Weekend at Ogawayama',
+    content: 'Multi-pitch climbing trip',
+    status: 'pending'
+  },
+  {
+    user: user2,
+    title: 'Mount Takao Day Hike',
+    content: 'Day trip hiking various trails',
+    status: 'pending'
+  }
+]).each_with_index do |plan, index|
+  plan.locations << (index.zero? ? Location.find_by(name: 'Ogawayama') : Location.find_by(name: 'Mount Takao'))
+  plan.adventures << (index.zero? ? Adventure.find_by(name: 'Rock Climbing') : Adventure.find_by(name: 'Hiking'))
+end
 
-# Admin user seeds
-admins = [
-  { email: 'admin@admin.com', password: '123456', admin: true },
-  { email: 'sarah@admin.com', password: '123456', admin: true },
-  { email: 'nico@admin.com', password: '123456', admin: true },
-  { email: 'lio@admin.com', password: '123456', admin: true }
-]
-
-admins.each do |admin_data|
-  User.create!(admin_data)
+# admin/debugging accounts
+[
+ { email: 'admin@admin.com', password: '123456', admin: true },
+ { email: 'sarah@admin.com', password: '123456', admin: true },
+ { email: 'nico@admin.com', password: '123456', admin: true },
+ { email: 'lio@admin.com', password: '123456', admin: true },
+ { email: 'lio', password: '123', admin: true }
+].each do |admin_data|
+ user = User.new(admin_data)
+ user.save(validate: false)
 end

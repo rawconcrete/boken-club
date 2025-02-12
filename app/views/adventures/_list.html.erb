@@ -1,0 +1,14 @@
+<%# app/views/adventures/_list.html.erb %>
+<div class="row">
+  <% adventures.each do |adventure| %>
+    <div class="col-md-4 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title"><%= adventure.name %></h5>
+          <p class="card-text"><%= adventure.details %></p>
+          <%= link_to "View Details", adventure_path(adventure), class: "btn btn-primary", data: { turbo_frame: "_top" } %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

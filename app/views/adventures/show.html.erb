@@ -1,2 +1,41 @@
-<h1>Adventures#show</h1>
-<p>Find me in app/views/adventures/show.html.erb</p>
+<%# app/views/adventures/show.html.erb  %>
+<div class="container">
+  <h1><%= @adventure.name %></h1>
+  <div class="row mt-4">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <p><strong>Details:</strong> <%= @adventure.details %></p>
+          <% if @adventure.tips.present? %>
+            <p><strong>Tips:</strong> <%= @adventure.tips %></p>
+          <% end %>
+          <% if @adventure.warnings.present? %>
+            <p><strong>Warnings:</strong> <%= @adventure.warnings %></p>
+          <% end %>
+          <% if @adventure.skills.present? %>
+            <p><strong>Required Skills:</strong> <%= @adventure.skills %></p>
+          <% end %>
+          <%= link_to "Plan This Adventure", new_travel_plan_path(adventure_id: @adventure.id),
+              class: "btn btn-primary mt-3",
+              data: { turbo_frame: "_top" } %>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5>Available Locations</h5>
+          <% @adventure.locations.each do |location| %>
+            <div class="mb-3 p-3 border rounded">
+              <h6 class="mb-2"><%= location.name %></h6>
+              <p class="small mb-2"><%= location.city %>, <%= location.prefecture %></p>
+              <%= link_to "View Location", location_path(location),
+                  class: "btn btn-primary btn-sm",
+                  data: { turbo_frame: "_top" } %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

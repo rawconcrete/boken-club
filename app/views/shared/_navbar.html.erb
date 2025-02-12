@@ -1,5 +1,5 @@
-<%# views/shared/_navbar.html.erb %>
-<div class="navbar navbar-expand-sm navbar-light navbar-lewagon">
+<%# app/views/shared/_navbar.html.erb %>
+<div class="navbar navbar-expand-sm navbar-light navbar-lewagon" data-controller="navbar">
   <div class="container-fluid">
     <%= link_to root_path, class: "navbar-brand" do %>
       <%= image_tag "https://raw.githubusercontent.com/lewagon/fullstack-images/master/uikit/logo.png" %>
@@ -12,6 +12,9 @@
         <% if user_signed_in? %>
           <li class="nav-item">
             <%= link_to "Locations", locations_path, class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Adventures", adventures_path, class: "nav-link" %>
           </li>
           <li class="nav-item dropdown">
             <a href="#" class="avatar" id="navbarDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

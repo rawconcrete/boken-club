@@ -1,15 +1,13 @@
-<h1>Search for Locations</h1>
-
-<%= form_with(url: search_locations_path, method: :get, local: true) do |form| %>
-  <%= form.text_field :query, placeholder: "Search by location name" %>
-  <%= form.submit "Search" %>
-<% end %>
-
-<h2>Locations</h2>
-
-<% @locations.each do |location| %>
-  <div class="location">
-    <h3><%= link_to location.name, location_path(location) %></h3>
-    <p><%= location.details %></p>
+<%# app/views/locations/index.html.erb %>
+<div class="container">
+  <h1>Locations</h1>
+  <div class="search-bar mb-4">
+    <%= form_with url: locations_path, method: :get,
+    data: { controller: "search-locations", turbo_frame: "locations-list" } do |f| %>
+      <%= f.text_field :query, class: "form-control", placeholder: "Search locations..." %>
+    <% end %>
   </div>
-<% end %>
+  <turbo-frame id="locations-list">
+    <%= render "locations/list", locations: @locations %>
+  </turbo-frame>
+</div>

@@ -1,17 +1,21 @@
+# config/routes.rb
 Rails.application.routes.draw do
   devise_for :users
   root 'pages#home'
 
-  get 'activities/search', to: 'activities#search', as: 'search_activities'
-
-  resources :adventures, only: [:index, :show]
-  resources :travel_plans, only: [:index, :show, :new, :create]
-  resources :locations, only: [:index, :show] do
-    resources :travel_plans, only: [:new, :create]
+  resources :adventures, only: [:index, :show] do
     collection do
-      get 'search'
+      get :index, format: :json
     end
   end
+
+  resources :locations, only: [:index, :show] do
+    collection do
+      get :index, format: :json
+    end
+  end
+
+  resources :travel_plans, only: [:index, :show, :new, :create]
 
   get "up" => "rails/health#show", as: :rails_health_check
 end

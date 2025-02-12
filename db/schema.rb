@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_02_11_103855) do
+ActiveRecord::Schema[7.1].define(version: 2025_02_12_123011) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -23,6 +23,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_11_103855) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "location_id"
+    t.index ["location_id"], name: "index_adventures_on_location_id"
   end
 
   create_table "locations", force: :cascade do |t|
@@ -34,7 +35,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_11_103855) do
     t.string "warnings"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "activity_name"
+    t.string "adventure_name"
   end
 
   create_table "locations_adventures", force: :cascade do |t|
@@ -52,14 +53,28 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_11_103855) do
     t.string "title"
     t.string "content"
     t.string "status"
-    t.bigint "adventure_id"
-    t.bigint "location_id", null: false
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["adventure_id"], name: "index_travel_plans_on_adventure_id"
-    t.index ["location_id"], name: "index_travel_plans_on_location_id"
     t.index ["user_id"], name: "index_travel_plans_on_user_id"
+  end
+
+  create_table "travel_plans_adventures", force: :cascade do |t|
+    t.bigint "travel_plan_id", null: false
+    t.bigint "adventure_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["adventure_id"], name: "index_travel_plans_adventures_on_adventure_id"
+    t.index ["travel_plan_id"], name: "index_travel_plans_adventures_on_travel_plan_id"
+  end
+
+  create_table "travel_plans_locations", force: :cascade do |t|
+    t.bigint "travel_plan_id", null: false
+    t.bigint "location_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["location_id"], name: "index_travel_plans_locations_on_location_id"
+    t.index ["travel_plan_id"], name: "index_travel_plans_locations_on_travel_plan_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -77,7 +92,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_11_103855) do
 
   add_foreign_key "locations_adventures", "adventures"
   add_foreign_key "locations_adventures", "locations"
-  add_foreign_key "travel_plans", "adventures"
-  add_foreign_key "travel_plans", "locations"
   add_foreign_key "travel_plans", "users"
+  add_foreign_key "travel_plans_adventures", "adventures"
+  add_foreign_key "travel_plans_adventures", "travel_plans"
+  add_foreign_key "travel_plans_locations", "locations"
+  add_foreign_key "travel_plans_locations", "travel_plans"
 end

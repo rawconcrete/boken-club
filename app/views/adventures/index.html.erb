@@ -1,2 +1,13 @@
-<h1>Adventures#index</h1>
-<p>Find me in app/views/adventures/index.html.erb</p>
+<%# app/views/adventures/index.html.erb %>
+<div class="container">
+  <h1>Adventures</h1>
+  <div class="search-bar mb-4">
+    <%= form_with url: adventures_path, method: :get,
+    data: { controller: "search-adventures", turbo_frame: "adventures-list" } do |f| %>
+      <%= f.text_field :query, class: "form-control", placeholder: "Search adventures..." %>
+    <% end %>
+  </div>
+  <turbo-frame id="adventures-list">
+    <%= render "adventures/list", adventures: @adventures %>
+  </turbo-frame>
+</div>
