@@ -1,8 +1,9 @@
+# routes.rb
 Rails.application.routes.draw do
   devise_for :users
   root 'pages#home'
 
-  get 'activities/search', to: 'activities#search', as: 'search_activities'
+  get 'adventures/search', to: 'adventures#search', as: 'search_adventures' # changed from activity/activities to adventure/adventures
 
   resources :adventures, only: [:index, :show]
   resources :travel_plans, only: [:index, :show, :new, :create]

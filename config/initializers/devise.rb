@@ -1,3 +1,4 @@
+# config/intializers/devise.rb
 # frozen_string_literal: true
 
 # Assuming you have not yet modified this file, each configuration option below
@@ -127,7 +128,7 @@ Devise.setup do |config|
   config.stretches = Rails.env.test? ? 1 : 12
 
   # Set up a pepper to generate the hashed password.
-  
+
   # config.pepper = 'fe59baa46feb9a0b8edc3ac0759f615ae3df0bdfe2d2db74dd8dd58f4ec57994caa780954254e7e7f7bb4c3e3b3054bd0e86fac602ac2355ab083889f66201b4'
 
 
