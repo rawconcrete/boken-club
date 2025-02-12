@@ -77,28 +77,33 @@ export default class extends Controller {
             .map(l => l.name)
             .join(', ')
 
+          const buttonHtml = unavailableLocations ?
+            `<button type="button"
+                    class="btn btn-sm btn-outline-primary float-end add-anyway-btn"
+                    data-adventure-id="${adventure.id}"
+                    data-adventure-data='${JSON.stringify(adventure)}'
+                    onclick="window.dispatchEvent(new CustomEvent('addAdventure', {detail: this.dataset.adventureData}))">
+              Add Anyway
+            </button>` :
+            `<button type="button"
+                    class="btn btn-sm btn-primary float-end add-btn"
+                    data-adventure-id="${adventure.id}"
+                    data-adventure-data='${JSON.stringify(adventure)}'
+                    onclick="window.dispatchEvent(new CustomEvent('addAdventure', {detail: this.dataset.adventureData}))">
+              Add
+            </button>`
+
           return `
             <div class="list-group-item">
               ${adventure.name}
               ${unavailableLocations ?
                 `<div class="mt-2">
                   <small class="text-muted">Not available at: ${unavailableLocations}</small>
-                  <button type="button"
-                          class="btn btn-sm btn-outline-primary float-end"
-                          data-action="click->travel-plan#selectAdventure"
-                          data-adventure='${JSON.stringify(adventure)}'>
-                    Add Anyway
-                  </button>
+                  ${buttonHtml}
                  </div>` :
-                `<button type="button"
-                         class="btn btn-sm btn-primary float-end"
-                         data-action="click->travel-plan#selectAdventure"
-                         data-adventure='${JSON.stringify(adventure)}'>
-                   Add
-                 </button>`
+                buttonHtml
               }
-            </div>
-          `
+            </div>`
         }).join('')
 
         this.adventureResultsTarget.innerHTML = availableHTML
@@ -125,9 +130,10 @@ export default class extends Controller {
   }
 
   selectAdventure(event) {
+    event.stopPropagation()
     const adventure = JSON.parse(event.currentTarget.dataset.adventure)
     this.addAdventureTag(adventure)
-  }
+}
 
   addLocationTag(location) {
     if (this.selectedLocations.has(location.id)) return
