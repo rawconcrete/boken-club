@@ -1,3 +1,4 @@
+<%# app/views/locations/show.html.erb %>
 <div class="container">
   <h1><%= @location.name %></h1>
   <div class="row mt-4">
@@ -25,9 +26,13 @@
             <div class="mb-3 p-3 border rounded">
               <h6 class="mb-2"><%= adventure.name %></h6>
               <p class="small mb-2"><%= adventure.details %></p>
+              <%= link_to "View Adventure", adventure_path(adventure),
+                  class: "btn btn-primary btn-sm",
+                  data: { turbo_frame: "_top" } %>
               <%= link_to "Plan This Adventure",
                   new_location_travel_plan_path(@location, adventure_id: adventure.id),
-                  class: "btn btn-primary btn-sm" %>
+                  class: "btn btn-outline-primary btn-sm ms-2",
+                  data: { turbo_frame: "_top" } %>
             </div>
           <% end %>
         </div>

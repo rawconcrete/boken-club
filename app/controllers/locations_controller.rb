@@ -12,6 +12,6 @@ class LocationsController < ApplicationController
   end
 
   def show
-    @location = Location.find(params[:id])
+    @location = Location.includes(:adventures).find(params[:id])
   end
 end
