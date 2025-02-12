@@ -15,7 +15,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :travel_plans, only: [:index, :show, :new, :create]
+  resources :travel_plans, except: [:destroy] do
+    member do
+      delete :destroy
+    end
+  end
 
   get "up" => "rails/health#show", as: :rails_health_check
 end

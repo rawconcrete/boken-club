@@ -36,8 +36,32 @@ class TravelPlansController < ApplicationController
   end
 
   def show
-    @travel_plan = TravelPlan.includes(:locations, :adventures).find_by(id: params[:id])
-    return redirect_to travel_plans_path, alert: "Travel Plan not found." unless @travel_plan
+    @travel_plan = current_user.travel_plans.includes(:locations, :adventures).find_by(id: params[:id])
+    return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
+  end
+
+  def destroy
+    @travel_plan = current_user.travel_plans.find_by(id: params[:id])
+    return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
+
+    @travel_plan.destroy
+    redirect_to travel_plans_path, notice: "Travel plan deleted successfully"
+  end
+
+  def edit
+    @travel_plan = current_user.travel_plans.find_by(id: params[:id])
+    return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
+  end
+
+  def update
+    @travel_plan = current_user.travel_plans.find_by(id: params[:id])
+    return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
+
+    if @travel_plan.update(travel_plan_params)
+      redirect_to @travel_plan, notice: 'Travel plan updated successfully.'
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   private
