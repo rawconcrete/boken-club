@@ -38,6 +38,11 @@ class TravelPlansController < ApplicationController
   def show
     @travel_plan = current_user.travel_plans.includes(:locations, :adventures).find_by(id: params[:id])
     return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @travel_plan.as_json(include: [:locations, :adventures]) }
+    end
   end
 
   def destroy
@@ -52,6 +57,7 @@ class TravelPlansController < ApplicationController
     @travel_plan = current_user.travel_plans.find_by(id: params[:id])
     return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
   end
+
 
   def update
     @travel_plan = current_user.travel_plans.find_by(id: params[:id])
