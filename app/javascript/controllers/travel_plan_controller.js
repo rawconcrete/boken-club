@@ -87,7 +87,7 @@ export default class extends Controller {
 
         const buttonHtml = unavailableLocations
           ? `<button class="btn btn-warning btn-sm float-end"
-                  data-action="click->travel-plan#addAdventureAnyway"
+                  click->travel-plan#addAdventureAnyway
                   data-adventure='${JSON.stringify(adventure)}'>
             Add Anyway
           </button>`
