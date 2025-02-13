@@ -13,11 +13,9 @@ class SearchController < ApplicationController
     suggestions += locations.map { |loc| { type: "location", id: loc.id, name: loc.name } }
     suggestions += adventures.map { |adv| { type: "adventure", id: adv.id, name: adv.name } }
 
-    # if no exact matches, suggest searching in index pages
-    if query.present? && suggestions.empty?
-      suggestions.push({ type: "index_search", category: "locations", query: query, name: "Search Locations for \"#{query}\"" })
-      suggestions.push({ type: "index_search", category: "adventures", query: query, name: "Search Adventures for \"#{query}\"" })
-    end
+    # always add "Search Locations for X" and "Search Adventures for X"
+    suggestions.push({ type: "index_search", category: "locations", query: query, name: "Search Locations for \"#{query}\"" })
+    suggestions.push({ type: "index_search", category: "adventures", query: query, name: "Search Adventures for \"#{query}\"" })
 
     # if no query, return all locations and adventures
     if query.blank?
