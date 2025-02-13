@@ -70,16 +70,19 @@ export default class extends Controller {
   renderAdventureResults(adventures) {
     this.adventureResultsTarget.innerHTML = adventures.map(adventure => {
       const unavailableLocations = Array.from(this.selectedLocations)
-        .filter(locationId => !adventure.available_locations?.includes(parseInt(locationId)))
+        .map(locationId => {
+          const location = this.locationsValue.find(l => l.id === parseInt(locationId));
+          return location ? location.name : '';
+        })
+        .filter(Boolean)
         .join(', ');
 
       const buttonHtml = unavailableLocations ?
         `<button class="btn btn-warning btn-sm float-end"
-                data-action="travel-plan#addAdventureAnyway"
-                data-adventure-id="${adventure.id}"
-                data-adventure='${JSON.stringify(adventure)}'>
-          Add Anyway
-        </button>` :
+        data-action="click->travel-plan#addAdventureAnyway"
+        data-adventure='${JSON.stringify(adventure)}'>
+        Add Anyway
+      </button>` :
         `<button class="btn btn-primary btn-sm float-end"
                 data-action="travel-plan#selectAdventure"
                 data-adventure='${JSON.stringify(adventure)}'>
