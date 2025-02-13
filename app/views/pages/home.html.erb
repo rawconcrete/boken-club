@@ -1,7 +1,69 @@
-<div class="min-h-screen bg-gray-100 flex items-center justify-center">
-  <div class="max-w-2xl mx-auto p-8 text-center">
-    <h1 class="text-4xl font-bold mb-4">Welcome to Boken Club</h1>
-    <p class="text-xl text-gray-600 mb-8">We're currently building something special. Check back soon!</p>
-    <div class="text-gray-500">© 2025 Boken Club. All rights reserved.</div>
-  </div>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boken Club</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= javascript_include_tag "application", defer: true %>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background: #f5f5f5;
+      }
+      .search-container {
+        position: relative;
+        width: 100%;
+        max-width: 500px;
+      }
+      .search-bar {
+        width: 100%;
+        padding: 12px;
+        font-size: 18px;
+        border: 1px solid #ccc;
+        border-radius: 25px;
+        text-align: center;
+      }
+      .suggestions {
+        position: absolute;
+        width: 100%;
+        background: white;
+        border: 1px solid #ddd;
+        border-top: none;
+        max-height: 200px;
+        overflow-y: auto;
+        display: none;
+      }
+      .suggestions div {
+        padding: 10px;
+        cursor: pointer;
+      }
+      .suggestions div:hover {
+        background: #eee;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Welcome to Boken Club</h1>
+    <p>We're currently building something special. Check back soon!</p>
+    <div class="search-container" data-controller="search">
+      <input type="text"
+           id="search-bar"
+           class="search-bar"
+           placeholder="I want to..."
+           data-action="input->search#fetchResults focus->search#startAnimation blur->search#stopAnimation"
+      data-search-target="input">
+      <div class="suggestions" data-search-target="suggestions"></div>
+    </div>
+    <p>© 2025 Boken Club. All rights reserved.</p>
+  </body>
+</html>
