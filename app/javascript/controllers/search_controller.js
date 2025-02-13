@@ -1,59 +1,40 @@
+// for homepage searchbar
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  static targets = ["input", "suggestions"];
+  static targets = ["input"];
 
   connect() {
-    this.suggestionsList = [];
     this.animationTexts = [
       "go hiking",
-      "go to Hokkaido",
-      "go rock climbing",
       "explore Mount Fuji",
-      "find a hidden waterfall"
+      "go rock climbing",
+      "visit Hokkaido",
+      "camp under the stars"
     ];
     this.animationIndex = 0;
-
-    this.fetchResults(); // Fetch results on page load
-    this.startAnimation();
+    this.typingIndex = 0;
+    this.isDeleting = false;
+    this.startTypingAnimation();
   }
 
-  startAnimation() {
-    this.stopAnimation(); // Ensure no duplicate intervals
-    this.typingInterval = setInterval(() => {
-      this.inputTarget.placeholder = `I want to... ${this.animationTexts[this.animationIndex]}`;
+  startTypingAnimation() {
+    const text = this.animationTexts[this.animationIndex];
+    const current = this.isDeleting
+      ? text.substring(0, this.typingIndex--)
+      : text.substring(0, this.typingIndex++);
+
+    this.inputTarget.placeholder = `I want to... ${current}`;
+
+    if (!this.isDeleting && this.typingIndex === text.length + 1) {
+      this.isDeleting = true;
+      setTimeout(() => this.startTypingAnimation(), 1200); // Pause before deleting
+    } else if (this.isDeleting && this.typingIndex === 0) {
+      this.isDeleting = false;
       this.animationIndex = (this.animationIndex + 1) % this.animationTexts.length;
-    }, 2000);
-  }
-
-  stopAnimation() {
-    clearInterval(this.typingInterval);
-  }
-
-  fetchResults() {
-    fetch(`/search.json?q=`)
-      .then(response => response.json())
-      .then(data => {
-        this.suggestionsList = data;
-        this.showSuggestions();
-      });
-  }
-
-  showSuggestions() {
-    if (this.suggestionsList.length === 0) {
-      this.suggestionsTarget.style.display = "none";
-      return;
+      setTimeout(() => this.startTypingAnimation(), 500);
+    } else {
+      setTimeout(() => this.startTypingAnimation(), this.isDeleting ? 50 : 100);
     }
-
-    this.suggestionsTarget.innerHTML = this.suggestionsList
-      .map(item => `<div data-action="click->search#selectSuggestion">${item}</div>`)
-      .join("");
-
-    this.suggestionsTarget.style.display = "block"; // Ensure suggestions stay visible
-  }
-
-  selectSuggestion(event) {
-    this.inputTarget.value = event.target.innerText;
-    this.suggestionsTarget.style.display = "none";
   }
 }
