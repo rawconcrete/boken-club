@@ -10,3 +10,78 @@
 // Your CSS partials
 @import "components/index";
 @import "pages/index";
+
+@import "components/alert";
+@import "components/navbar";
+@import "components/searchbar";
+@import "components/buttons";
+@import "components/treecursor";
+
+// Apply to body and all relevant sections
+body {
+  background: url('Unknown.png') no-repeat left center;
+  background-size: cover;
+  background-attachment: fixed;
+  animation: moveBackgroundBounce 50s ease-in-out infinite;
+  position: relative;
+  overflow-x: hidden;
+  cursor: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Ctext x="0" y="20" font-family="Arial" font-size="20"%3E🌲%3C/text%3E%3C/svg%3E'), auto;
+}
+
+h1, h2 {
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+
+.hero-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  z-index: 1;
+}
+
+.parallax {
+  position: relative;
+  background: url('Unknown.png') no-repeat left center;
+  background-size: cover;
+  background-attachment: fixed;
+  animation: moveBackground 10s linear infinite;
+  height: 100vh;
+}
+
+.parallax-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 3rem;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
+  padding: 20px;
+}
+
+@keyframes moveBackgroundBounce {
+  0% {
+    background-position: left center;
+  }
+  25% {
+    background-position: right center;
+  }
+  50% {
+    background-position: left center;
+  }
+  75% {
+    background-position: right center;
+  }
+  100% {
+    background-position: left center;
+  }
+}

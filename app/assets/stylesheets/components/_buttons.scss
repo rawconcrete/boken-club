@@ -1,0 +1,13 @@
+.btn-primary {
+  background: linear-gradient(to right, #53cbd9, #88f2a4);
+  border: none;
+  border-radius: 25px;
+  padding: 10px 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-primary:hover {
+  transform: scale(1.1);
+  background: linear-gradient(to right, #88f2a4, #53cbd9);
+}
