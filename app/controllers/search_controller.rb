@@ -13,13 +13,13 @@ class SearchController < ApplicationController
     suggestions += locations.map { |loc| { type: "location", id: loc.id, name: loc.name } }
     suggestions += adventures.map { |adv| { type: "adventure", id: adv.id, name: adv.name } }
 
-    # if no direct matches, suggest searching Locations or Adventures
+    # if no exact matches, suggest searching in index pages
     if query.present? && suggestions.empty?
-      suggestions.push({ type: "search", category: "locations", query: query, name: "Search Locations for \"#{query}\"" })
-      suggestions.push({ type: "search", category: "adventures", query: query, name: "Search Adventures for \"#{query}\"" })
+      suggestions.push({ type: "index_search", category: "locations", query: query, name: "Search Locations for \"#{query}\"" })
+      suggestions.push({ type: "index_search", category: "adventures", query: query, name: "Search Adventures for \"#{query}\"" })
     end
 
-    # return all results if no query provided
+    # if no query, return all locations and adventures
     if query.blank?
       all_locations = Location.pluck(:id, :name).map { |id, name| { type: "location", id: id, name: name } }
       all_adventures = Adventure.pluck(:id, :name).map { |id, name| { type: "adventure", id: id, name: name } }
