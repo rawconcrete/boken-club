@@ -195,6 +195,7 @@ export default class extends Controller {
   }
 
   addAnyway(event) {
+    console.log("addAnyway called", event.currentTarget.dataset.travelPlanAdventureValue)
     const adventure = JSON.parse(event.currentTarget.dataset.travelPlanAdventureValue)
     this.addAdventureTag(adventure)
   }
