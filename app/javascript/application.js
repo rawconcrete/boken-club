@@ -13,3 +13,4 @@ const context = require.context("controllers", true, /\.js$/);
 Stimulus.load(definitionsFromContext(context));
 
 console.log("✅ Stimulus Loaded Successfully!");
+import "controllers"
