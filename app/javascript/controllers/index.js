@@ -4,4 +4,8 @@ import { application } from "controllers/application";
 import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading";
 
 eagerLoadControllersFrom("controllers", application);
-console.log("Stimulus Controllers Loaded");
+console.log("✅ Stimulus Controllers Loaded");
+
+document.addEventListener("turbo:load", () => {
+  application.controllers.forEach((controller) => controller.connect());
+});
