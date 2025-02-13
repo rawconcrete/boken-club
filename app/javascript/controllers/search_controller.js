@@ -42,7 +42,7 @@ export default class extends Controller {
         } else if (item.type === "adventure") {
           return `<div class="suggestion" data-action="click->search#goToAdventure" data-id="${item.id}">${item.name}</div>`;
         } else {
-          return `<div class="suggestion" data-action="click->search#searchCategory" data-category="${item.category}" data-query="${item.query}">${item.name}</div>`;
+          return `<div class="suggestion" data-action="click->search#searchIndex" data-category="${item.category}" data-query="${item.query}">${item.name}</div>`;
         }
       })
       .join("");
@@ -60,7 +60,7 @@ export default class extends Controller {
     window.location.href = `/adventures/${adventureId}`;
   }
 
-  searchCategory(event) {
+  searchIndex(event) {
     const category = event.target.dataset.category;
     const query = event.target.dataset.query;
     window.location.href = `/${category}?q=${encodeURIComponent(query)}`;
