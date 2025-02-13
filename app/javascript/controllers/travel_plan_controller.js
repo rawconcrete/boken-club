@@ -1,4 +1,4 @@
-// travel_plan_controller.js
+// app/javascript/controllers/travel_plan_controller.js
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
@@ -16,7 +16,6 @@ export default class extends Controller {
   }
 
   initializeExistingSelections() {
-    // use the data attributes passed from the form
     if (this.hasLocationsValue) {
       this.locationsValue.forEach(location => this.addLocationTag(location))
     }
@@ -69,12 +68,35 @@ export default class extends Controller {
   }
 
   renderAdventureResults(adventures) {
-    this.adventureResultsTarget.innerHTML = adventures.map(adventure => `
-      <div class="list-group-item" data-action="click->travel-plan#selectAdventure"
-           data-adventure='${JSON.stringify(adventure)}'>
-        ${adventure.name}
-      </div>
-    `).join('')
+    this.adventureResultsTarget.innerHTML = adventures.map(adventure => {
+      const unavailableLocations = Array.from(this.selectedLocations)
+        .filter(locationId => !adventure.available_locations?.includes(parseInt(locationId)))
+        .join(', ');
+
+      const buttonHtml = unavailableLocations ?
+        `<button class="btn btn-warning btn-sm float-end"
+                data-action="travel-plan#addAdventureAnyway"
+                data-adventure-id="${adventure.id}"
+                data-adventure='${JSON.stringify(adventure)}'>
+          Add Anyway
+        </button>` :
+        `<button class="btn btn-primary btn-sm float-end"
+                data-action="travel-plan#selectAdventure"
+                data-adventure='${JSON.stringify(adventure)}'>
+          Add
+        </button>`;
+
+      return `
+        <div class="list-group-item">
+          ${adventure.name}
+          ${unavailableLocations ?
+            `<div class="mt-2">
+              <small class="text-muted">Not available at: ${unavailableLocations}</small>
+            </div>` : ''
+          }
+          ${buttonHtml}
+        </div>`;
+    }).join('');
   }
 
   updateAvailableAdventures() {
@@ -88,43 +110,7 @@ export default class extends Controller {
           locations.filter(l => this.selectedLocations.has(l.id))
             .map(l => [l.id, l])
         )
-
-        const availableHTML = adventures.map(adventure => {
-          const unavailableLocations = Array.from(selectedLocations.values())
-            .filter(location => !adventure.available_locations?.includes(location.id))
-            .map(l => l.name)
-            .join(', ')
-
-          const buttonHtml = unavailableLocations ?
-            `<button type="button"
-                    class="btn btn-sm btn-outline-primary float-end add-anyway-btn"
-                    data-adventure-id="${adventure.id}"
-                    data-adventure-data='${JSON.stringify(adventure)}'
-                    onclick="window.dispatchEvent(new CustomEvent('addAdventure', {detail: this.dataset.adventureData}))">
-              Add Anyway
-            </button>` :
-            `<button type="button"
-                    class="btn btn-sm btn-primary float-end add-btn"
-                    data-adventure-id="${adventure.id}"
-                    data-adventure-data='${JSON.stringify(adventure)}'
-                    onclick="window.dispatchEvent(new CustomEvent('addAdventure', {detail: this.dataset.adventureData}))">
-              Add
-            </button>`
-
-          return `
-            <div class="list-group-item">
-              ${adventure.name}
-              ${unavailableLocations ?
-                `<div class="mt-2">
-                  <small class="text-muted">Not available at: ${unavailableLocations}</small>
-                  ${buttonHtml}
-                 </div>` :
-                buttonHtml
-              }
-            </div>`
-        }).join('')
-
-        this.adventureResultsTarget.innerHTML = availableHTML
+        this.renderAdventureResults(adventures)
       })
   }
 
@@ -151,6 +137,24 @@ export default class extends Controller {
     event.stopPropagation()
     const adventure = JSON.parse(event.currentTarget.dataset.adventure)
     this.addAdventureTag(adventure)
+  }
+
+  addAdventureAnyway(event) {
+    const adventure = JSON.parse(event.target.dataset.adventure);
+    const disclaimer = `Note: ${adventure.name} is not typically available at selected locations`;
+
+    this.selectedAdventures.add(adventure.id);
+
+    this.selectedAdventuresTarget.insertAdjacentHTML('beforeend', `
+      <div class="badge bg-warning p-2 m-1 d-inline-flex align-items-center">
+        ${adventure.name}
+        <button type="button" class="btn-close ms-2"
+                data-action="click->travel-plan#removeAdventure"
+                data-adventure-id="${adventure.id}"></button>
+        <input type="hidden" name="travel_plan[adventure_ids][]" value="${adventure.id}">
+        <input type="hidden" name="travel_plan[adventure_disclaimers][${adventure.id}]" value="${disclaimer}">
+      </div>
+    `);
   }
 
   addLocationTag(location) {
