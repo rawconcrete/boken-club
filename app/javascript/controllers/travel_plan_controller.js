@@ -101,7 +101,7 @@ export default class extends Controller {
                     data-action="click->travel-plan#addAnyway"
                     data-travel-plan-adventure-value='${JSON.stringify(adventure)}'>
               Add Anyway
-            </button>`` :
+            </button>` :
             `<button type="button"
                     class="btn btn-sm btn-primary float-end add-btn"
                     data-adventure-id="${adventure.id}"
@@ -194,4 +194,9 @@ export default class extends Controller {
     this.selectedAdventures.delete(adventureId)
     event.currentTarget.closest('.badge').remove()
   }
+
+addAnyway(event) {
+  const adventure = JSON.parse(event.currentTarget.dataset.travelPlanAdventureValue)
+  this.addAdventureTag(adventure)
+}
 }
