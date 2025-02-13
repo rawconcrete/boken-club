@@ -1,16 +1,15 @@
 <div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-  <div class="max-w-2xl mx-auto p-8 text-center">
+  <div class="max-w-3xl mx-auto p-8 text-center">
     <h1 class="text-4xl font-bold mb-4">Welcome to Boken Club</h1>
     <p class="text-xl text-gray-600 mb-8">We're currently building something special. Check back soon!</p>
-    <div class="search-container" style="width: 80%;" data-controller="search">
-      <input type="text"
-      id="search-bar"
-      class="search-bar"
-      style="width: 100%; max-width: 700px; padding: 14px; font-size: 18px; border-radius: 50px; border: 1px solid #ccc; text-align: center;"
-      placeholder="I want to..."
-      data-action="input->search#fetchResults focus->search#startAnimation blur->search#stopAnimation"
-      data-search-target="input">
-      <div class="suggestions" data-search-target="suggestions"></div>
+    <div class="w-full flex justify-center">
+      <div class="search-container w-full max-w-2xl" data-controller="search">
+        <input type="text"
+          id="search-bar"
+          class="search-bar w-full px-6 py-4 text-lg rounded-full border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
+          placeholder="I want to..."
+          data-search-target="input">
+      </div>
     </div>
     <div class="text-gray-500 mt-8">© 2025 Boken Club. All rights reserved.</div>
   </div>
