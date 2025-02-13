@@ -1,8 +1,8 @@
 <%# app/views/travel_plans/_form.html.erb %>
 <div class="container"
      data-controller="travel-plan"
-     data-locations="<%= travel_plan.locations.to_json %>"
-     data-adventures="<%= travel_plan.adventures.to_json %>">
+     data-travel-plan-locations-value="<%= travel_plan.locations.to_json %>"
+     data-travel-plan-adventures-value="<%= travel_plan.adventures.to_json %>">
   <div class="row justify-content-center">
     <div class="col-md-8">
       <%= form_with(model: travel_plan, local: true) do |f| %>
@@ -21,11 +21,7 @@
             </div>
             <div class="mb-3">
               <%= f.label :status, class: "form-label" %>
-              <%= f.select :status,
-                ['pending', 'completed', 'cancelled'].map { |s| [s.capitalize, s] },
-                { include_blank: true },
-                class: "form-control"
-              %>
+              <%= f.select :status, [['Pending', 'pending'], ['Completed', 'completed'], ['Cancelled', 'cancelled']], { selected: travel_plan.status }, class: "form-control" %>
             </div>
           </div>
         </div>
@@ -59,7 +55,7 @@
         </div>
         <div class="d-flex justify-content-end gap-2">
           <%= link_to 'Cancel', :back, class: "btn btn-secondary" %>
-          <%= f.submit class: "btn btn-primary" %>
+          <%= f.submit 'Save', class: "btn btn-primary" %>
         </div>
       <% end %>
     </div>

@@ -1,35 +1,33 @@
-// app/javascript/controllers/travel_plan_controller.js
+// travel_plan_controller.js
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["locationSearch", "locationResults", "selectedLocations", "selectedAdventures", "adventureSearch", "adventureResults"]
+  static values = {
+    locations: Array,
+    adventures: Array
+  }
 
   connect() {
     this.selectedLocations = new Set()
     this.selectedAdventures = new Set()
-    this.loadInitialSelections()
     this.initializeExistingSelections()
+    this.loadInitialSelections()
   }
 
-  async initializeExistingSelections() {
-    const form = this.element.querySelector('form')
-    if (!form) return
+  initializeExistingSelections() {
+    // use the data attributes passed from the form
+    if (this.hasLocationsValue) {
+      this.locationsValue.forEach(location => this.addLocationTag(location))
+    }
 
-    const formId = form.getAttribute('id')
-    if (!formId?.includes('edit')) return
+    if (this.hasAdventuresValue) {
+      this.adventuresValue.forEach(adventure => this.addAdventureTag(adventure))
+    }
 
-    const travelPlanId = window.location.pathname.split('/').filter(Boolean).pop()
-    if (!travelPlanId) return
-
-    const response = await fetch(`/travel_plans/${travelPlanId}.json`)
-    const travelPlan = await response.json()
-
-    travelPlan.locations?.forEach(location => this.addLocationTag(location))
-    travelPlan.adventures?.forEach(adventure => this.addAdventureTag(adventure))
     this.updateAvailableAdventures()
   }
 
-  // Rest of the existing methods remain unchanged
   async loadInitialSelections() {
     const urlParams = new URLSearchParams(window.location.search)
     const locationId = urlParams.get('location_id')
