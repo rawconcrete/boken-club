@@ -1,0 +1,9 @@
+.tree-cursor {
+  position: fixed;
+  pointer-events: none; /* Asegura que no interfiera con otros elementos */
+  z-index: 9999; /* Asegúrate de que esté encima de otros elementos */
+  font-size: 2rem; /* Ajusta el tamaño del emoji */
+  transition: transform 0.1s ease-in-out; /* Transición suave para el movimiento */
+  will-change: transform; /* Optimización para las animaciones */
+  transition: all 0.1s ease-in-out; /* Transición adicional para el movimiento */
+}
