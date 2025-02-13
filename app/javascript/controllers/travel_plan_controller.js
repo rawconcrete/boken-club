@@ -98,11 +98,10 @@ export default class extends Controller {
           const buttonHtml = unavailableLocations ?
             `<button type="button"
                     class="btn btn-sm btn-outline-primary float-end add-anyway-btn"
-                    data-adventure-id="${adventure.id}"
-                    data-adventure-data='${JSON.stringify(adventure)}'
-                    onclick="window.dispatchEvent(new CustomEvent('addAdventure', {detail: this.dataset.adventureData}))">
+                    data-action="click->travel-plan#addAnyway"
+                    data-travel-plan-adventure-value='${JSON.stringify(adventure)}'>
               Add Anyway
-            </button>` :
+            </button>`` :
             `<button type="button"
                     class="btn btn-sm btn-primary float-end add-btn"
                     data-adventure-id="${adventure.id}"
