@@ -1,4 +1,3 @@
-// for homepage/landing page
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
@@ -14,10 +13,13 @@ export default class extends Controller {
       "find a hidden waterfall"
     ];
     this.animationIndex = 0;
-    this.typingInterval = null;
+
+    this.fetchResults(); // Fetch results on page load
+    this.startAnimation();
   }
 
   startAnimation() {
+    this.stopAnimation(); // Ensure no duplicate intervals
     this.typingInterval = setInterval(() => {
       this.inputTarget.placeholder = `I want to... ${this.animationTexts[this.animationIndex]}`;
       this.animationIndex = (this.animationIndex + 1) % this.animationTexts.length;
@@ -26,17 +28,10 @@ export default class extends Controller {
 
   stopAnimation() {
     clearInterval(this.typingInterval);
-    this.inputTarget.placeholder = "I want to...";
   }
 
   fetchResults() {
-    const query = this.inputTarget.value.trim();
-    if (query.length < 2) {
-      this.suggestionsTarget.style.display = "none";
-      return;
-    }
-
-    fetch(`/search.json?q=${query}`)
+    fetch(`/search.json?q=`)
       .then(response => response.json())
       .then(data => {
         this.suggestionsList = data;
@@ -54,7 +49,7 @@ export default class extends Controller {
       .map(item => `<div data-action="click->search#selectSuggestion">${item}</div>`)
       .join("");
 
-    this.suggestionsTarget.style.display = "block";
+    this.suggestionsTarget.style.display = "block"; // Ensure suggestions stay visible
   }
 
   selectSuggestion(event) {
