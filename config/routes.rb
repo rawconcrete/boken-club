@@ -17,5 +17,8 @@ Rails.application.routes.draw do
 
   resources :travel_plans, only: [:index, :show, :new, :create]
 
+  get '/search', to: 'search#index'
+
+
   get "up" => "rails/health#show", as: :rails_health_check
 end
