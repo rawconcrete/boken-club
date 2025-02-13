@@ -1,4 +1,3 @@
-# app/controllers/travel_plans_controller.rb
 class TravelPlansController < ApplicationController
   before_action :authenticate_user!
 
@@ -28,7 +27,14 @@ class TravelPlansController < ApplicationController
 
   def create
     @travel_plan = current_user.travel_plans.build(travel_plan_params)
+
     if @travel_plan.save
+      params[:travel_plan][:adventure_disclaimers]&.each do |adventure_id, disclaimer|
+        @travel_plan.adventure_travel_plan_disclaimers.create(
+          adventure_id: adventure_id,
+          disclaimer: disclaimer
+        )
+      end
       redirect_to @travel_plan, notice: 'Travel plan was successfully created.'
     else
       render :new, status: :unprocessable_entity
@@ -36,12 +42,12 @@ class TravelPlansController < ApplicationController
   end
 
   def show
-    @travel_plan = current_user.travel_plans.includes(:locations, :adventures).find_by(id: params[:id])
+    @travel_plan = current_user.travel_plans.includes(:locations, :adventures, :adventure_travel_plan_disclaimers).find_by(id: params[:id])
     return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
 
     respond_to do |format|
       format.html
-      format.json { render json: @travel_plan.as_json(include: [:locations, :adventures]) }
+      format.json { render json: @travel_plan.as_json(include: [:locations, :adventures, :adventure_travel_plan_disclaimers]) }
     end
   end
 
@@ -58,12 +64,18 @@ class TravelPlansController < ApplicationController
     return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
   end
 
-
   def update
     @travel_plan = current_user.travel_plans.find_by(id: params[:id])
     return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
 
     if @travel_plan.update(travel_plan_params)
+      @travel_plan.adventure_travel_plan_disclaimers.destroy_all
+      params[:travel_plan][:adventure_disclaimers]&.each do |adventure_id, disclaimer|
+        @travel_plan.adventure_travel_plan_disclaimers.create(
+          adventure_id: adventure_id,
+          disclaimer: disclaimer
+        )
+      end
       redirect_to @travel_plan, notice: 'Travel plan updated successfully.'
     else
       render :edit, status: :unprocessable_entity
@@ -78,7 +90,8 @@ class TravelPlansController < ApplicationController
       :content,
       :status,
       location_ids: [],
-      adventure_ids: []
+      adventure_ids: [],
+      adventure_disclaimers: {}
     )
   end
 end
