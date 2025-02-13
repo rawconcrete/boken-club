@@ -16,42 +16,29 @@ export default class extends Controller {
   };
 
   connect() {
-    console.log("TravelPlan Controller Connected");
+    console.log("TravelPlan Controller Connected ✅");
     this.selectedLocations = new Set();
     this.selectedAdventures = new Set();
     this.initializeExistingSelections();
     this.loadInitialSelections();
   }
 
-  initializeExistingSelections() {
-    if (this.hasLocationsValue) {
-      this.locationsValue.forEach((location) => this.addLocationTag(location));
-    }
-
-    if (this.hasAdventuresValue) {
-      this.adventuresValue.forEach((adventure) =>
-        this.addAdventureTag(adventure)
-      );
-    }
-
-    this.updateAvailableAdventures();
-  }
-
   addAdventureAnyway(event) {
-    console.log("Add Anyway button clicked");
+    console.log("✅ Add Anyway button clicked");
 
-    const adventureData = event.target.dataset.adventure;
-    console.log("Adventure Data:", adventureData);
-
+    const adventureData = event.currentTarget.dataset.adventure; // Use `currentTarget`
     if (!adventureData) {
-      console.error("No adventure data found on button");
+      console.error("❌ No adventure data found on button");
       return;
     }
 
     const adventure = JSON.parse(adventureData);
-    console.log("Parsed Adventure:", adventure);
+    console.log("✅ Parsed Adventure:", adventure);
 
-    const disclaimer = `Note: ${adventure.name} is not typically available at selected locations`;
+    if (this.selectedAdventures.has(adventure.id)) {
+      console.warn("❗ Adventure already added:", adventure.id);
+      return;
+    }
 
     this.selectedAdventures.add(adventure.id);
 
@@ -64,10 +51,11 @@ export default class extends Controller {
                 data-action="click->travel-plan#removeAdventure"
                 data-adventure-id="${adventure.id}"></button>
         <input type="hidden" name="travel_plan[adventure_ids][]" value="${adventure.id}">
-        <input type="hidden" name="travel_plan[adventure_disclaimers][${adventure.id}]" value="${disclaimer}">
       </div>
     `
     );
+
+    this.dispatch("refresh"); // Helps Stimulus detect new elements
   }
 
   renderAdventureResults(adventures) {
@@ -85,18 +73,6 @@ export default class extends Controller {
           .filter(Boolean)
           .join(", ");
 
-        const buttonHtml = unavailableLocations
-          ? `<button class="btn btn-warning btn-sm float-end"
-                  click->travel-plan#addAdventureAnyway
-                  data-adventure='${JSON.stringify(adventure)}'>
-            Add Anyway
-          </button>`
-          : `<button class="btn btn-primary btn-sm float-end"
-                  data-action="click->travel-plan#selectAdventure"
-                  data-adventure='${JSON.stringify(adventure)}'>
-            Add
-          </button>`;
-
         return `
         <div class="list-group-item">
           ${adventure.name}
@@ -107,9 +83,26 @@ export default class extends Controller {
               </div>`
               : ""
           }
-          ${buttonHtml}
+          <button class="btn btn-warning btn-sm float-end"
+                  data-action="click->travel-plan#addAdventureAnyway"
+                  data-adventure='${JSON.stringify(adventure)}'>
+            Add Anyway
+          </button>
         </div>`;
       })
       .join("");
+
+    this.refreshStimulus(); // Re-bind events
+  }
+
+  refreshStimulus() {
+    setTimeout(() => {
+      this.element
+        .querySelectorAll('[data-action="click->travel-plan#addAdventureAnyway"]')
+        .forEach((btn) => {
+          btn.addEventListener("click", (event) => this.addAdventureAnyway(event));
+        });
+      console.log("✅ Rebound Stimulus Events");
+    }, 50);
   }
 }
