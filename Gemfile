@@ -73,3 +73,7 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+# for inline svg
+# requires svg images in app/assets/images/icons, ex. app/assets/images/icons/calendar.svg
+gem 'inline_svg'

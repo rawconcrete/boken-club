@@ -1,26 +1,40 @@
-<%# app/views/travel_plans_show.html.erb  %>
+<%# app/views/travel_plans/show.html.erb %>
 <div class="container mx-auto px-4">
-  <h1 class="text-2xl font-bold mb-4"><%= @travel_plan.title %></h1>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <%# Location Details %>
-    <div class="bg-white rounded-lg shadow p-6">
-      <h2 class="text-xl font-semibold mb-3">Location</h2>
-      <p><strong>Name:</strong> <%= @location.name %></p>
-      <p><strong>City:</strong> <%= @location.city %></p>
-      <p><strong>Prefecture:</strong> <%= @location.prefecture %></p>
-      <p><strong>Details:</strong> <%= @location.details %></p>
-    </div>
-    <%# Adventure Details %>
-    <div class="bg-white rounded-lg shadow p-6">
-      <h2 class="text-xl font-semibold mb-3">Adventure</h2>
-      <p><strong>Type:</strong> <%= @adventure.name %></p>
-      <p><strong>Details:</strong> <%= @adventure.details %></p>
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold"><%= @travel_plan.title %></h1>
+    <div class="space-x-2">
+      <%= link_to "Edit", edit_travel_plan_path(@travel_plan),
+      class: "bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600" %>
+      <%= button_to "Delete", travel_plan_path(@travel_plan), method: :delete,
+      class: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600",
+      data: { turbo_confirm: "Are you sure?" } %>
     </div>
   </div>
-  <%# Travel Plan Details %>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-xl font-semibold mb-3">Locations</h2>
+      <% @travel_plan.locations.each do |location| %>
+        <div class="mb-4">
+          <p><strong>Name:</strong> <%= location.name %></p>
+          <p><strong>City:</strong> <%= location.city %></p>
+          <p><strong>Prefecture:</strong> <%= location.prefecture %></p>
+          <p><strong>Details:</strong> <%= location.details %></p>
+        </div>
+      <% end %>
+    </div>
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-xl font-semibold mb-3">Adventures</h2>
+      <% @travel_plan.adventures.each do |adventure| %>
+        <div class="mb-4">
+          <p><strong>Type:</strong> <%= adventure.name %></p>
+          <p><strong>Details:</strong> <%= adventure.details %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
   <div class="mt-6 bg-white rounded-lg shadow p-6">
     <h2 class="text-xl font-semibold mb-3">Trip Details</h2>
-    <p><strong>Status:</strong> <%= @travel_plan.status %></p>
+    <p><strong>Status:</strong> <span class="<%= status_color_class(@travel_plan.status) %>"><%= @travel_plan.status&.capitalize || 'Not Set' %></span></p>
     <p><strong>Notes:</strong> <%= @travel_plan.content %></p>
   </div>
 </div>

@@ -2,7 +2,7 @@
 <div class="container">
   <h1 class="mb-4"><%= @location.name %></h1>
   <div class="row">
-    <!-- Location Details Section -->
+    <!-- location details section -->
     <div class="col-md-8">
       <div class="card">
         <div class="card-body">
@@ -15,7 +15,7 @@
         </div>
       </div>
     </div>
-    <!-- Available Adventures Section -->
+    <!-- available adventures section -->
     <div class="col-md-4">
       <div class="card">
         <div class="card-body">
@@ -24,7 +24,7 @@
             <div class="mb-3 p-3 border rounded">
               <h6 class="mb-2"><%= adventure.name %></h6>
               <p class="small mb-3"><%= adventure.details %></p>
-              <!-- Button Alignment Fix: Flexbox -->
+              <!-- button alignment fix: flexbox -->
               <div class="d-flex gap-2">
                 <%= link_to "View Adventure", adventure_path(adventure),
                     class: "btn btn-primary btn-sm flex-fill",

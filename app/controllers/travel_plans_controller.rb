@@ -8,10 +8,22 @@ class TravelPlansController < ApplicationController
 
   def new
     @travel_plan = current_user.travel_plans.new
+    title_parts = []
 
-    # prepopulate location/adventure if provided in params
-    @travel_plan.locations << Location.find_by(id: params[:location_id]) if params[:location_id].present?
-    @travel_plan.adventures << Adventure.find_by(id: params[:adventure_id]) if params[:adventure_id].present?
+    if params[:location_id].present?
+      location = Location.find_by(id: params[:location_id])
+      @travel_plan.locations << location if location
+      title_parts << location&.name
+    end
+
+    if params[:adventure_id].present?
+      adventure = Adventure.find_by(id: params[:adventure_id])
+      @travel_plan.adventures << adventure if adventure
+      title_parts << adventure&.name
+    end
+
+    title_parts << Time.current.strftime("%Y-%m-%d")
+    @travel_plan.title = title_parts.compact.join(" - ")
   end
 
   def create
@@ -24,8 +36,38 @@ class TravelPlansController < ApplicationController
   end
 
   def show
-    @travel_plan = TravelPlan.includes(:locations, :adventures).find_by(id: params[:id])
-    return redirect_to travel_plans_path, alert: "Travel Plan not found." unless @travel_plan
+    @travel_plan = current_user.travel_plans.includes(:locations, :adventures).find_by(id: params[:id])
+    return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @travel_plan.as_json(include: [:locations, :adventures]) }
+    end
+  end
+
+  def destroy
+    @travel_plan = current_user.travel_plans.find_by(id: params[:id])
+    return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
+
+    @travel_plan.destroy
+    redirect_to travel_plans_path, notice: "Travel plan deleted successfully"
+  end
+
+  def edit
+    @travel_plan = current_user.travel_plans.find_by(id: params[:id])
+    return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
+  end
+
+
+  def update
+    @travel_plan = current_user.travel_plans.find_by(id: params[:id])
+    return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
+
+    if @travel_plan.update(travel_plan_params)
+      redirect_to @travel_plan, notice: 'Travel plan updated successfully.'
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   private

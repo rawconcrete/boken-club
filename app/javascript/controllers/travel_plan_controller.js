@@ -1,13 +1,31 @@
-// app/javascript/controllers/travel_plan_controller.js
+// travel_plan_controller.js
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["locationSearch", "locationResults", "selectedLocations", "selectedAdventures", "adventureSearch", "adventureResults"]
+  static values = {
+    locations: Array,
+    adventures: Array
+  }
 
   connect() {
     this.selectedLocations = new Set()
     this.selectedAdventures = new Set()
+    this.initializeExistingSelections()
     this.loadInitialSelections()
+  }
+
+  initializeExistingSelections() {
+    // use the data attributes passed from the form
+    if (this.hasLocationsValue) {
+      this.locationsValue.forEach(location => this.addLocationTag(location))
+    }
+
+    if (this.hasAdventuresValue) {
+      this.adventuresValue.forEach(adventure => this.addAdventureTag(adventure))
+    }
+
+    this.updateAvailableAdventures()
   }
 
   async loadInitialSelections() {
@@ -133,7 +151,7 @@ export default class extends Controller {
     event.stopPropagation()
     const adventure = JSON.parse(event.currentTarget.dataset.adventure)
     this.addAdventureTag(adventure)
-}
+  }
 
   addLocationTag(location) {
     if (this.selectedLocations.has(location.id)) return

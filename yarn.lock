@@ -2,6 +2,16 @@
 # yarn lockfile v1
 
 
+"@fortawesome/fontawesome-free@^6.7.2":
+  version "6.7.2"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-6.7.2.tgz#8249de9b7e22fcb3ceb5e66090c30a1d5492b81a"
+  integrity sha512-JUOtgFW6k9u4Y+xeIaEiLr3+cjoUPiAuLXoyKOJSia6Duzb7pq+A76P9ZdPDoAoxHdHzq6gE9/jKBGXlZT8FbA==
+
+"@heroicons/react@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@heroicons/react/-/react-2.2.0.tgz#0c05124af50434a800773abec8d3af6a297d904b"
+  integrity sha512-LMcepvRaS9LYHJGsF0zzmgKCUim/X3N/DQKc4jepAXJ7l8QxJ1PmxJzqplF2Z3FE4PqBAIGyJAQ/w4B5dsqbtQ==
+
 "@orchidjs/sifter@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@orchidjs/sifter/-/sifter-1.1.0.tgz#b36154ad0cda4898305d1ac44f318b41048a0438"
@@ -15,9 +25,9 @@
   integrity sha512-5DobW1CHgnBROOEpFlEXytED5OosEWESFvg/VYmH0143oXcijYTprRYJTs+55HzGM4IqxiLFSuqEzu9mPNwVsA==
 
 tom-select@^2.4.2:
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/tom-select/-/tom-select-2.4.2.tgz#9764faf6cba51f6571d03a79bb7c1cac1cac7a5a"
-  integrity sha512-2RWjkL3gMDz9E+u8w+tQy9JWsYq8gaSytEVeugKYDeMus6ZtxT1HttLPnXsfHCnBPlsNubVyj5gtUeN+S+bcpA==
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/tom-select/-/tom-select-2.4.3.tgz#1daa4131cd317de691f39eb5bf41148265986c1f"
+  integrity sha512-MFFrMxP1bpnAMPbdvPCZk0KwYxLqhYZso39torcdoefeV/NThNyDu8dV96/INJ5XQVTL3O55+GqQ78Pkj5oCfw==
   dependencies:
     "@orchidjs/sifter" "^1.1.0"
     "@orchidjs/unicode-variants" "^1.1.2"
