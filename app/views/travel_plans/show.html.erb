@@ -28,6 +28,11 @@
         <div class="mb-4">
           <p><strong>Type:</strong> <%= adventure.name %></p>
           <p><strong>Details:</strong> <%= adventure.details %></p>
+          <% if disclaimer = @travel_plan.adventure_travel_plan_disclaimers.find_by(adventure: adventure) %>
+            <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-2">
+              <%= disclaimer.disclaimer %>
+            </div>
+          <% end %>
         </div>
       <% end %>
     </div>
