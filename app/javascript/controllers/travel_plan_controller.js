@@ -9,6 +9,17 @@ export default class extends Controller {
   }
 
   connect() {
+    console.log("Travel plan controller connected - VERSION 2")
+    console.log("Controller element:", this.element)
+    console.log("Available targets:", {
+      locationSearch: this.hasLocationSearchTarget,
+      locationResults: this.hasLocationResultsTarget,
+      selectedLocations: this.hasSelectedLocationsTarget,
+      selectedAdventures: this.hasSelectedAdventuresTarget,
+      adventureSearch: this.hasAdventureSearchTarget,
+      adventureResults: this.hasAdventureResultsTarget
+    })
+
     this.selectedLocations = new Set()
     this.selectedAdventures = new Set()
     this.initializeExistingSelections()
@@ -16,7 +27,6 @@ export default class extends Controller {
   }
 
   initializeExistingSelections() {
-    // use the data attributes passed from the form
     if (this.hasLocationsValue) {
       this.locationsValue.forEach(location => this.addLocationTag(location))
     }
@@ -62,7 +72,7 @@ export default class extends Controller {
   renderLocationResults(locations) {
     this.locationResultsTarget.innerHTML = locations.map(location => `
       <div class="list-group-item" data-action="click->travel-plan#selectLocation"
-           data-location='${JSON.stringify(location)}'>
+           data-location-id="${location.id}">
         ${location.name} - ${location.city}, ${location.prefecture}
       </div>
     `).join('')
@@ -71,7 +81,7 @@ export default class extends Controller {
   renderAdventureResults(adventures) {
     this.adventureResultsTarget.innerHTML = adventures.map(adventure => `
       <div class="list-group-item" data-action="click->travel-plan#selectAdventure"
-           data-adventure='${JSON.stringify(adventure)}'>
+           data-adventure-id="${adventure.id}">
         ${adventure.name}
       </div>
     `).join('')
@@ -84,30 +94,28 @@ export default class extends Controller {
     Promise.all([fetch(`/adventures.json${query}`), fetch('/locations.json')])
       .then(([adventuresRes, locationsRes]) => Promise.all([adventuresRes.json(), locationsRes.json()]))
       .then(([adventures, locations]) => {
+        console.log("Fetched adventures:", adventures)
         const selectedLocations = new Map(
           locations.filter(l => this.selectedLocations.has(l.id))
             .map(l => [l.id, l])
         )
 
         const availableHTML = adventures.map(adventure => {
+          console.log("Processing adventure:", adventure)
           const unavailableLocations = Array.from(selectedLocations.values())
             .filter(location => !adventure.available_locations?.includes(location.id))
             .map(l => l.name)
             .join(', ')
 
-          const buttonHtml = unavailableLocations ?
-            `<button type="button"
-                    class="btn btn-sm btn-outline-primary float-end add-anyway-btn"
+          // Note: Using just the ID, not the whole adventure object
+          const buttonHtml = `<button type="button"
+                    class="btn btn-sm ${unavailableLocations ? 'btn-outline-primary' : 'btn-primary'} float-end"
                     data-action="click->travel-plan#addAnyway"
-                    data-travel-plan-adventure-value='${JSON.stringify(adventure)}'>
-              Add Anyway
-            </button>` :
-            `<button type="button"
-                    class="btn btn-sm btn-primary float-end add-btn"
-                    data-action="click->travel-plan#addAnyway"
-                    data-travel-plan-adventure-value='${JSON.stringify(adventure)}'>
-              Add
+                    data-adventure-id="${adventure.id}">
+              ${unavailableLocations ? 'Add Anyway' : 'Add'}
             </button>`
+
+          console.log("Generated button HTML:", buttonHtml)
 
           return `
             <div class="list-group-item">
@@ -115,10 +123,8 @@ export default class extends Controller {
               ${unavailableLocations ?
                 `<div class="mt-2">
                   <small class="text-muted">Not available at: ${unavailableLocations}</small>
-                  ${buttonHtml}
-                 </div>` :
-                buttonHtml
-              }
+                </div>` : ''}
+              ${buttonHtml}
             </div>`
         }).join('')
 
@@ -139,16 +145,18 @@ export default class extends Controller {
     this.addAdventureTag(adventure)
   }
 
-  selectLocation(event) {
-    const location = JSON.parse(event.currentTarget.dataset.location)
+  async selectLocation(event) {
+    const locationId = event.currentTarget.dataset.locationId
+    const response = await fetch(`/locations/${locationId}.json`)
+    const location = await response.json()
     this.addLocationTag(location)
     this.updateAvailableAdventures()
   }
 
-  selectAdventure(event) {
+  async selectAdventure(event) {
     event.stopPropagation()
-    const adventure = JSON.parse(event.currentTarget.dataset.adventure)
-    this.addAdventureTag(adventure)
+    const adventureId = event.currentTarget.dataset.adventureId
+    await this.fetchAndAddAdventure(adventureId)
   }
 
   addLocationTag(location) {
@@ -167,6 +175,7 @@ export default class extends Controller {
   }
 
   addAdventureTag(adventure) {
+    console.log("Adding adventure tag:", adventure)
     if (this.selectedAdventures.has(adventure.id)) return
 
     this.selectedAdventures.add(adventure.id)
@@ -194,9 +203,24 @@ export default class extends Controller {
     event.currentTarget.closest('.badge').remove()
   }
 
-  addAnyway(event) {
-    console.log("addAnyway called", event.currentTarget.dataset.travelPlanAdventureValue)
-    const adventure = JSON.parse(event.currentTarget.dataset.travelPlanAdventureValue)
-    this.addAdventureTag(adventure)
+  async addAnyway(event) {
+    console.log("addAnyway called - VERSION 2")
+    console.log("Event target:", event.currentTarget)
+    console.log("All data attributes:", event.currentTarget.dataset)
+    console.log("HTML of button:", event.currentTarget.outerHTML)
+
+    const adventureId = event.currentTarget.dataset.adventureId
+    if (!adventureId) {
+      console.error("No adventure ID found in button data attributes")
+      console.error("Available data attributes:", Object.keys(event.currentTarget.dataset))
+      return
+    }
+
+    try {
+      console.log("Fetching adventure with ID:", adventureId)
+      await this.fetchAndAddAdventure(adventureId)
+    } catch (error) {
+      console.error("Error fetching adventure:", error)
+    }
   }
 }
