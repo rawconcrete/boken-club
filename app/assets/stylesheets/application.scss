@@ -17,24 +17,37 @@
 @import "components/buttons";
 @import "components/treecursor";
 
-// Apply to body and all relevant sections
+// Global Styles
 body {
+  position: relative;
+  overflow-x: hidden;
+  cursor: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Ctext x="0" y="20" font-family="Arial" font-size="20" transform="rotate(-30 15 15)"%3E🌲%3C/text%3E%3C/svg%3E'), auto;  min-height: 100vh;
+
+  h1, h2 {
+    font-family: "Nunito", sans-serif;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  }
+}
+
+// For homepage
+.home {
   background: url('Unknown.png') no-repeat left center;
   background-size: cover;
   background-attachment: fixed;
   animation: moveBackgroundBounce 50s ease-in-out infinite;
-  position: relative;
-  overflow-x: hidden;
-  cursor: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"%3E%3Ctext x="0" y="20" font-family="Arial" font-size="20"%3E🌲%3C/text%3E%3C/svg%3E'), auto;
 }
 
-h1, h2 {
-  font-family: "Nunito", sans-serif;
-  font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+// Add an alternative static background for non-home pages
+body:not(.home) {
+  background: url('Unknown.png') no-repeat center center;
+  background-size: cover;
+  background-attachment: scroll;
+  background-attachment: fixed;
 }
 
 
+// Hero section (for full-screen sections like landing page)
 .hero-section {
   display: flex;
   justify-content: center;
@@ -43,6 +56,7 @@ h1, h2 {
   z-index: 1;
 }
 
+// Parallax effect for background
 .parallax {
   position: relative;
   background: url('Unknown.png') no-repeat left center;
@@ -61,6 +75,7 @@ h1, h2 {
   font-size: 3rem;
 }
 
+// Card style for content boxes
 .card {
   background: rgba(255, 255, 255, 0.8);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
@@ -68,6 +83,7 @@ h1, h2 {
   padding: 20px;
 }
 
+// Keyframes for the bounce effect
 @keyframes moveBackgroundBounce {
   0% {
     background-position: left center;

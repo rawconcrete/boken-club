@@ -2,31 +2,41 @@
   <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">My Travel Plans</h1>
   <div style="display: flex; flex-wrap: wrap; gap: 20px;">
     <% @travel_plans.each do |plan| %>
-      <div style="background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); padding: 16px; width: calc(33.333% - 20px); min-width: 250px;">
-        <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 10px;"><%= plan.title %></h2>
-        <p style="color: #555; margin-bottom: 10px;"><%= plan.content %></p>
-        <p style="margin-bottom: 10px;">
+      <div style="background: #ffffff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); padding: 20px; width: calc(33.333% - 20px); min-width: 250px;
+                  transition: all 0.3s ease; border: 1px solid #e0e0e0; position: relative;">
+
+        <!-- X Button at the top right, with more space from the top -->
+        <div style="position: absolute; top: 5px; right: 4px;">
+          <%= button_to "x", travel_plan_path(plan), method: :delete,
+              style: "background: linear-gradient(135deg, #f1727f, #e53e5e); color: white; padding: 0px 5px; border-radius: 100px; font-size: 14px;
+                    border: none; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); transition: all 0.3s ease-in-out; cursor: pointer;",
+              data: { confirm: "Are you sure?" } %>
+        </div>
+
+        <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 12px; color: #333;"> <%= plan.title %></h2>
+        <p style="color: #555; margin-bottom: 15px; font-size: 16px;"><%= plan.content %></p>
+        <p style="margin-bottom: 15px;">
           <strong>Status:</strong>
-          <span style="padding: 5px 10px; border-radius: 5px; font-size: 14px;
-            <%= case plan.status
-              when 'pending' then 'background: #fff3cd; color: #856404;'
-              when 'completed' then 'background: #d4edda; color: #155724;'
-              when 'cancelled' then 'background: #f8d7da; color: #721c24;'
-              else 'background: #e2e3e5; color: #6c757d;'
-            end %>">
+          <span style="padding: 6px 12px; border-radius: 5px; font-size: 14px;
+                      <%= case plan.status
+                          when 'pending' then 'background: #fff3cd; color: #856404;'
+                          when 'completed' then 'background: #d4edda; color: #155724;'
+                          when 'cancelled' then 'background: #f8d7da; color: #721c24;'
+                          else 'background: #e2e3e5; color: #6c757d;'
+                      end %>">
             <%= plan.status&.capitalize || 'Not Set' %>
           </span>
         </p>
-        <p><strong>Locations:</strong> <%= plan.locations.map(&:name).join(", ") %></p>
-        <p><strong>Adventures:</strong> <%= plan.adventures.map(&:name).join(", ") %></p>
-        <div style="display: flex; justify-content: center; gap: 10px; margin-top: 15px;">
-          <%= link_to "View Details", travel_plan_path(plan),
-              style: "background: #007bff; color: white; padding: 8px 16px; border-radius: 5px; text-decoration: none; font-size: 14px; border: 1px solid #0056b3;" %>
+        <p style="margin-bottom: 15px; font-size: 14px;"><strong>Locations:</strong> <%= plan.locations.map(&:name).join(", ") %></p>
+        <p style="margin-bottom: 15px; font-size: 14px;"><strong>Adventures:</strong> <%= plan.adventures.map(&:name).join(", ") %></p>
+
+        <div style="display: flex; justify-content: center; gap: 40px; margin-top: 20px;">
+          <%= link_to "Details", travel_plan_path(plan),
+              style: "background: linear-gradient(135deg, #69a6e9, #4285f4); color: white; padding: 18px 16px; border-radius: 6px; font-size: 14px; text-decoration: none;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); transition: all 0.3s ease-in-out; cursor: pointer;" %>
           <%= link_to "Edit", edit_travel_plan_path(plan),
-              style: "background: #ffc107; color: #212529; padding: 8px 16px; border-radius: 5px; text-decoration: none; font-size: 14px; border: 1px solid #d39e00;" %>
-          <%= button_to "Delete", travel_plan_path(plan), method: :delete,
-              style: "background: #dc3545; color: white; padding: 8px 16px; border-radius: 5px; border: 1px solid #bd2130; font-size: 14px; cursor: pointer;",
-              data: { confirm: "Are you sure?" } %>
+              style: "background: linear-gradient(135deg, #7aec71, #3cb371); color: white; padding: 18px 25px; border-radius: 6px; font-size: 14px; text-decoration: none;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); transition: all 0.3s ease-in-out; cursor: pointer;" %>
         </div>
       </div>
     <% end %>
