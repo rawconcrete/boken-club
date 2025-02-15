@@ -89,8 +89,13 @@ locations = Location.create!([
 
 # link locations to adventures
 locations.each do |location|
- matching_adventure = adventures.find { |a| a.name == location.adventure_name }
- location.adventures << matching_adventure if matching_adventure
+  matching_adventure = adventures.find { |a| a.name == location.adventure_name }
+  if matching_adventure
+    LocationsAdventure.create!(
+      location: location,
+      adventure: matching_adventure
+    )
+  end
 end
 
 # travel plans
