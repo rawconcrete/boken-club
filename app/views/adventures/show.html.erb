@@ -18,6 +18,9 @@
           <%= link_to "Plan This Adventure", new_travel_plan_path(adventure_id: @adventure.id),
               class: "btn btn-primary mt-3",
               data: { turbo_frame: "_top" } %>
+          <%= link_to "Back", :back,
+              class: "btn btn-primary mt-3",
+              data: { turbo_frame: "_top" } %>
         </div>
       </div>
     </div>
