@@ -171,36 +171,24 @@ locations = Location.create!([
     details: 'Known for its clear waters and exciting rapids',
     tips: 'Best conditions from March to November',
     warnings: 'Rapids can become dangerous after heavy rainfall' },
-  { name: 'Miyako Islands', city: 'Miyakojima', prefecture: 'Okinawa',
-    details: 'Famous for its crystal clear waters and abundant marine life',
-    tips: 'Best visibility from March to November',
-    warnings: 'Be aware of strong currents and monitor weather conditions' },
-[
-  {
-    "name": "Ishigaki Island",
-    "city": "Ishigaki",
-    "prefecture": "Okinawa",
-    "details": "Home to manta rays and diverse coral reefs, offering both shallow and deep diving experiences.",
-    "tips": "Manta ray sightings are most common from July to September.",
-    "warnings": "Typhoon season can affect diving conditions from June to October."
-  },
-  {
-    "name": "Nobeyama Radio Observatory",
-    "city": "Minamimaki",
-    "prefecture": "Nagano",
-    "details": "One of Japan's premier stargazing locations, home to radio telescopes and high-altitude viewing areas.",
-    "tips": "Winter months offer the clearest skies; bring warm clothing.",
-    "warnings": "Temperature drops significantly at night, and facilities may be limited."
-  },
-  {
-    "name": "Mount Norikura",
-    "city": "Matsumoto",
-    "prefecture": "Nagano",
-    "details": "High-altitude location offering excellent dark sky viewing conditions and astronomical events.",
-    "tips": "Access may be restricted during winter months; check opening times.",
-    "warnings": "High altitude may cause breathing difficulties for some visitors."
-  }
-])
+    { name: 'Miyako Islands', city: 'Miyakojima', prefecture: 'Okinawa',
+      details: 'Famous for its crystal clear waters and abundant marine life',
+      tips: 'Best visibility from March to November',
+      warnings: 'Be aware of strong currents and monitor weather conditions' },
+    { name: "Ishigaki Island", city: "Ishigaki", prefecture: "Okinawa",
+      details: "Home to manta rays and diverse coral reefs, offering both shallow and deep diving experiences.",
+      tips: "Manta ray sightings are most common from July to September.",
+      warnings: "Typhoon season can affect diving conditions from June to October." },
+    { name: "Nobeyama Radio Observatory", city: "Minamimaki", prefecture: "Nagano",
+      details: "One of Japan's premier stargazing locations, home to radio telescopes and high-altitude viewing areas.",
+      tips: "Winter months offer the clearest skies; bring warm clothing.",
+      warnings: "Temperature drops significantly at night, and facilities may be limited." },
+    { name: "Mount Norikura", city: "Matsumoto", prefecture: "Nagano",
+      details: "High-altitude location offering excellent dark sky viewing conditions and astronomical events.",
+      tips: "Access may be restricted during winter months; check opening times.",
+      warnings: "High altitude may cause breathing difficulties for some visitors." }
+  ])
+
 # After locations creation, add:
 puts "Created #{Location.count} locations:"
 Location.all.each { |loc| puts "- #{loc.name}" }
@@ -300,26 +288,6 @@ User.create!([
 ].each do |admin_data|
   user = User.new(admin_data)
   user.save(validate: false)
-end
-
-# basic users
-User.create!([
-  {email: 'user1@example.com', password: 'password'},
-  {email: 'user2@example.com', password: 'password'}
- ])
-
-# admin/debugging accounts
-[
- { email: 'admin@admin.com', password: '123456', admin: true },
- { email: 'sarah@admin.com', password: '123456', admin: true },
- { email: 'nico@admin.com', password: '123456', admin: true },
- { email: 'lio@admin.com', password: '123456', admin: true },
- { email: 'lio', password: '123', admin: true },
- { email: 'admin', password: 'admin', admin: true},
- { email: 'nico', password: '123', admin: true},
-].each do |admin_data|
- user = User.new(admin_data)
- user.save(validate: false)
 end
 
 # travel plans
