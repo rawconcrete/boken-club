@@ -1,5 +1,7 @@
 class AdventuresController < ApplicationController
   def index
+    @adventures = Adventure.all
+
     respond_to do |format|
       format.html
       format.json do
@@ -8,8 +10,6 @@ class AdventuresController < ApplicationController
           @adventures = Adventure.joins(:locations)
                                .where(locations: { id: location_ids })
                                .distinct
-        else
-          @adventures = Adventure.all
         end
 
         adventures = @adventures.map do |adventure|
