@@ -2,7 +2,10 @@
 class LocationsController < ApplicationController
   def index
     @locations = if params[:query].present?
-      Location.where("name ILIKE ? OR city ILIKE ? OR prefecture ILIKE ? OR details ILIKE ?",
+      Location.where("name ILIKE ? OR city ILIKE ? OR prefecture ILIKE ? OR details ILIKE ? OR tips ILIKE ? OR warnings ILIKE ? OR adventure_name ILIKE ?",
+      "%#{params[:query]}%",
+      "%#{params[:query]}%",
+      "%#{params[:query]}%",
       "%#{params[:query]}%",
       "%#{params[:query]}%",
       "%#{params[:query]}%",
