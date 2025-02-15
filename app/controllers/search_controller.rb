@@ -1,4 +1,5 @@
 class SearchController < ApplicationController
+
   def index
     query = params[:q].to_s.downcase.strip
 

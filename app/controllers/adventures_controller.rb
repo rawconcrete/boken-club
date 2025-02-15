@@ -2,6 +2,16 @@ class AdventuresController < ApplicationController
   def index
     @adventures = Adventure.all
 
+    @adventures = if params[:query].present?
+      Adventure.where("name ILIKE ? OR details ILIKE ? OR tips ILIKE ? OR warnings ILIKE ?",
+      "%#{params[:query]}%",
+      "%#{params[:query]}%",
+      "%#{params[:query]}%",
+      "%#{params[:query]}%")
+    else
+      Adventure.all
+    end
+
     respond_to do |format|
       format.html
       format.json do
