@@ -77,8 +77,16 @@ locations = Location.create!([
   { name: 'Mount Fuji Tomoekan', city: 'Fujiyoshida', prefecture: 'Yamanashi', details: 'Mountain hut at the 7th Station on the Yoshida Trail.', adventure_name: 'Overnight Stay', tips: 'Private rooms available; family-friendly. Huts open only July–Sept; basic facilities, reservations required.', warnings: 'Limited capacity; books up fast.' },
   { name: 'Mount Fuji Taishikan', city: 'Fujiyoshida', prefecture: 'Yamanashi', details: 'Mountain hut at the 8th Station on the Yoshida Trail.', adventure_name: 'Overnight Stay', tips: 'Lodging and meals; good for acclimatization. Huts open only July–Sept; basic facilities, reservations required.', warnings: 'Basic facilities; early reservation advised.' },
   { name: 'Mount Fuji Hōei Sansō', city: 'Fujinomiya', prefecture: 'Shizuoka', details: 'Mountain hut at the 7th Station on the Fujinomiya Trail.', adventure_name: 'Overnight Stay', tips: 'Meals and sleeping areas available. Huts open only July–Sept; basic facilities, reservations required.', warnings: 'Steep trail; ensure physical readiness.' },
-  { name: 'Mount Fuji Waraji-kan', city: 'Gotemba', prefecture: 'Shizuoka', details: 'Mountain hut at the 7th Station on the Gotemba Trail.', adventure_name: 'Overnight Stay', tips: 'Basic lodging; fewer crowds. Huts open only July–Sept; basic facilities, reservations required.', warnings: 'Limited amenities; for experienced hikers.' }
-
+  { name: 'Mount Fuji Waraji-kan', city: 'Gotemba', prefecture: 'Shizuoka', details: 'Mountain hut at the 7th Station on the Gotemba Trail.', adventure_name: 'Overnight Stay', tips: 'Basic lodging; fewer crowds. Huts open only July–Sept; basic facilities, reservations required.', warnings: 'Limited amenities; for experienced hikers.' },
+  { name: 'Mount Fuji Fujiyoshida 5th Station', city: 'Fujiyoshida', prefecture: 'Yamanashi', details: 'Popular starting point for Mount Fuji climbs with camping facilities', adventure_name: 'Hiking', tips: 'Best hiking season is July-August', warnings: 'Altitude sickness possible above 2400m' },
+  { name: 'Asagiri Kogen', city: 'Fujinomiya', prefecture: 'Shizuoka', details: 'Popular paragliding area with stunning views of Mount Fuji, suitable for both beginners and experienced pilots', adventure_name: 'Paragliding', tips: 'Best conditions are typically in the morning hours with stable winds', warnings: 'Weather can change rapidly, check forecasts before flying' },
+  { name: 'Mount Ibuki', city: 'Maibara', prefecture: 'Shiga', details: 'One of the largest paragliding areas in Western Japan with excellent thermal conditions', adventure_name: 'Paragliding', tips: 'Spring and autumn offer the most stable flying conditions', warnings: 'Strong winds possible at the summit, check wind speeds carefully' },
+  { name: 'Tone River', city: 'Minakami', prefecture: 'Gunma', details: 'Premier rafting destination with rapids ranging from class II to IV', adventure_name: 'Rafting', tips: 'Peak season is from April to October with snowmelt creating exciting rapids', warnings: 'Water levels can be high during rainy season (June-July)' },
+  { name: 'Yoshino River', city: 'Miyoshi', prefecture: 'Tokushima', details: 'Known for its clear waters and exciting rapids, popular for both beginners and advanced rafters', adventure_name: 'Rafting', tips: 'Best conditions from March to November', warnings: 'Rapids can become dangerous after heavy rainfall' },
+  { name: 'Miyako Islands', city: 'Miyakojima', prefecture: 'Okinawa', details: 'Famous for its crystal clear waters and abundant marine life, featuring numerous dive sites with caves and coral reefs', adventure_name: 'Diving', tips: 'Best visibility from March to November', warnings: 'Be aware of strong currents and monitor weather conditions' },
+  { name: 'Ishigaki Island', city: 'Ishigaki', prefecture: 'Okinawa', details: 'Home to manta rays and diverse coral reefs, offering both shallow and deep diving experiences', adventure_name: 'Diving', tips: 'Manta ray sightings are most common from July to September', warnings: 'Typhoon season can affect diving conditions from June to October' },
+  { name: 'Nobeyama Radio Observatory', city: 'Minamimaki', prefecture: 'Nagano', details: 'One of Japan\'s premier stargazing locations, home to radio telescopes and high altitude viewing areas', adventure_name: 'Star Gazing', tips: 'Winter months offer the clearest skies, bring warm clothing', warnings: 'Temperature drops significantly at night, facilities may be limited' },
+  { name: 'Mount Norikura', city: 'Matsumoto', prefecture: 'Nagano', details: 'High-altitude location offering excellent dark sky viewing conditions and astronomical events', adventure_name: 'Star Gazing', tips: 'Access may be restricted during winter months, check opening times', warnings: 'High altitude can cause breathing difficulties for some visitors' }
 ])
 
 # link locations to adventures
@@ -99,7 +107,9 @@ User.create!([
  { email: 'sarah@admin.com', password: '123456', admin: true },
  { email: 'nico@admin.com', password: '123456', admin: true },
  { email: 'lio@admin.com', password: '123456', admin: true },
- { email: 'lio', password: '123', admin: true }
+ { email: 'lio', password: '123', admin: true },
+ { email: 'admin', password: 'admin', admin: true},
+ { email: 'nico', password: '123', admin: true},
 ].each do |admin_data|
  user = User.new(admin_data)
  user.save(validate: false)
