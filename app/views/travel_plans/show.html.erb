@@ -1,18 +1,19 @@
 <%# app/views/travel_plans/show.html.erb %>
 <div class="container mx-auto px-4">
-  <div class="flex justify-between items-center mb-6">
+  <div class="flex justify-between items-center mb-6 text-white">
     <h1 class="text-2xl font-bold"><%= @travel_plan.title %></h1>
-    <div class="space-x-2">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="card">
+        <div class="space-x-2" style="display: flex; gap: 5px; margin-top: 20px; position: absolute; top: 0px; right: 10px;">
       <%= link_to "Edit", edit_travel_plan_path(@travel_plan),
-      class: "bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600" %>
+          style: "background: linear-gradient(135deg,rgb(72, 145, 67), #3cb371); color: white; padding: 5px 10px; border-radius: 6px; font-size: 14px; text-decoration: none;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); transition: all 0.3s ease-in-out; cursor: pointer;" %>
       <%= button_to "Delete", travel_plan_path(@travel_plan), method: :delete,
-      class: "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600",
+          style: "background: linear-gradient(135deg, #f1727f, #e53e5e); color: white; padding: 5px 10px; border-radius: 6px; font-size: 14px;
+          border: none; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); transition: all 0.3s ease-in-out; cursor: pointer;",
       data: { turbo_confirm: "Are you sure?" } %>
     </div>
-  </div>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="bg-white rounded-lg shadow p-6">
-      <h2 class="text-xl font-semibold mb-3">Locations</h2>
+      <h2 class="text-xl font-semibold mb-3 ">Locations</h2>
       <% @travel_plan.locations.each do |location| %>
         <div class="mb-4">
           <p><strong>Name:</strong> <%= location.name %></p>
@@ -22,7 +23,8 @@
         </div>
       <% end %>
     </div>
-    <div class="bg-white rounded-lg shadow p-6">
+
+    <div class="card">
       <h2 class="text-xl font-semibold mb-3">Adventures</h2>
       <% @travel_plan.adventures.each do |adventure| %>
         <div class="mb-4">
@@ -32,7 +34,8 @@
       <% end %>
     </div>
   </div>
-  <div class="mt-6 bg-white rounded-lg shadow p-6">
+
+  <div class="mt-6 card">
     <h2 class="text-xl font-semibold mb-3">Trip Details</h2>
     <p><strong>Status:</strong> <span class="<%= status_color_class(@travel_plan.status) %>"><%= @travel_plan.status&.capitalize || 'Not Set' %></span></p>
     <p><strong>Notes:</strong> <%= @travel_plan.content %></p>
