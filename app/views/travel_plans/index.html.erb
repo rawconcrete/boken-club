@@ -10,7 +10,7 @@
           <%= button_to "x", travel_plan_path(plan), method: :delete,
               style: "background: linear-gradient(135deg, #f1727f, #e53e5e); color: white; padding: 0px 5px; border-radius: 100px; font-size: 14px;
                     border: none; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); transition: all 0.3s ease-in-out; cursor: pointer;",
-           data: { confirm: "Are you sure?" } %>
+           data: { turbo_confirm: "Are you sure?" } %>
         </div>
 
         <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 12px; color: #333;"> <%= plan.title %></h2>
