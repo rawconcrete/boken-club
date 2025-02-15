@@ -34,4 +34,13 @@ class AdventuresController < ApplicationController
       end
     end
   end
+
+  def show
+    @adventure = Adventure.find_by(id: params[:id])
+
+    if @adventure.nil?
+      redirect_to adventures_path, alert: "Adventure not found"
+    end
+  end
+
 end
