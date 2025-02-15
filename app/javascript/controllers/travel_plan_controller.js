@@ -35,6 +35,26 @@ export default class extends Controller {
     if (adventureId) await this.fetchAndAddAdventure(adventureId)
   }
 
+  async fetchAndAddLocation(id) {
+    try {
+      const response = await fetch(`/locations/${id}.json`)
+      const location = await response.json()
+      this.addLocationTag(location)
+    } catch (error) {
+      console.error('Error fetching location:', error)
+    }
+  }
+
+  async fetchAndAddAdventure(id) {
+    try {
+      const response = await fetch(`/adventures/${id}.json`)
+      const adventure = await response.json()
+      this.addAdventureTag(adventure)
+    } catch (error) {
+      console.error('Error fetching adventure:', error)
+    }
+  }
+
   async updateAvailableAdventures() {
     const locationIds = Array.from(this.selectedLocations).join(',')
     const queryParams = new URLSearchParams()
@@ -68,17 +88,21 @@ export default class extends Controller {
   }
 
   renderAdventureResults(adventures) {
-    this.adventureResultsTarget.innerHTML = adventures.map(adventure => `
-      <div class="list-group-item d-flex justify-content-between align-items-center">
-        ${adventure.name}
-        <button type="button"
-                class="btn btn-sm btn-primary"
-                data-action="click->travel-plan#selectAdventure"
-                data-adventure='${JSON.stringify(adventure)}'>
-          Add
-        </button>
-      </div>
-    `).join('')
+    this.adventureResultsTarget.innerHTML = adventures.map(adventure => {
+      const adventureJson = JSON.stringify(adventure).replace(/"/g, '&quot;')
+
+      return `
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          ${adventure.name}
+          <button type="button"
+                  class="btn btn-sm btn-primary"
+                  data-action="click->travel-plan#selectAdventure"
+                  data-adventure="${adventureJson}">
+            Add
+          </button>
+        </div>
+      `
+    }).join('')
   }
 
   selectLocation(event) {
@@ -90,8 +114,19 @@ export default class extends Controller {
   }
 
   selectAdventure(event) {
-    const adventure = JSON.parse(event.currentTarget.dataset.adventure)
-    this.addAdventureTag(adventure)
+    event.preventDefault()
+    event.stopPropagation()
+
+    console.log('Select adventure clicked')
+
+    try {
+      const adventureData = JSON.parse(event.currentTarget.dataset.adventure)
+      console.log('Adventure data:', adventureData)
+      this.addAdventureTag(adventureData)
+    } catch (error) {
+      console.error('Error parsing adventure data:', error)
+      console.log('Raw adventure data:', event.currentTarget.dataset.adventure)
+    }
   }
 
   addLocationTag(location) {
@@ -111,6 +146,8 @@ export default class extends Controller {
 
   addAdventureTag(adventure) {
     if (this.selectedAdventures.has(adventure.id)) return
+
+    console.log('Adding adventure:', adventure)
 
     this.selectedAdventures.add(adventure.id)
     this.selectedAdventuresTarget.insertAdjacentHTML('beforeend', `
