@@ -11,12 +11,15 @@ export default class extends Controller {
   connect() {
     this.selectedLocations = new Set()
     this.selectedAdventures = new Set()
+    // clear any existing adventure results
+    if (this.hasAdventureResultsTarget) {
+      this.adventureResultsTarget.innerHTML = ''
+    }
     this.initializeExistingSelections()
     this.loadInitialSelections()
   }
 
   initializeExistingSelections() {
-    // use the data attributes passed from the form
     if (this.hasLocationsValue) {
       this.locationsValue.forEach(location => this.addLocationTag(location))
     }
@@ -24,8 +27,6 @@ export default class extends Controller {
     if (this.hasAdventuresValue) {
       this.adventuresValue.forEach(adventure => this.addAdventureTag(adventure))
     }
-
-    this.updateAvailableAdventures()
   }
 
   async loadInitialSelections() {
@@ -43,7 +44,13 @@ export default class extends Controller {
 
     if (query.length < 2) return
 
-    const response = await fetch(`/adventures.json?query=${encodeURIComponent(query)}`)
+    const locationIds = Array.from(this.selectedLocations).join(',')
+    const queryParams = new URLSearchParams({
+      query: query,
+      ...(locationIds && { location_ids: locationIds })
+    })
+
+    const response = await fetch(`/adventures.json?${queryParams}`)
     const adventures = await response.json()
     this.renderAdventureResults(adventures)
   }
@@ -69,70 +76,56 @@ export default class extends Controller {
   }
 
   renderAdventureResults(adventures) {
-    this.adventureResultsTarget.innerHTML = adventures.map(adventure => `
-      <div class="list-group-item" data-action="click->travel-plan#selectAdventure"
-           data-adventure='${JSON.stringify(adventure)}'>
-        ${adventure.name}
-      </div>
-    `).join('')
+    this.adventureResultsTarget.innerHTML = adventures.map(adventure => {
+      const unavailableLocations = Array.from(this.selectedLocations).length > 0
+        ? this.getUnavailableLocations(adventure)
+        : []
+
+      const buttonHtml = unavailableLocations.length > 0
+        ? `<button type="button"
+                class="btn btn-sm btn-outline-primary float-end add-anyway-btn"
+                data-action="click->travel-plan#selectAdventure"
+                data-adventure='${JSON.stringify(adventure)}'>
+            Add Anyway
+          </button>`
+        : `<button type="button"
+                class="btn btn-sm btn-primary float-end add-btn"
+                data-action="click->travel-plan#selectAdventure"
+                data-adventure='${JSON.stringify(adventure)}'>
+            Add
+          </button>`
+
+      return `
+        <div class="list-group-item">
+          ${adventure.name}
+          ${unavailableLocations.length > 0
+            ? `<div class="mt-2">
+                <small class="text-muted">Not available at: ${unavailableLocations.join(', ')}</small>
+                ${buttonHtml}
+               </div>`
+            : buttonHtml
+          }
+        </div>`
+    }).join('')
   }
 
-  updateAvailableAdventures() {
-    const locationIds = Array.from(this.selectedLocations).join(',')
-    const query = locationIds ? `?location_ids=${locationIds}` : ''
-
-    Promise.all([fetch(`/adventures.json${query}`), fetch('/locations.json')])
-      .then(([adventuresRes, locationsRes]) => Promise.all([adventuresRes.json(), locationsRes.json()]))
-      .then(([adventures, locations]) => {
-        const selectedLocations = new Map(
-          locations.filter(l => this.selectedLocations.has(l.id))
-            .map(l => [l.id, l])
-        )
-
-        const availableHTML = adventures.map(adventure => {
-          const unavailableLocations = Array.from(selectedLocations.values())
-            .filter(location => !adventure.available_locations?.includes(location.id))
-            .map(l => l.name)
-            .join(', ')
-
-          const buttonHtml = unavailableLocations ?
-            `<button type="button"
-                    class="btn btn-sm btn-outline-primary float-end add-anyway-btn"
-                    data-adventure-id="${adventure.id}"
-                    data-adventure-data='${JSON.stringify(adventure)}'
-                    onclick="window.dispatchEvent(new CustomEvent('addAdventure', {detail: this.dataset.adventureData}))">
-              Add Anyway
-            </button>` :
-            `<button type="button"
-                    class="btn btn-sm btn-primary float-end add-btn"
-                    data-adventure-id="${adventure.id}"
-                    data-adventure-data='${JSON.stringify(adventure)}'
-                    onclick="window.dispatchEvent(new CustomEvent('addAdventure', {detail: this.dataset.adventureData}))">
-              Add
-            </button>`
-
-          return `
-            <div class="list-group-item">
-              ${adventure.name}
-              ${unavailableLocations ?
-                `<div class="mt-2">
-                  <small class="text-muted">Not available at: ${unavailableLocations}</small>
-                  ${buttonHtml}
-                 </div>` :
-                buttonHtml
-              }
-            </div>`
-        }).join('')
-
-        this.adventureResultsTarget.innerHTML = availableHTML
+  getUnavailableLocations(adventure) {
+    return Array.from(this.selectedLocations)
+      .filter(locationId => !adventure.available_locations?.includes(parseInt(locationId)))
+      .map(locationId => {
+        const location = this.locationsValue.find(l => l.id === parseInt(locationId))
+        return location ? location.name : ''
       })
+      .filter(name => name)
   }
 
   async fetchAndAddLocation(id) {
     const response = await fetch(`/locations/${id}.json`)
     const location = await response.json()
     this.addLocationTag(location)
-    this.updateAvailableAdventures()
+    // Clear adventure results when a new location is added
+    this.adventureResultsTarget.innerHTML = ''
+    this.adventureSearchTarget.value = ''
   }
 
   async fetchAndAddAdventure(id) {
@@ -144,13 +137,20 @@ export default class extends Controller {
   selectLocation(event) {
     const location = JSON.parse(event.currentTarget.dataset.location)
     this.addLocationTag(location)
-    this.updateAvailableAdventures()
+    // Clear adventure results when a new location is selected
+    this.adventureResultsTarget.innerHTML = ''
+    this.adventureSearchTarget.value = ''
+    this.locationSearchTarget.value = ''
+    this.locationResultsTarget.innerHTML = ''
   }
 
   selectAdventure(event) {
     event.stopPropagation()
     const adventure = JSON.parse(event.currentTarget.dataset.adventure)
     this.addAdventureTag(adventure)
+    // Clear search after selection
+    this.adventureSearchTarget.value = ''
+    this.adventureResultsTarget.innerHTML = ''
   }
 
   addLocationTag(location) {
@@ -187,7 +187,9 @@ export default class extends Controller {
     const locationId = event.currentTarget.dataset.locationId
     this.selectedLocations.delete(locationId)
     event.currentTarget.closest('.badge').remove()
-    this.updateAvailableAdventures()
+    // Clear adventure results when a location is removed
+    this.adventureResultsTarget.innerHTML = ''
+    this.adventureSearchTarget.value = ''
   }
 
   removeAdventure(event) {

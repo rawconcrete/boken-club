@@ -4,10 +4,12 @@ class AdventuresController < ApplicationController
     @adventures = if params[:query].present?
                    Adventure.where("name ILIKE ?", "%#{params[:query]}%")
                  else
-                   Adventure.all
+                   # For HTML requests with no query, return empty array
+                   format.html? ? [] : Adventure.all
                  end
 
     respond_to do |format|
+      # Only return adventures for JSON requests or when there's a search query
       format.html
       format.json do
         adventures = if params[:location_ids].present?
