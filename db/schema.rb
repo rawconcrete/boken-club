@@ -10,9 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_02_12_123011) do
+ActiveRecord::Schema[7.1].define(version: 2025_02_18_124829) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "adventure_equipments", force: :cascade do |t|
+    t.bigint "adventure_id", null: false
+    t.bigint "equipment_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["adventure_id"], name: "index_adventure_equipments_on_adventure_id"
+    t.index ["equipment_id"], name: "index_adventure_equipments_on_equipment_id"
+  end
 
   create_table "adventures", force: :cascade do |t|
     t.string "name"
@@ -24,6 +33,23 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_12_123011) do
     t.datetime "updated_at", null: false
     t.integer "location_id"
     t.index ["location_id"], name: "index_adventures_on_location_id"
+  end
+
+  create_table "equipment", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.string "category"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "location_equipments", force: :cascade do |t|
+    t.bigint "equipment_id", null: false
+    t.bigint "location_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["equipment_id"], name: "index_location_equipments_on_equipment_id"
+    t.index ["location_id"], name: "index_location_equipments_on_location_id"
   end
 
   create_table "locations", force: :cascade do |t|
@@ -47,6 +73,14 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_12_123011) do
     t.datetime "updated_at", null: false
     t.index ["adventure_id"], name: "index_locations_adventures_on_adventure_id"
     t.index ["location_id"], name: "index_locations_adventures_on_location_id"
+  end
+
+  create_table "tips", force: :cascade do |t|
+    t.string "title"
+    t.text "content"
+    t.string "category"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "travel_plans", force: :cascade do |t|
@@ -77,6 +111,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_12_123011) do
     t.index ["travel_plan_id"], name: "index_travel_plans_locations_on_travel_plan_id"
   end
 
+  create_table "user_equipments", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "equipment_id", null: false
+    t.text "memo"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["equipment_id"], name: "index_user_equipments_on_equipment_id"
+    t.index ["user_id"], name: "index_user_equipments_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -90,6 +134,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_12_123011) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "adventure_equipments", "adventures"
+  add_foreign_key "adventure_equipments", "equipment"
+  add_foreign_key "location_equipments", "equipment"
+  add_foreign_key "location_equipments", "locations"
   add_foreign_key "locations_adventures", "adventures"
   add_foreign_key "locations_adventures", "locations"
   add_foreign_key "travel_plans", "users"
@@ -97,4 +145,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_12_123011) do
   add_foreign_key "travel_plans_adventures", "travel_plans"
   add_foreign_key "travel_plans_locations", "locations"
   add_foreign_key "travel_plans_locations", "travel_plans"
+  add_foreign_key "user_equipments", "equipment"
+  add_foreign_key "user_equipments", "users"
 end
