@@ -1,0 +1,38 @@
+<!-- app/views/admin/admin/dashboard.html.erb -->
+<div class="dashboard-container">
+  <h1 class="dashboard-title">Admin Dashboard</h1>
+
+  <div class="dashboard-cards">
+    <!-- Locations Section -->
+    <div class="card">
+      <h2 class="card-title">Locations</h2>
+      <% if @locations.any? %>
+        <ul class="list">
+          <% @locations.each do |location| %>
+            <li class="list-item">
+              <%= location.name %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p>No locations available.</p>
+      <% end %>
+    </div>
+
+    <!-- Adventures Section -->
+    <div class="card">
+      <h2 class="card-title">Adventures</h2>
+      <% if @adventures.any? %>
+        <ul class="list">
+          <% @adventures.each do |adventure| %>
+            <li class="list-item">
+              <%= adventure.name %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p>No adventures available.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

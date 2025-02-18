@@ -1,0 +1,36 @@
+<!-- app/views/admin/locations/_form.html.erb -->
+<%= form_with(model: @location, url: @location.new_record? ? admin_locations_path : admin_location_path(@location), method: @location.new_record? ? :post : :patch, local: true) do |f| %>
+  <div class="form-group">
+    <%= f.label :name %>
+    <%= f.text_field :name, required: true, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :city %>
+    <%= f.text_field :city, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :prefecture %>
+    <%= f.text_field :prefecture, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :details %>
+    <%= f.text_area :details, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :tips %>
+    <%= f.text_area :tips, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :warnings %>
+    <%= f.text_area :warnings, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.submit "Save", class: "btn btn-primary" %>
+  </div>
+<% end %>

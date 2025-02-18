@@ -1,0 +1,26 @@
+<!-- app/views/admin/adventures/_form.html.erb -->
+<%= form_with(model: @adventure, url: @adventure.new_record? ? admin_adventures_path : admin_adventure_path(@adventure), method: @adventure.new_record? ? :post : :patch, local: true) do |f| %>
+  <div class="form-group">
+    <%= f.label :name %>
+    <%= f.text_field :name, required: true, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :details %>
+    <%= f.text_area :details, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :tips %>
+    <%= f.text_area :tips, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :warnings %>
+    <%= f.text_area :warnings, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.submit "Save", class: "btn btn-primary" %>
+  </div>
+<% end %>
