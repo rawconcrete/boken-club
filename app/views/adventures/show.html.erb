@@ -1,4 +1,4 @@
-<%# app/views/adventures/show.html.erb  %>
+<%# app/views/adventures/show.html.erb %>
 <div class="container text-white">
   <h1><%= @adventure.name %></h1>
   <div class="row mt-4">
@@ -14,6 +14,32 @@
           <% end %>
           <% if @adventure.skills.present? %>
             <p><strong>Required Skills:</strong> <%= @adventure.skills %></p>
+          <% end %>
+          <!-- new equipment section -->
+          <% if @adventure.equipment.any? %>
+            <div class="mt-4">
+              <h5>Recommended Equipment</h5>
+              <div class="row">
+                <% @adventure.equipment.each do |item| %>
+                  <div class="col-md-6 mb-2">
+                    <div class="d-flex align-items-center border rounded p-2">
+                      <div>
+                        <strong><%= item.name %></strong>
+                        <div class="small text-muted"><%= item.category %></div>
+                      </div>
+                      <% if user_signed_in? %>
+                        <% if current_user.equipment.include?(item) %>
+                          <span class="badge bg-success ms-auto">✓ Owned</span>
+                        <% else %>
+                          <%= button_to "Add", user_equipments_path(equipment_id: item.id),
+                              class: "btn btn-sm btn-outline-primary ms-auto" %>
+                        <% end %>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
           <% end %>
           <%= link_to "Plan This Adventure", new_travel_plan_path(adventure_id: @adventure.id),
               class: "btn btn-primary mt-3",
