@@ -20,11 +20,16 @@ export default class extends Controller {
   }
 
   loadSelectedEquipment() {
-    const selectedEquipment = JSON.parse(sessionStorage.getItem('selectedEquipment') || '[]');
+    const selectedEquipment = JSON.parse(localStorage.getItem("selectedEquipment") || "[]")
+
     selectedEquipment.forEach(equipment => {
-      this.addEquipmentTag(equipment);
-    });
+      const checkbox = document.getElementById(`equipment_${equipment.id}`)
+      if (checkbox) {
+        checkbox.checked = true
+      }
+    })
   }
+
 
   addEquipmentTag(equipment) {
     if (this.selectedEquipment.has(equipment.id)) return;
