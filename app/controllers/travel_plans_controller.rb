@@ -1,6 +1,7 @@
 # app/controllers/travel_plans_controller.rb
 class TravelPlansController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_travel_plan, except: [:index, :new, :create]
 
   def index
     @travel_plans = current_user.travel_plans.includes(:locations, :adventures)
@@ -70,6 +71,26 @@ class TravelPlansController < ApplicationController
     end
   end
 
+  def add_item
+    item_type = params[:item_type]
+    item_id = params[:item_id]
+
+    case item_type
+    when 'equipment'
+      @travel_plan.equipment_ids = (@travel_plan.equipment_ids + [item_id]).uniq
+    when 'adventure'
+      @travel_plan.adventure_ids = (@travel_plan.adventure_ids + [item_id]).uniq
+    when 'location'
+      @travel_plan.location_ids = (@travel_plan.location_ids + [item_id]).uniq
+    end
+
+    if @travel_plan.save
+      render json: { success: true }
+    else
+      render json: { success: false }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def travel_plan_params
@@ -80,5 +101,9 @@ class TravelPlansController < ApplicationController
       location_ids: [],
       adventure_ids: []
     )
+  end
+
+  def set_travel_plan
+    @travel_plan = current_user.travel_plans.find(params[:id])
   end
 end
