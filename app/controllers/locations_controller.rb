@@ -1,5 +1,6 @@
 # app/controllers/locations_controller.rb
 class LocationsController < ApplicationController
+  skip_before_action :authenticate_user!, only: [ :index, :show ]
   def index
     @locations = if params[:query].present?
       Location.where("name ILIKE ? OR city ILIKE ? OR prefecture ILIKE ? OR details ILIKE ? OR tips ILIKE ? OR warnings ILIKE ? OR adventure_name ILIKE ?",
