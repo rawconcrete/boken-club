@@ -5,6 +5,7 @@ export default class extends Controller {
   static values = { equipment: Array };
 
   connect() {
+    console.log("Stimulus travel plan controller connected.");
     this.loadSelectedEquipment();
   }
 

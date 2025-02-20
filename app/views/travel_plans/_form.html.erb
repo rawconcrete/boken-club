@@ -64,10 +64,10 @@
                   <% Equipment.all.each do |equipment| %>
                     <div class="form-check">
                       <%= check_box_tag "travel_plan[equipment_ids][]", equipment.id,
-                        false, # Force unchecked by default
-                        id: "equipment_#{equipment.id}",
-                        class: "form-check-input",
-                        data: { action: "change->travel-plan#toggle", equipmentId: equipment.id, equipmentName: equipment.name } %>
+                          false, # Start unchecked
+                          id: "equipment_#{equipment.id}",
+                          class: "form-check-input",
+                          data: { action: "change->travel-plan#toggle", equipmentId: equipment.id, equipmentName: equipment.name } %>
                       <%= label_tag "equipment_#{equipment.id}", equipment.name, class: "form-check-label" %>
                     </div>
                   <% end %>

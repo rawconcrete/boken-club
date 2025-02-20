@@ -36,7 +36,10 @@ class AdventuresController < ApplicationController
   end
 
   def show
-    @adventure = Adventure.find_by(id: params[:id])
+    @adventure = Adventure.find(params[:id])
+    respond_to do |format|
+      format.html # renders the default view
+      format.json { render json: @adventure } # now supports JSON
 
     if @adventure.nil?
       redirect_to adventures_path, alert: "Adventure not found"
