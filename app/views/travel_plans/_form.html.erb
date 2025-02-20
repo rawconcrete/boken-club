@@ -61,20 +61,14 @@
                   <h5 class="mb-0">Equipment Needed</h5>
                 </div>
                 <div class="card-body" data-controller="equipment-selection">
-                  <% Equipment.all.each do |item| %>
+                  <% Equipment.all.each do |equipment| %>
                     <div class="form-check">
-                      <input type="checkbox"
-                              class="form-check-input"
-                              id="equipment_<%= item.id %>"
-                              name="travel_plan[equipment_ids][]"
-                              value="<%= item.id %>"
-                              data-action="change->equipment-selection#toggle"
-                      data-equipment-id="<%= item.id %>"
-                      data-equipment-name="<%= item.name %>"
-                      <%= 'checked' if travel_plan.equipment.include?(item) %>>
-                      <label for="equipment_<%= item.id %>" class="form-check-label">
-                        <%= item.name %>
-                      </label>
+                      <%= check_box_tag "travel_plan[equipment_ids][]", equipment.id,
+                        false, # Force unchecked by default
+                        id: "equipment_#{equipment.id}",
+                        class: "form-check-input",
+                        data: { action: "change->travel-plan#toggle", equipmentId: equipment.id, equipmentName: equipment.name } %>
+                      <%= label_tag "equipment_#{equipment.id}", equipment.name, class: "form-check-label" %>
                     </div>
                   <% end %>
                 </div>
