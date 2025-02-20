@@ -17,6 +17,57 @@ export default class extends Controller {
     this.updateAvailableAdventures()
   }
 
+  // add equipment handling
+  async searchEquipment(event) {
+    const query = event.target.value.trim()
+    this.equipmentResultsTarget.innerHTML = ''
+
+    if (query.length < 2) return
+
+    const response = await fetch(`/equipment.json?query=${encodeURIComponent(query)}`)
+    const equipment = await response.json()
+    this.renderEquipmentResults(equipment)
+  }
+
+  renderEquipmentResults(equipment) {
+    this.equipmentResultsTarget.innerHTML = equipment.map(item => `
+      <div class="list-group-item" data-action="click->travel-plan#selectEquipment"
+           data-equipment='${JSON.stringify(item)}'>
+        ${item.name} - ${item.category}
+      </div>
+    `).join('')
+  }
+
+  selectEquipment(event) {
+    const equipment = JSON.parse(event.currentTarget.dataset.equipment)
+    this.addEquipmentTag(equipment)
+    this.equipmentSearchTarget.value = ''
+    this.equipmentResultsTarget.innerHTML = ''
+  }
+
+  addEquipmentTag(equipment) {
+    if (this.selectedEquipment.has(equipment.id)) return
+
+    this.selectedEquipment.add(equipment.id)
+    this.selectedEquipmentTarget.insertAdjacentHTML('beforeend', `
+      <div class="badge bg-primary p-2 m-1 d-inline-flex align-items-center">
+        ${equipment.name}
+        <button type="button" class="btn-close ms-2"
+                data-action="click->travel-plan#removeEquipment"
+                data-equipment-id="${equipment.id}"></button>
+        <input type="hidden" name="travel_plan[equipment_ids][]" value="${equipment.id}">
+      </div>
+    `)
+  }
+
+  removeEquipment(event) {
+    const equipmentId = event.currentTarget.dataset.equipmentId
+    this.selectedEquipment.delete(equipmentId)
+    event.currentTarget.closest('.badge').remove()
+  }
+
+  // end of equipment handling
+
   initializeExistingSelections() {
     if (this.hasLocationsValue) {
       this.locationsValue.forEach(location => this.addLocationTag(location))
