@@ -97,6 +97,18 @@ end
     end
   end
 
+  def equipment_suggestions
+    location_ids = params[:location_ids]&.split(",") || []
+    adventure_ids = params[:adventure_ids]&.split(",") || []
+
+    equipment = Equipment.joins(:locations).where(locations: { id: location_ids })
+                        .or(Equipment.joins(:adventures).where(adventures: { id: adventure_ids }))
+                        .distinct
+
+    render json: equipment.as_json(only: [:id, :name])
+  end
+
+
   private
 
   def travel_plan_params
