@@ -1,0 +1,24 @@
+<%# app/views/equipment/_list.html.erb %>
+<div class="row">
+  <% equipment.each do |item| %>
+    <div class="col-md-4 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">
+            <%= item.name %>
+            <span class="badge bg-secondary"><%= item.category %></span>
+          </h5>
+          <p class="card-text"><%= item.description %></p>
+          <div class="mt-auto">
+            <%= link_to "View Details", equipment_path(item), class: "btn btn-primary" %>
+            <% if user_signed_in? && !current_user.equipment.include?(item) %>
+              <%= button_to "Add to My Equipment",
+                  user_equipments_path(equipment_id: item.id),
+                  class: "btn btn-outline-primary mt-2" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
