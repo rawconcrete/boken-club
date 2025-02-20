@@ -15,39 +15,34 @@
           <% if @adventure.skills.present? %>
             <p><strong>Required Skills:</strong> <%= @adventure.skills %></p>
           <% end %>
-          <!-- new equipment section -->
           <% if @adventure.equipment.any? %>
-            <div class="mt-4">
-              <h5>Recommended Equipment</h5>
-              <div class="row">
-                <% @adventure.equipment.each do |item| %>
-                  <div class="col-md-6 mb-2">
-                    <div class="d-flex align-items-center border rounded p-2">
-                      <div>
-                        <strong><%= item.name %></strong>
-                        <div class="small text-muted"><%= item.category %></div>
-                      </div>
-                      <%= render 'shared/add_to_plan_button', item: adventure, item_type: 'adventure' %>
-                      <% if user_signed_in? %>
-                        <% if current_user.equipment.include?(item) %>
-                          <span class="badge bg-success ms-auto">✓ Owned</span>
-                        <% else %>
-                          <%= button_to "Add", user_equipments_path(equipment_id: item.id),
-                              class: "btn btn-sm btn-outline-primary ms-auto" %>
-                        <% end %>
-                      <% end %>
+            <h5 class="mt-4">Recommended Equipment</h5>
+            <div class="row">
+              <% @adventure.equipment.each do |item| %>
+                <div class="col-md-6 mb-2">
+                  <div class="d-flex align-items-center border rounded p-2">
+                    <div>
+                      <strong><%= item.name %></strong>
+                      <div class="small text-muted"><%= item.category %></div>
                     </div>
+                    <%= render 'shared/add_to_plan_button', item: item, item_type: 'equipment' %>
+                    <% if user_signed_in? && current_user.equipment.include?(item) %>
+                      <span class="badge bg-success ms-auto">✓ Owned</span>
+                    <% end %>
                   </div>
-                <% end %>
-              </div>
+                </div>
+              <% end %>
             </div>
           <% end %>
-          <%= link_to "Plan This Adventure", new_travel_plan_path(adventure_id: @adventure.id),
-              class: "btn btn-primary mt-3",
-              data: { turbo_frame: "_top" } %>
-          <%= link_to "Back", :back,
-              class: "btn btn-primary mt-3",
-              data: { turbo_frame: "_top" } %>
+          <div class="mt-3">
+            <%= link_to "Plan This Adventure", new_travel_plan_path(adventure_id: @adventure.id),
+                class: "btn btn-primary mt-3",
+                data: { turbo_frame: "_top" } %>
+            <%= link_to "Back", :back,
+                class: "btn btn-primary mt-3",
+                data: { turbo_frame: "_top" } %>
+            <%= render 'shared/add_to_plan_button', item: @adventure, item_type: 'adventure' %>
+          </div>
         </div>
       </div>
     </div>
@@ -59,9 +54,12 @@
             <div class="mb-3 p-3 border rounded">
               <h6 class="mb-2"><%= location.name %></h6>
               <p class="small mb-2"><%= location.city %>, <%= location.prefecture %></p>
-              <%= link_to "View Location", location_path(location),
-                  class: "btn btn-primary btn-sm",
-                  data: { turbo_frame: "_top" } %>
+              <div class="d-flex gap-2">
+                <%= link_to "View Location", location_path(location),
+                    class: "btn btn-primary btn-sm",
+                    data: { turbo_frame: "_top" } %>
+                <%= render 'shared/add_to_plan_button', item: location, item_type: 'location' %>
+              </div>
             </div>
           <% end %>
         </div>
