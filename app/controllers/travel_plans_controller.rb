@@ -101,11 +101,12 @@ end
 
   def travel_plan_params
     params.require(:travel_plan).permit(
-      :title,
-      :content,
-      :status,
-      location_ids: [],
-      adventure_ids: []
+    :title,
+    :content,
+    :status,
+    location_ids: [],
+    adventure_ids: [],
+    equipment_ids: []
     )
   end
 

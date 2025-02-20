@@ -16,19 +16,24 @@
             <p class="text-danger"><strong>Warnings:</strong> <%= @location.warnings %></p>
           <% end %>
           <% if @location.equipment.any? %>
-            <h5 class="mt-4">Recommended Equipment</h5>
-            <div class="row">
+            <h5 class="mt-4">Required Equipment</h5>
+            <div class="row" data-controller="equipment-selection">
               <% @location.equipment.each do |item| %>
                 <div class="col-md-6 mb-2">
                   <div class="d-flex align-items-center border rounded p-2">
-                    <div>
-                      <strong><%= item.name %></strong>
-                      <div class="small text-muted"><%= item.category %></div>
+                    <div class="form-check">
+                      <input type="checkbox"
+                   class="form-check-input"
+                   id="equipment-<%= item.id %>"
+                   data-action="equipment-selection#toggle"
+                   data-equipment-selection-target="checkbox"
+                   data-equipment-id="<%= item.id %>"
+                   data-equipment-name="<%= item.name %>">
+                      <label class="form-check-label" for="equipment-<%= item.id %>">
+                        <strong><%= item.name %></strong>
+                        <div class="small text-muted"><%= item.category %></div>
+                      </label>
                     </div>
-                    <%= render 'shared/add_to_plan_button', item: item, item_type: 'equipment' %>
-                    <% if user_signed_in? && current_user.equipment.include?(item) %>
-                      <span class="badge bg-success ms-auto">✓ Owned</span>
-                    <% end %>
                   </div>
                 </div>
               <% end %>

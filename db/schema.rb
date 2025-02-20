@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_02_18_124829) do
+ActiveRecord::Schema[7.1].define(version: 2025_02_20_113533) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -102,6 +102,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_18_124829) do
     t.index ["travel_plan_id"], name: "index_travel_plans_adventures_on_travel_plan_id"
   end
 
+  create_table "travel_plans_equipments", force: :cascade do |t|
+    t.bigint "travel_plan_id", null: false
+    t.bigint "equipment_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["equipment_id"], name: "index_travel_plans_equipments_on_equipment_id"
+    t.index ["travel_plan_id"], name: "index_travel_plans_equipments_on_travel_plan_id"
+  end
+
   create_table "travel_plans_locations", force: :cascade do |t|
     t.bigint "travel_plan_id", null: false
     t.bigint "location_id", null: false
@@ -144,6 +153,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_18_124829) do
   add_foreign_key "travel_plans", "users"
   add_foreign_key "travel_plans_adventures", "adventures"
   add_foreign_key "travel_plans_adventures", "travel_plans"
+  add_foreign_key "travel_plans_equipments", "equipment"
+  add_foreign_key "travel_plans_equipments", "travel_plans"
   add_foreign_key "travel_plans_locations", "locations"
   add_foreign_key "travel_plans_locations", "travel_plans"
   add_foreign_key "user_equipments", "equipment"
