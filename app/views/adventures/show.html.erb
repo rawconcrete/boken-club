@@ -45,9 +45,7 @@
           <div class="mt-3">
             <%= link_to "Plan This Adventure",
                 new_travel_plan_path(
-                  adventure_id: @adventure.id,
-                  equipment_ids: selected_equipment_ids
-                ),
+                  adventure_id: @adventure.id),
                 class: "btn btn-primary mt-3",
                 data: {
                   turbo_frame: "_top",
