@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
   static targets = [
     "locationSearch", "locationResults", "selectedLocations",
-    "selectedAdventures", "adventureResults", "selectedEquipment"
+    "selectedAdventures", "adventureResults", "selectedEquipment", "checkbox"
   ];
   static values = {
     locations: Array,
@@ -19,34 +19,33 @@ export default class extends Controller {
     this.loadSelectedEquipment();
   }
 
+  /*** EQUIPMENT SELECTION & LOADING ***/
   loadSelectedEquipment() {
-    const selectedEquipment = JSON.parse(localStorage.getItem("selectedEquipment") || "[]")
+    const selectedEquipment = JSON.parse(localStorage.getItem("selectedEquipment") || "[]");
 
-    selectedEquipment.forEach(equipment => {
-      const checkbox = document.getElementById(`equipment_${equipment.id}`)
-      if (checkbox) {
-        checkbox.checked = true
-      }
-    })
+    this.checkboxTargets.forEach((checkbox) => {
+      const equipmentId = checkbox.dataset.equipmentId;
+      checkbox.checked = selectedEquipment.some(e => e.id == equipmentId); // Only check if stored
+    });
   }
 
+  toggleEquipment(event) {
+    const checkbox = event.target;
+    const equipmentId = checkbox.dataset.equipmentId;
+    const equipmentName = checkbox.dataset.equipmentName;
 
-  addEquipmentTag(equipment) {
-    if (this.selectedEquipment.has(equipment.id)) return;
+    let selectedEquipment = JSON.parse(localStorage.getItem("selectedEquipment") || "[]");
 
-    this.selectedEquipment.add(equipment.id);
-    this.selectedEquipmentTarget.insertAdjacentHTML("beforeend", `
-      <div class="badge bg-info p-2 m-1 d-inline-flex align-items-center">
-        ${equipment.name}
-        <button type="button" class="btn-close ms-2"
-                data-action="click->travel-plan#removeEquipment"
-                data-equipment-id="${equipment.id}"></button>
-        <input type="hidden" name="travel_plan[equipment_ids][]" value="${equipment.id}">
-      </div>
-    `);
+    if (checkbox.checked) {
+      selectedEquipment.push({ id: equipmentId, name: equipmentName });
+    } else {
+      selectedEquipment = selectedEquipment.filter(e => e.id != equipmentId);
+    }
+
+    localStorage.setItem("selectedEquipment", JSON.stringify(selectedEquipment));
   }
 
-
+  /*** LOCATION & ADVENTURE SELECTION ***/
   selectLocation(event) {
     const location = JSON.parse(event.currentTarget.dataset.location);
     this.addLocationTag(location);
@@ -93,6 +92,7 @@ export default class extends Controller {
     this.updateEquipment();
   }
 
+  /*** EQUIPMENT UPDATING BASED ON LOCATIONS & ADVENTURES ***/
   async updateEquipment() {
     const locationIds = Array.from(this.selectedLocations);
     const adventureIds = Array.from(this.selectedAdventures);
