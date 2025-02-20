@@ -36,8 +36,10 @@ Rails.application.routes.draw do
   resources :equipment
   resources :user_equipments, only: [:create, :destroy]
 
-  member do
-    post 'add_item'
+  resources :travel_plans do
+    member do
+      post 'add_item'
+    end
   end
 
 end
