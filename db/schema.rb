@@ -23,6 +23,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_18_124829) do
     t.index ["equipment_id"], name: "index_adventure_equipments_on_equipment_id"
   end
 
+  create_table "adventure_travel_plan_disclaimers", force: :cascade do |t|
+    t.bigint "adventure_id", null: false
+    t.bigint "travel_plan_id", null: false
+    t.text "disclaimer"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["adventure_id"], name: "index_adventure_travel_plan_disclaimers_on_adventure_id"
+    t.index ["travel_plan_id"], name: "index_adventure_travel_plan_disclaimers_on_travel_plan_id"
+  end
+
   create_table "adventures", force: :cascade do |t|
     t.string "name"
     t.string "details"
@@ -32,6 +42,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_18_124829) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "location_id"
+    t.index ["location_id"], name: "index_adventures_on_location_id"
   end
 
   create_table "equipment", force: :cascade do |t|
@@ -136,6 +147,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_18_124829) do
 
   add_foreign_key "adventure_equipments", "adventures"
   add_foreign_key "adventure_equipments", "equipment"
+  add_foreign_key "adventure_travel_plan_disclaimers", "adventures"
+  add_foreign_key "adventure_travel_plan_disclaimers", "travel_plans"
   add_foreign_key "location_equipments", "equipment"
   add_foreign_key "location_equipments", "locations"
   add_foreign_key "locations_adventures", "adventures"
