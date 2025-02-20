@@ -312,3 +312,125 @@ TravelPlan.create!([
   plan.locations << (index.zero? ? Location.find_by(name: 'Ogawayama') : Location.find_by(name: 'Mount Takao'))
   plan.adventures << (index.zero? ? Adventure.find_by(name: 'Rock Climbing') : Adventure.find_by(name: 'Hiking'))
 end
+
+# equipments
+# db/seeds/equipment.rb
+
+puts "Creating equipment..."
+
+# hiking Equipment
+hiking_equipment = [
+  {
+    name: "Hiking Boots",
+    description: "Waterproof hiking boots with ankle support and rugged soles for various terrain",
+    category: "hiking"
+  },
+  {
+    name: "Trekking Poles",
+    description: "Adjustable aluminum trekking poles with ergonomic grips and shock absorption",
+    category: "hiking"
+  },
+  {
+    name: "Daypack",
+    description: "30L daypack with hydration compatibility and multiple compartments",
+    category: "hiking"
+  }
+]
+
+# camping Equipment
+camping_equipment = [
+  {
+    name: "4-Season Tent",
+    description: "Durable 2-person tent suitable for all weather conditions with waterproof rainfly",
+    category: "camping"
+  },
+  {
+    name: "Sleeping Bag",
+    description: "Mummy-style sleeping bag rated for -5°C with synthetic fill",
+    category: "camping"
+  },
+  {
+    name: "Camping Stove",
+    description: "Portable gas camping stove with piezo ignition",
+    category: "camping"
+  }
+]
+
+# climbing Equipment
+climbing_equipment = [
+  {
+    name: "Climbing Harness",
+    description: "Adjustable climbing harness with padded waist and leg loops",
+    category: "climbing"
+  },
+  {
+    name: "Climbing Rope",
+    description: "60m dynamic climbing rope with dry treatment",
+    category: "climbing"
+  },
+  {
+    name: "Climbing Shoes",
+    description: "Intermediate climbing shoes with sticky rubber soles",
+    category: "climbing"
+  }
+]
+
+# safety equipment
+safety_equipment = [
+  {
+    name: "First Aid Kit",
+    description: "Comprehensive outdoor first aid kit with wilderness medical supplies",
+    category: "safety"
+  },
+  {
+    name: "Headlamp",
+    description: "Water-resistant LED headlamp with multiple brightness settings",
+    category: "safety"
+  },
+  {
+    name: "Emergency Shelter",
+    description: "Lightweight emergency bivy shelter for unexpected overnight stays",
+    category: "safety"
+  }
+]
+
+# create all equipment
+[hiking_equipment, camping_equipment, climbing_equipment, safety_equipment].each do |category|
+  category.each do |equipment|
+    Equipment.create!(equipment)
+  end
+end
+
+# associate equipment with adventures and locations
+Adventure.all.each do |adventure|
+  # associate relevant equipment based on adventure type
+  case adventure.name.downcase
+  when /hiking|trekking/
+    adventure.equipment << Equipment.where(category: "hiking")
+    adventure.equipment << Equipment.where(category: "safety")
+  when /camping/
+    adventure.equipment << Equipment.where(category: "camping")
+    adventure.equipment << Equipment.where(category: "safety")
+  when /climbing/
+    adventure.equipment << Equipment.where(category: "climbing")
+    adventure.equipment << Equipment.where(category: "safety")
+  end
+end
+
+Location.all.each do |location|
+  # associate safety equipment with all locations
+  location.equipment << Equipment.where(category: "safety")
+
+  # associate specific equipment based on location details
+  if location.details&.downcase&.match?(/camping/)
+    location.equipment << Equipment.where(category: "camping")
+  end
+  if location.details&.downcase&.match?(/hiking|trail/)
+    location.equipment << Equipment.where(category: "hiking")
+  end
+  if location.details&.downcase&.match?(/climbing|rock/)
+    location.equipment << Equipment.where(category: "climbing")
+  end
+end
+
+puts "Created #{Equipment.count} equipment items"
