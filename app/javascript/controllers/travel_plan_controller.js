@@ -21,25 +21,28 @@ export default class extends Controller {
 
   /*** EQUIPMENT SELECTION & LOADING ***/
   loadSelectedEquipment() {
-    const selectedEquipment = JSON.parse(localStorage.getItem("selectedEquipment") || "[]");
+    const storedEquipment = JSON.parse(localStorage.getItem("selectedEquipment") || "[]");
+    const storedEquipmentIds = new Set(storedEquipment.map(e => e.id)); // Set of stored IDs
 
     this.checkboxTargets.forEach((checkbox) => {
       const equipmentId = checkbox.dataset.equipmentId;
-      checkbox.checked = selectedEquipment.some(e => e.id == equipmentId); // Only check if stored
+      checkbox.checked = storedEquipmentIds.has(parseInt(equipmentId)); // ONLY check if stored
     });
   }
 
   toggleEquipment(event) {
     const checkbox = event.target;
-    const equipmentId = checkbox.dataset.equipmentId;
+    const equipmentId = parseInt(checkbox.dataset.equipmentId);
     const equipmentName = checkbox.dataset.equipmentName;
 
     let selectedEquipment = JSON.parse(localStorage.getItem("selectedEquipment") || "[]");
 
     if (checkbox.checked) {
-      selectedEquipment.push({ id: equipmentId, name: equipmentName });
+      if (!selectedEquipment.some(e => e.id === equipmentId)) {
+        selectedEquipment.push({ id: equipmentId, name: equipmentName });
+      }
     } else {
-      selectedEquipment = selectedEquipment.filter(e => e.id != equipmentId);
+      selectedEquipment = selectedEquipment.filter(e => e.id !== equipmentId);
     }
 
     localStorage.setItem("selectedEquipment", JSON.stringify(selectedEquipment));
@@ -99,15 +102,24 @@ export default class extends Controller {
 
     try {
       const response = await fetch(`/travel_plans/equipment_suggestions?location_ids=${locationIds.join(",")}&adventure_ids=${adventureIds.join(",")}`);
-      const equipment = await response.json();
+      const recommendedEquipment = await response.json();
+
+      const storedEquipment = JSON.parse(localStorage.getItem("selectedEquipment") || "[]");
+      const storedEquipmentIds = new Set(storedEquipment.map(e => e.id)); // Set of stored IDs
 
       this.selectedEquipment.clear();
-      this.selectedEquipmentTarget.innerHTML = equipment.map(item => `
-        <div class="badge bg-info p-2 m-1 d-inline-flex align-items-center">
-          ${item.name}
-          <input type="hidden" name="travel_plan[equipment_ids][]" value="${item.id}">
+      this.selectedEquipmentTarget.innerHTML = recommendedEquipment.map(item => `
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input"
+                 id="equipment_${item.id}"
+                 data-action="change->travel-plan#toggleEquipment"
+                 data-equipment-id="${item.id}"
+                 data-equipment-name="${item.name}"
+                 ${storedEquipmentIds.has(item.id) ? "checked" : ""}>
+          <label for="equipment_${item.id}" class="form-check-label">${item.name}</label>
         </div>
       `).join("");
+
     } catch (error) {
       console.error("Error fetching equipment suggestions:", error);
     }
