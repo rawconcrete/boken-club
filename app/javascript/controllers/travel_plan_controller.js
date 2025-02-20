@@ -80,7 +80,7 @@ export default class extends Controller {
 
   renderLocationResults(locations) {
     this.locationResultsTarget.innerHTML = locations.map(location => `
-      <div class="list-group-item" data-action="click->travel-plan#selectLocation"
+      <div class="list-group-item" data-action="click->travel-plans#selectLocation"
            data-location='${JSON.stringify(location)}'>
         ${location.name} - ${location.city}, ${location.prefecture}
       </div>
