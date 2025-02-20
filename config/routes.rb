@@ -16,6 +16,9 @@ Rails.application.routes.draw do
   end
 
   resources :travel_plans, except: [:destroy] do
+    collection do
+      get 'equipment_suggestions'
+    end
     member do
       delete :destroy
     end
