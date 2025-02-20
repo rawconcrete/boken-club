@@ -32,7 +32,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_18_124829) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "location_id"
-    t.index ["location_id"], name: "index_adventures_on_location_id"
   end
 
   create_table "equipment", force: :cascade do |t|
@@ -130,6 +129,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_18_124829) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "admin", default: false
+    t.integer "role", default: 0, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

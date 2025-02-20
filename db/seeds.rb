@@ -275,7 +275,8 @@ end
 # basic users
 User.create!([
   {email: 'user1@example.com', password: 'password'},
-  {email: 'user2@example.com', password: 'password'}
+  {email: 'user2@example.com', password: 'password'},
+  {email: "test@example.com", password: "password", role: 1}
 ])
 
 # admin accounts

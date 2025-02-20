@@ -1,0 +1,35 @@
+<%= form_with(model: @location, url: @location.new_record? ? admin_locations_path : admin_location_path(@location), method: @location.new_record? ? :post : :patch, local: true) do |f| %>
+  <div>
+    <%= f.label :name %>
+    <%= f.text_field :name, required: true %>
+  </div>
+
+  <div>
+    <%= f.label :city %>
+    <%= f.text_field :city %>
+  </div>
+
+  <div>
+    <%= f.label :prefecture %>
+    <%= f.text_field :prefecture %>
+  </div>
+
+  <div>
+    <%= f.label :details %>
+    <%= f.text_area :details %>
+  </div>
+
+  <div>
+    <%= f.label :tips %>
+    <%= f.text_area :tips %>
+  </div>
+
+  <div>
+    <%= f.label :warnings %>
+    <%= f.text_area :warnings %>
+  </div>
+
+  <div>
+    <%= f.submit "Save" %>
+  </div>
+<% end %>

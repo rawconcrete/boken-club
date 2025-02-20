@@ -25,4 +25,11 @@ Rails.application.routes.draw do
 
 
   get "up" => "rails/health#show", as: :rails_health_check
+
+  namespace :admin do
+    resources :locations, only: [:new, :create, :edit, :update, :destroy]
+    resources :adventures, only: [:new, :create, :edit, :update, :destroy]
+    get 'dashboard', to: 'admin#dashboard'
+  end
+
 end
