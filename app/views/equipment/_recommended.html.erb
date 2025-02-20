@@ -1,0 +1,33 @@
+<%# app/views/equipments/_recommended.html.erb %>
+<div class="card mb-4">
+  <div class="card-header">
+    <h5 class="mb-0">Recommended Equipment</h5>
+  </div>
+  <div class="card-body">
+    <% if equipment.any? %>
+      <div class="row">
+        <% equipment.each do |item| %>
+          <div class="col-md-6 mb-3">
+            <div class="d-flex align-items-center">
+              <div>
+                <h6 class="mb-1"><%= item.name %></h6>
+                <p class="small text-muted mb-0"><%= item.category %></p>
+              </div>
+              <% if user_signed_in? %>
+                <% if current_user.equipment.include?(item) %>
+                  <span class="badge bg-success ms-auto">✓ Owned</span>
+                <% else %>
+                  <%= button_to "Add",
+                      user_equipments_path(equipment_id: item.id),
+                      class: "btn btn-sm btn-outline-primary ms-auto" %>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-muted mb-0">No specific equipment recommendations.</p>
+    <% end %>
+  </div>
+</div>
