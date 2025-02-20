@@ -1,0 +1,32 @@
+<%# app/views/equipment/index.html.erb %>
+<div class="container text-white">
+  <h1 class="mb-4">Equipment</h1>
+  <div class="search-bar mb-4">
+    <%= form_with url: equipment_index_path, method: :get,
+        data: { controller: "search-equipment", turbo_frame: "equipment-list" } do |f| %>
+      <%= f.text_field :query,
+          class: "form-control",
+          placeholder: "Search equipment...",
+          value: params[:query] %>
+    <% end %>
+  </div>
+  <div class="filtering mb-4">
+    <%= form_with url: equipment_index_path, method: :get do |f| %>
+      <div class="btn-group">
+        <%= f.select :category,
+            options_for_select([
+              ['All Categories', ''],
+              ['Hiking', 'hiking'],
+              ['Camping', 'camping'],
+              ['Climbing', 'climbing'],
+              ['Safety', 'safety']
+            ], selected: params[:category]),
+            {},
+            { class: "form-select", onchange: 'this.form.submit()' } %>
+      </div>
+    <% end %>
+  </div>
+  <turbo-frame id="equipment-list">
+    <%= render "equipment/list", equipment: @equipment %>
+  </turbo-frame>
+</div>
