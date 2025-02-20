@@ -8,4 +8,5 @@ class TravelPlan < ApplicationRecord
   validates :status, inclusion: { in: ['pending', 'completed', 'cancelled'], message: "%{value} is not a valid status" }, allow_nil: true
   validates :title, presence: true
 
+  scope :in_progress, -> { where(status: 'pending') }
 end
