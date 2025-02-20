@@ -1,0 +1,7 @@
+<%# app/views/shared/_add_to_plan_button.html.erb %>
+<% if user_signed_in? && current_user.travel_plans.exists?(status: 'pending') %>
+  <%= button_to "Add to Plan",
+      add_item_travel_plan_path(current_user.travel_plans.find_by(status: 'pending'), item_id: item.id, item_type: item_type),
+      method: :post,
+      class: "btn btn-outline-primary btn-sm" %>
+<% end %>
