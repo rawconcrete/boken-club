@@ -15,6 +15,15 @@ export default class extends Controller {
     this.initializeExistingSelections()
     this.loadInitialSelections()
     this.updateAvailableAdventures()
+    this.loadSelectedEquipment()
+  }
+
+  loadSelectedEquipment() {
+    const selectedEquipment = JSON.parse(localStorage.getItem('selectedEquipment') || '[]')
+    selectedEquipment.forEach(equipment => {
+      this.addEquipmentTag(equipment)
+    })
+    localStorage.removeItem('selectedEquipment') // Clear after loading
   }
 
   // add equipment handling
