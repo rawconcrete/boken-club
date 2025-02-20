@@ -12,6 +12,12 @@
           <p><strong>Details:</strong> <%= @location.details %></p>
           <%= content_tag(:p, "<strong>Tips:</strong> #{@location.tips}".html_safe) if @location.tips.present? %>
           <%= content_tag(:p, "<strong>Warnings:</strong> #{@location.warnings}".html_safe, class: "text-danger") if @location.warnings.present? %>
+          <%= link_to "Plan a Trip Here", new_travel_plan_path(location_id: @location.id),
+          class: "btn btn-primary btn-sm flex-fill",
+          data: { turbo_frame: "_top" } %>
+          <%= link_to "Back", :back,
+          class: "btn btn-primary btn-sm flex-fill",
+          data: { turbo_frame: "_top" } %>
         </div>
       </div>
     </div>
@@ -27,12 +33,6 @@
               <!-- button alignment fix: flexbox -->
               <div class="d-flex gap-2">
                 <%= link_to "View Adventure", adventure_path(adventure),
-                    class: "btn btn-primary btn-sm flex-fill",
-                    data: { turbo_frame: "_top" } %>
-                <%= link_to "Plan a Trip Here", new_travel_plan_path(location_id: @location.id),
-                    class: "btn btn-primary btn-sm flex-fill",
-                    data: { turbo_frame: "_top" } %>
-                <%= link_to "Back", :back,
                     class: "btn btn-primary btn-sm flex-fill",
                     data: { turbo_frame: "_top" } %>
               </div>

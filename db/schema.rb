@@ -32,6 +32,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_18_124829) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "location_id"
+    t.index ["location_id"], name: "index_adventures_on_location_id"
   end
 
   create_table "equipment", force: :cascade do |t|
