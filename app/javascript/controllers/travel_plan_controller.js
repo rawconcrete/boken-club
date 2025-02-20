@@ -16,6 +16,11 @@ export default class extends Controller {
     this.loadInitialSelections()
     this.updateAvailableAdventures()
     this.loadSelectedEquipment()
+    const selectedEquipment = JSON.parse(sessionStorage.getItem('selectedEquipment') || '[]')
+    selectedEquipment.forEach(equipment => {
+      const checkbox = document.getElementById(`equipment_${equipment.id}`)
+      if (checkbox) checkbox.checked = true
+    })
   }
 
   loadSelectedEquipment() {
