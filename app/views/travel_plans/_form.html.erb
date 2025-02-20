@@ -2,7 +2,8 @@
 <div class="container"
      data-controller="travel-plan"
      data-travel-plan-locations-value="<%= travel_plan.locations.to_json %>"
-     data-travel-plan-adventures-value="<%= travel_plan.adventures.to_json %>">
+     data-travel-plan-adventures-value="<%= travel_plan.adventures.to_json %>"
+     data-travel-plan-equipment-value="<%= travel_plan.equipment.to_json %>">
   <div class="row justify-content-center">
     <div class="col-md-8">
       <%= form_with(model: travel_plan, local: true) do |f| %>
@@ -25,6 +26,22 @@
             </div>
           </div>
         </div>
+        <!-- equipment section -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Equipment Needed</h5>
+          </div>
+          <div class="card-body">
+            <div data-travel-plan-target="selectedEquipment" class="mb-3"></div>
+            <input type="text"
+                   class="form-control"
+                   placeholder="Search equipment..."
+                   data-travel-plan-target="equipmentSearch"
+                   data-action="input->travel-plan#searchEquipment">
+            <div data-travel-plan-target="equipmentResults" class="list-group mt-2"></div>
+          </div>
+        </div>
+        <!-- rest of the form remains the same -->
         <div class="card mb-4">
           <div class="card-header">
             <h5 class="mb-0">Locations</h5>
@@ -45,11 +62,6 @@
           </div>
           <div class="card-body">
             <div data-travel-plan-target="selectedAdventures" class="mb-3"></div>
-            <input type="text"
-           class="form-control"
-           placeholder="Search adventures..."
-           data-travel-plan-target="adventureSearch"
-           data-action="input->travel-plan#searchAdventures">
             <div data-travel-plan-target="adventureResults" class="list-group mt-2"></div>
           </div>
         </div>
