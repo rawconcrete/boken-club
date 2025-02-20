@@ -7,25 +7,31 @@ class TravelPlansController < ApplicationController
     @travel_plans = current_user.travel_plans.includes(:locations, :adventures)
   end
 
-  def new
-    @travel_plan = current_user.travel_plans.new
-    title_parts = []
+def new
+  @travel_plan = current_user.travel_plans.new
+  title_parts = []
 
-    if params[:location_id].present?
-      location = Location.find_by(id: params[:location_id])
-      @travel_plan.locations << location if location
-      title_parts << location&.name
-    end
-
-    if params[:adventure_id].present?
-      adventure = Adventure.find_by(id: params[:adventure_id])
-      @travel_plan.adventures << adventure if adventure
-      title_parts << adventure&.name
-    end
-
-    title_parts << Time.current.strftime("%Y-%m-%d")
-    @travel_plan.title = title_parts.compact.join(" - ")
+  if params[:location_id].present?
+    location = Location.find_by(id: params[:location_id])
+    @travel_plan.locations << location if location
+    title_parts << location&.name
   end
+
+  if params[:adventure_id].present?
+    adventure = Adventure.find_by(id: params[:adventure_id])
+    @travel_plan.adventures << adventure if adventure
+    title_parts << adventure&.name
+  end
+
+  # add handling for equipment
+  if params[:equipment_id].present?
+    @equipment = Equipment.find_by(id: params[:equipment_id])
+    @travel_plan.equipment << @equipment if @equipment
+  end
+
+  title_parts << Time.current.strftime("%Y-%m-%d")
+  @travel_plan.title = title_parts.compact.join(" - ")
+end
 
   def create
     @travel_plan = current_user.travel_plans.build(travel_plan_params)
