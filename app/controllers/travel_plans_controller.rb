@@ -7,31 +7,32 @@ class TravelPlansController < ApplicationController
     @travel_plans = current_user.travel_plans.includes(:locations, :adventures)
   end
 
-def new
-  @travel_plan = current_user.travel_plans.new
-  title_parts = []
+  def new
+    @travel_plan = current_user.travel_plans.new
+    title_parts = []
 
-  if params[:location_id].present?
-    location = Location.find_by(id: params[:location_id])
-    @travel_plan.locations << location if location
-    title_parts << location&.name
+    if params[:location_id].present?
+      location = Location.find_by(id: params[:location_id])
+      if location
+        @travel_plan.locations << location
+        title_parts << location.name
+        @travel_plan.equipment += location.equipment # Ensure equipment is inherited
+      end
+    end
+
+    if params[:adventure_id].present?
+      adventure = Adventure.find_by(id: params[:adventure_id])
+      if adventure
+        @travel_plan.adventures << adventure
+        title_parts << adventure.name
+        @travel_plan.equipment += adventure.equipment # Ensure equipment is inherited
+      end
+    end
+
+    title_parts << Time.current.strftime("%Y-%m-%d")
+    @travel_plan.title = title_parts.compact.join(" - ")
   end
 
-  if params[:adventure_id].present?
-    adventure = Adventure.find_by(id: params[:adventure_id])
-    @travel_plan.adventures << adventure if adventure
-    title_parts << adventure&.name
-  end
-
-  # add handling for equipment
-  if params[:equipment_id].present?
-    @equipment = Equipment.find_by(id: params[:equipment_id])
-    @travel_plan.equipment << @equipment if @equipment
-  end
-
-  title_parts << Time.current.strftime("%Y-%m-%d")
-  @travel_plan.title = title_parts.compact.join(" - ")
-end
 
   def create
     @travel_plan = current_user.travel_plans.build(travel_plan_params)
@@ -61,9 +62,10 @@ end
   end
 
   def edit
-    @travel_plan = current_user.travel_plans.find_by(id: params[:id])
+    @travel_plan = current_user.travel_plans.includes(:locations, :adventures, :equipment).find_by(id: params[:id])
     return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
   end
+
 
 
   def update
@@ -105,8 +107,9 @@ end
                         .or(Equipment.joins(:adventures).where(adventures: { id: adventure_ids }))
                         .distinct
 
-    render json: equipment.as_json(only: [:id, :name])
+    render json: equipment.map { |e| { id: e.id, name: e.name } }
   end
+
 
 
   private

@@ -22,13 +22,25 @@ export default class extends Controller {
   loadSelectedEquipment() {
     const selectedEquipment = JSON.parse(sessionStorage.getItem('selectedEquipment') || '[]');
     selectedEquipment.forEach(equipment => {
-      const checkbox = document.getElementById(`equipment_${equipment.id}`);
-      if (checkbox) {
-        checkbox.checked = true;
-        this.selectedEquipment.add(equipment.id);
-      }
+      this.addEquipmentTag(equipment);
     });
   }
+
+  addEquipmentTag(equipment) {
+    if (this.selectedEquipment.has(equipment.id)) return;
+
+    this.selectedEquipment.add(equipment.id);
+    this.selectedEquipmentTarget.insertAdjacentHTML("beforeend", `
+      <div class="badge bg-info p-2 m-1 d-inline-flex align-items-center">
+        ${equipment.name}
+        <button type="button" class="btn-close ms-2"
+                data-action="click->travel-plan#removeEquipment"
+                data-equipment-id="${equipment.id}"></button>
+        <input type="hidden" name="travel_plan[equipment_ids][]" value="${equipment.id}">
+      </div>
+    `);
+  }
+
 
   selectLocation(event) {
     const location = JSON.parse(event.currentTarget.dataset.location);
