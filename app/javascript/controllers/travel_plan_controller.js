@@ -1,73 +1,54 @@
-// travel_plan_controller.js
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  static targets = ["locationSearch", "locationResults", "selectedLocations",
-                    "selectedAdventures", "adventureResults", "selectedEquipment"]
+  static targets = [
+    "locationSearch", "locationResults", "selectedLocations",
+    "selectedAdventures", "adventureResults", "selectedEquipment"
+  ];
   static values = {
     locations: Array,
     adventures: Array,
     equipment: Array
-  }
+  };
 
   connect() {
-    this.selectedLocations = new Set()
-    this.selectedAdventures = new Set()
-    this.selectedEquipment = new Set()
-    this.initializeExistingSelections()
-    this.loadSelectedEquipment()
+    this.selectedLocations = new Set();
+    this.selectedAdventures = new Set();
+    this.selectedEquipment = new Set();
+    this.initializeExistingSelections();
+    this.loadSelectedEquipment();
   }
 
   loadSelectedEquipment() {
-    const selectedEquipment = JSON.parse(sessionStorage.getItem('selectedEquipment') || '[]')
+    const selectedEquipment = JSON.parse(sessionStorage.getItem('selectedEquipment') || '[]');
     selectedEquipment.forEach(equipment => {
-      const checkbox = document.getElementById(`equipment_${equipment.id}`)
+      const checkbox = document.getElementById(`equipment_${equipment.id}`);
       if (checkbox) {
-        checkbox.checked = true
-        this.selectedEquipment.add(equipment.id)
+        checkbox.checked = true;
+        this.selectedEquipment.add(equipment.id);
       }
-    })
-  }
-
-  async searchLocations(event) {
-    const query = event.target.value.trim()
-    if (query.length < 2) {
-      this.locationResultsTarget.innerHTML = ''
-      return
-    }
-
-    try {
-      const response = await fetch(`/locations.json?query=${encodeURIComponent(query)}`)
-      const locations = await response.json()
-      this.renderLocationResults(locations)
-    } catch (error) {
-      console.error('Error searching locations:', error)
-    }
-  }
-
-  renderLocationResults(locations) {
-    this.locationResultsTarget.innerHTML = locations
-      .filter(location => !this.selectedLocations.has(location.id))
-      .map(location => `
-        <div class="list-group-item" data-action="click->travel-plan#selectLocation"
-             data-location='${JSON.stringify(location)}'>
-          ${location.name} - ${location.city}, ${location.prefecture}
-        </div>
-      `).join('')
+    });
   }
 
   selectLocation(event) {
-    const location = JSON.parse(event.currentTarget.dataset.location)
-    this.addLocationTag(location)
-    this.locationSearchTarget.value = ''
-    this.locationResultsTarget.innerHTML = ''
+    const location = JSON.parse(event.currentTarget.dataset.location);
+    this.addLocationTag(location);
+    this.locationSearchTarget.value = "";
+    this.locationResultsTarget.innerHTML = "";
+    this.updateEquipment();
+  }
+
+  selectAdventure(event) {
+    const adventure = JSON.parse(event.currentTarget.dataset.adventure);
+    this.addAdventureTag(adventure);
+    this.updateEquipment();
   }
 
   addLocationTag(location) {
-    if (this.selectedLocations.has(location.id)) return
+    if (this.selectedLocations.has(location.id)) return;
 
-    this.selectedLocations.add(location.id)
-    this.selectedLocationsTarget.insertAdjacentHTML('beforeend', `
+    this.selectedLocations.add(location.id);
+    this.selectedLocationsTarget.insertAdjacentHTML("beforeend", `
       <div class="badge bg-primary p-2 m-1 d-inline-flex align-items-center">
         ${location.name}
         <button type="button" class="btn-close ms-2"
@@ -75,19 +56,43 @@ export default class extends Controller {
                 data-location-id="${location.id}"></button>
         <input type="hidden" name="travel_plan[location_ids][]" value="${location.id}">
       </div>
-    `)
+    `);
+    this.updateEquipment();
   }
 
-  removeLocation(event) {
-    const locationId = event.currentTarget.dataset.locationId
-    this.selectedLocations.delete(locationId)
-    event.currentTarget.closest('.badge').remove()
-  }
-}
+  addAdventureTag(adventure) {
+    if (this.selectedAdventures.has(adventure.id)) return;
 
-  removeAdventure(event) {
-    const adventureId = event.currentTarget.dataset.adventureId
-    this.selectedAdventures.delete(adventureId)
-    event.currentTarget.closest('.badge').remove()
+    this.selectedAdventures.add(adventure.id);
+    this.selectedAdventuresTarget.insertAdjacentHTML("beforeend", `
+      <div class="badge bg-success p-2 m-1 d-inline-flex align-items-center">
+        ${adventure.name}
+        <button type="button" class="btn-close ms-2"
+                data-action="click->travel-plan#removeAdventure"
+                data-adventure-id="${adventure.id}"></button>
+        <input type="hidden" name="travel_plan[adventure_ids][]" value="${adventure.id}">
+      </div>
+    `);
+    this.updateEquipment();
+  }
+
+  async updateEquipment() {
+    const locationIds = Array.from(this.selectedLocations);
+    const adventureIds = Array.from(this.selectedAdventures);
+
+    try {
+      const response = await fetch(`/travel_plans/equipment_suggestions?location_ids=${locationIds.join(",")}&adventure_ids=${adventureIds.join(",")}`);
+      const equipment = await response.json();
+
+      this.selectedEquipment.clear();
+      this.selectedEquipmentTarget.innerHTML = equipment.map(item => `
+        <div class="badge bg-info p-2 m-1 d-inline-flex align-items-center">
+          ${item.name}
+          <input type="hidden" name="travel_plan[equipment_ids][]" value="${item.id}">
+        </div>
+      `).join("");
+    } catch (error) {
+      console.error("Error fetching equipment suggestions:", error);
+    }
   }
 }
