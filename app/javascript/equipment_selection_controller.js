@@ -1,11 +1,9 @@
-// app/javascript/controllers/equipment_selection_controller.js
-import { Controller } from "@hotwired/stimulus"
-
 export default class extends Controller {
-  static targets = ["checkbox"]
+  static targets = ["checkbox", "planButton"]
 
   connect() {
     this.loadSelectedEquipment()
+    this.updatePlanButtonUrl()
   }
 
   toggle(event) {
@@ -22,17 +20,16 @@ export default class extends Controller {
     }
 
     localStorage.setItem('selectedEquipment', JSON.stringify(selectedEquipment))
+    this.updatePlanButtonUrl()
   }
 
-  loadSelectedEquipment() {
-    const selectedEquipment = this.getSelectedEquipment()
-    this.checkboxTargets.forEach(checkbox => {
-      const equipmentId = checkbox.dataset.equipmentId
-      checkbox.checked = selectedEquipment.some(e => e.id === equipmentId)
-    })
-  }
-
-  getSelectedEquipment() {
-    return JSON.parse(localStorage.getItem('selectedEquipment') || '[]')
+  updatePlanButtonUrl() {
+    if (this.hasPlanButtonTarget) {
+      const button = this.planButtonTarget
+      const url = new URL(button.href)
+      const selectedIds = this.getSelectedEquipment().map(e => e.id)
+      url.searchParams.set('equipment_ids', selectedIds.join(','))
+      button.href = url.toString()
+    }
   }
 }
