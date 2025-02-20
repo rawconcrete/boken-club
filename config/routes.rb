@@ -32,4 +32,8 @@ Rails.application.routes.draw do
     get 'dashboard', to: 'admin#dashboard'
   end
 
+  # add for equipments
+  resources :equipment
+  resources :user_equipments, only: [:create, :destroy]
+
 end

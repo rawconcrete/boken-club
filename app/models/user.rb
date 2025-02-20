@@ -1,5 +1,8 @@
 class User < ApplicationRecord
   has_many :travel_plans
+  # add for equipments
+  has_many :user_equipments
+  has_many :equipment, through: :user_equipments
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
