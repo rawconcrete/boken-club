@@ -2,7 +2,6 @@
 <div class="container">
   <h1 class="mb-4 text-white"><%= @location.name %></h1>
   <div class="row">
-    <!-- location details section -->
     <div class="col-md-8">
       <div class="card">
         <div class="card-body">
@@ -12,10 +11,35 @@
           <p><strong>Details:</strong> <%= @location.details %></p>
           <%= content_tag(:p, "<strong>Tips:</strong> #{@location.tips}".html_safe) if @location.tips.present? %>
           <%= content_tag(:p, "<strong>Warnings:</strong> #{@location.warnings}".html_safe, class: "text-danger") if @location.warnings.present? %>
+          <!-- new equipment section -->
+          <% if @location.equipment.any? %>
+            <div class="mt-4">
+              <h5>Recommended Equipment</h5>
+              <div class="row">
+                <% @location.equipment.each do |item| %>
+                  <div class="col-md-6 mb-2">
+                    <div class="d-flex align-items-center border rounded p-2">
+                      <div>
+                        <strong><%= item.name %></strong>
+                        <div class="small text-muted"><%= item.category %></div>
+                      </div>
+                      <% if user_signed_in? %>
+                        <% if current_user.equipment.include?(item) %>
+                          <span class="badge bg-success ms-auto">✓ Owned</span>
+                        <% else %>
+                          <%= button_to "Add", user_equipments_path(equipment_id: item.id),
+                              class: "btn btn-sm btn-outline-primary ms-auto" %>
+                        <% end %>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
         </div>
       </div>
     </div>
-    <!-- available adventures section -->
     <div class="col-md-4">
       <div class="card">
         <div class="card-body">
@@ -24,7 +48,6 @@
             <div class="mb-3 p-3 border rounded">
               <h6 class="mb-2"><%= adventure.name %></h6>
               <p class="small mb-3"><%= adventure.details %></p>
-              <!-- button alignment fix: flexbox -->
               <div class="d-flex gap-2">
                 <%= link_to "View Adventure", adventure_path(adventure),
                     class: "btn btn-primary btn-sm flex-fill",
