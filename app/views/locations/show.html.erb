@@ -22,8 +22,7 @@
                       <div>
                         <strong><%= item.name %></strong>
                         <div class="small text-muted"><%= item.category %></div>
-                        <%= render 'shared/add_to_plan_button', item: item, item_type: 'equipment' %>
-                      </div>
+                        <%= render 'shared/add_to_plan_button', item: location, item_type: 'location' %>                      </div>
                       <% if user_signed_in? %>
                         <% if current_user.equipment.include?(item) %>
                           <span class="badge bg-success ms-auto">✓ Owned</span>
