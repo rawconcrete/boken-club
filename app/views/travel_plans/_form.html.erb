@@ -47,13 +47,39 @@
               <% else %>
                 <p>No equipment found for this travel plan.</p>
               <% end %>
-              <div data-travel-plan-target="selectedEquipment">
-                <% travel_plan.equipment.each do |item| %>
-                  <div class="badge bg-info p-2 m-1 d-inline-flex align-items-center">
-                    <%= item.name %>
-                    <input type="hidden" name="travel_plan[equipment_ids][]" value="<%= item.id %>">
-                  </div>
-                <% end %>
+              <div class="card mb-4">
+                <div class="card-header">
+                  <h5 class="mb-0">Equipment Needed</h5>
+                </div>
+                <div class="card-body" data-controller="equipment-selection">
+                  <%# Debugging: Show existing equipment IDs %>
+                  <% if travel_plan.equipment.any? %>
+                    <p>Loaded Equipment:</p>
+                    <ul>
+                      <% travel_plan.equipment.each do |item| %>
+                        <li><%= item.name %> (ID: <%= item.id %>)</li>
+                      <% end %>
+                    </ul>
+                  <% else %>
+                    <p>No equipment found for this travel plan.</p>
+                  <% end %>
+                  <% Equipment.all.each do |item| %>
+                    <div class="form-check">
+                      <input type="checkbox"
+                              class="form-check-input"
+                              id="equipment_<%= item.id %>"
+                              name="travel_plan[equipment_ids][]"
+                              value="<%= item.id %>"
+                              data-action="change->equipment-selection#toggle"
+                      data-equipment-id="<%= item.id %>"
+                      data-equipment-name="<%= item.name %>"
+                      <%= 'checked' if travel_plan.equipment.include?(item) %>>
+                      <label for="equipment_<%= item.id %>" class="form-check-label">
+                        <%= item.name %>
+                      </label>
+                    </div>
+                  <% end %>
+                </div>
               </div>
             </div>
           </div>
