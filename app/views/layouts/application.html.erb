@@ -1,3 +1,4 @@
+<%# app/views/layouts/application.html.erb %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -10,11 +11,18 @@
   </head>
   <% if request.path == root_path %>
     <body class="home">
-  <% else %>
-    <body>
-  <% end %>
-    <%= render "shared/navbar" %>
-    <%= render "shared/flashes" %>
-    <%= yield %>
-  </body>
-</html>
+    <% else %>
+      <body>
+      <% end %>
+      <%= render "shared/navbar" %>
+      <%= render "shared/flashes" %>
+      <%= yield %>
+      <% if flash[:javascript] %>
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            <%= flash[:javascript].html_safe %>
+          });
+        </script>
+      <% end %>
+    </body>
+  </html>
