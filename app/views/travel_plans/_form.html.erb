@@ -1,4 +1,4 @@
-<%# Debugging: Show what is being pre-loaded into the form %>
+<%# debugging: show what is being pre-loaded into the form %>
 <p>Loaded Equipment from Travel Plan:</p>
 <ul>
   <% travel_plan.equipment.each do |item| %>
@@ -25,7 +25,7 @@
   <div class="row justify-content-center">
     <div class="col-md-8">
       <%= form_with(model: travel_plan, local: true) do |f| %>
-        <%# Travel Plan Details %>
+        <%# travel plan details %>
         <div class="card mb-4">
           <div class="card-header">
             <h5 class="mb-0">Plan Details</h5>
@@ -45,7 +45,7 @@
             </div>
           </div>
         </div>
-        <%# Equipment Selection %>
+        <%# equipment selection %>
         <div class="card mb-4">
           <div class="card-header">
             <h5 class="mb-0">Equipment Needed</h5>
@@ -53,17 +53,23 @@
           <div class="card-body" data-controller="equipment-selection">
             <% Equipment.all.each do |equipment| %>
               <div class="form-check">
-                <%= check_box_tag "travel_plan[equipment_ids][]", equipment.id,
-                    false, # Do NOT pre-check here, JavaScript will handle it
+                <%= check_box_tag "travel_plan[equipment_ids][]",
+                    equipment.id,
+                    travel_plan.equipment_ids.include?(equipment.id),
                     id: "equipment_#{equipment.id}",
                     class: "form-check-input",
-                    data: { action: "change->equipment-selection#toggle", equipmentId: equipment.id, equipmentName: equipment.name } %>
+                    data: {
+                      equipment_selection_target: "checkbox",
+                      action: "change->equipment-selection#toggle",
+                      equipment_id: equipment.id,
+                      equipment_name: equipment.name
+                    } %>
                 <%= label_tag "equipment_#{equipment.id}", equipment.name, class: "form-check-label" %>
               </div>
             <% end %>
           </div>
         </div>
-        <%# Locations Section %>
+        <%# locations section %>
         <div class="card mb-4">
           <div class="card-header">
             <h5 class="mb-0">Locations</h5>
@@ -78,7 +84,7 @@
             <div data-travel-plan-target="locationResults" class="list-group mt-2"></div>
           </div>
         </div>
-        <%# Available Adventures %>
+        <%# available adventures %>
         <div class="card mb-4">
           <div class="card-header">
             <h5 class="mb-0">Available Adventures</h5>
@@ -88,7 +94,7 @@
             <div data-travel-plan-target="adventureResults" class="list-group mt-2"></div>
           </div>
         </div>
-        <%# Submit & Cancel Buttons %>
+        <%# submit & cancel Buttons %>
         <div class="d-flex justify-content-end gap-2">
           <%= link_to 'Cancel', :back, class: "btn btn-secondary" %>
           <%= f.submit 'Save', class: "btn btn-primary" %>
