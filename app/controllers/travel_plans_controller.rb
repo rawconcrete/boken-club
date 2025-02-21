@@ -8,6 +8,7 @@ class TravelPlansController < ApplicationController
 
   def new
     @travel_plan = current_user.travel_plans.new
+    setup_equipment_list
     title_parts = []
 
     if params[:location_id].present?
@@ -29,8 +30,10 @@ class TravelPlansController < ApplicationController
   def create
     @travel_plan = current_user.travel_plans.build(travel_plan_params)
     if @travel_plan.save
+      create_equipment_selections
       redirect_to @travel_plan, notice: 'Travel plan was successfully created.'
     else
+      setup_equipment_list
       render :new, status: :unprocessable_entity
     end
   end
@@ -56,21 +59,59 @@ class TravelPlansController < ApplicationController
   def edit
     @travel_plan = current_user.travel_plans.find_by(id: params[:id])
     return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
+    setup_equipment_list
   end
-
 
   def update
     @travel_plan = current_user.travel_plans.find_by(id: params[:id])
     return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
 
     if @travel_plan.update(travel_plan_params)
+      update_equipment_selections
       redirect_to @travel_plan, notice: 'Travel plan updated successfully.'
     else
+      setup_equipment_list
       render :edit, status: :unprocessable_entity
     end
   end
 
   private
+
+  def setup_equipment_list
+    location_ids = params[:location_id].present? ? [params[:location_id]] : @travel_plan.location_ids
+    adventure_ids = params[:adventure_id].present? ? [params[:adventure_id]] : @travel_plan.adventure_ids
+
+    @equipment_list = Equipment.distinct
+      .left_joins(:locations, :adventures)
+      .where('locations.id IN (?) OR adventures.id IN (?)', location_ids, adventure_ids)
+  end
+
+  def create_equipment_selections
+    return unless params[:equipment_ids]
+
+    params[:equipment_ids].each do |equipment_id|
+      @travel_plan.travel_plan_equipments.create(
+        equipment_id: equipment_id,
+        checked: true
+      )
+    end
+  end
+
+  def update_equipment_selections
+    return unless params[:equipment_ids]
+
+    # remove existing selections that aren't in  new list
+    @travel_plan.travel_plan_equipments.where.not(equipment_id: params[:equipment_ids]).destroy_all
+
+    # add new selections
+    params[:equipment_ids].each do |equipment_id|
+      @travel_plan.travel_plan_equipments.find_or_create_by!(
+        equipment_id: equipment_id
+      ) do |tpe|
+        tpe.checked = true
+      end
+    end
+  end
 
   def travel_plan_params
     params.require(:travel_plan).permit(
@@ -78,7 +119,8 @@ class TravelPlansController < ApplicationController
       :content,
       :status,
       location_ids: [],
-      adventure_ids: []
+      adventure_ids: [],
+      equipment_ids: []
     )
   end
 end
