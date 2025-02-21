@@ -87,9 +87,16 @@ class TravelPlansController < ApplicationController
     location_ids = params[:location_id].present? ? [params[:location_id]] : @travel_plan.location_ids
     adventure_ids = params[:adventure_id].present? ? [params[:adventure_id]] : @travel_plan.adventure_ids
 
+    # handle empty arrays
+    location_ids = [0] if location_ids.empty?
+    adventure_ids = [0] if adventure_ids.empty?
+
     @equipment_list = Equipment.distinct
       .left_joins(:locations, :adventures)
       .where('locations.id IN (?) OR adventures.id IN (?)', location_ids, adventure_ids)
+
+    # if no specific locations/adventures, show all equipment
+    @equipment_list = Equipment.all if @equipment_list.empty?
   end
 
   def create_equipment_selections
