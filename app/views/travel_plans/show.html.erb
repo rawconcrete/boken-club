@@ -38,22 +38,4 @@
       <p><strong>Status:</strong> <span class="<%= status_color_class(@travel_plan.status) %>"><%= @travel_plan.status&.capitalize || 'Not Set' %></span></p>
       <p><strong>Notes:</strong> <%= @travel_plan.content %></p>
     </div>
-    <%# equipment %>
-    <div class="mt-6 card">
-      <h2 class="text-xl font-semibold mb-3">Equipment List</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <% @travel_plan.travel_plan_equipments.each do |tpe| %>
-          <div class="flex items-center gap-2">
-            <input type="checkbox"
-               <%= 'checked' if tpe.checked %>
-               disabled
-               class="form-checkbox h-5 w-5">
-            <div>
-              <p class="font-medium"><%= tpe.equipment.name %></p>
-              <p class="text-sm text-gray-600"><%= tpe.equipment.description %></p>
-            </div>
-          </div>
-        <% end %>
-      </div>
-    </div>
   </div>
