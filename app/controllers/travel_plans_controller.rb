@@ -25,6 +25,12 @@ class TravelPlansController < ApplicationController
 
     title_parts << Time.current.strftime("%Y-%m-%d")
     @travel_plan.title = title_parts.compact.join(" - ")
+
+    # debug lines
+    puts "Location IDs: #{@travel_plan.location_ids}"
+    puts "Adventure IDs: #{@travel_plan.adventure_ids}"
+    puts "Equipment List Count: #{@equipment_list&.count}"
+    puts "Equipment List: #{@equipment_list.inspect}"
   end
 
   def create
