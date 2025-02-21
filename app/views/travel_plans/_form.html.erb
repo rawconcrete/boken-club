@@ -1,23 +1,4 @@
-<%# debugging: show what is being pre-loaded into the form %>
-<p>Loaded Equipment from Travel Plan:</p>
-<ul>
-  <% travel_plan.equipment.each do |item| %>
-    <li><%= item.name %> (ID: <%= item.id %>)</li>
-  <% end %>
-</ul>
-<p>LocalStorage Selected Equipment:</p>
-<ul id="debug-storage"></ul>
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    let storedEquipment = JSON.parse(localStorage.getItem("selectedEquipment") || "[]");
-    let debugList = document.getElementById("debug-storage");
-    storedEquipment.forEach(item => {
-      let li = document.createElement("li");
-      li.innerText = `${item.name} (ID: ${item.id})`;
-      debugList.appendChild(li);
-    });
-  });
-</script>
+<%# app/views/travel_plans/_form.html.erb %>
 <div class="container" data-controller="travel-plan"
      data-travel-plan-locations-value="<%= travel_plan.locations.to_json %>"
      data-travel-plan-adventures-value="<%= travel_plan.adventures.to_json %>"
@@ -94,7 +75,7 @@
             <div data-travel-plan-target="adventureResults" class="list-group mt-2"></div>
           </div>
         </div>
-        <%# submit & cancel Buttons %>
+        <%# submit & cancel buttons %>
         <div class="d-flex justify-content-end gap-2">
           <%= link_to 'Cancel', :back, class: "btn btn-secondary" %>
           <%= f.submit 'Save', class: "btn btn-primary" %>
