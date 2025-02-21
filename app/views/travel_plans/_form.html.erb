@@ -1,4 +1,3 @@
-<%# app/views/travel_plans/_form.html.erb %>
 <%# Debugging: Show what is being pre-loaded into the form %>
 <p>Loaded Equipment from Travel Plan:</p>
 <ul>
@@ -19,14 +18,14 @@
     });
   });
 </script>
-<div class="container"
-     data-controller="travel-plan"
+<div class="container" data-controller="travel-plan"
      data-travel-plan-locations-value="<%= travel_plan.locations.to_json %>"
      data-travel-plan-adventures-value="<%= travel_plan.adventures.to_json %>"
      data-travel-plan-equipment-value="<%= travel_plan.equipment.to_json %>">
   <div class="row justify-content-center">
     <div class="col-md-8">
       <%= form_with(model: travel_plan, local: true) do |f| %>
+        <%# Travel Plan Details %>
         <div class="card mb-4">
           <div class="card-header">
             <h5 class="mb-0">Plan Details</h5>
@@ -46,64 +45,55 @@
             </div>
           </div>
         </div>
-        <%# equpiment portion %>
+        <%# Equipment Selection %>
         <div class="card mb-4">
           <div class="card-header">
             <h5 class="mb-0">Equipment Needed</h5>
           </div>
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">Equipment Needed</h5>
-            </div>
-            <div class="card-body">
-              <div class="card mb-4">
-                <div class="card-header">
-                  <h5 class="mb-0">Equipment Needed</h5>
-                </div>
-                <div class="card-body" data-controller="equipment-selection">
-                  <% Equipment.all.each do |equipment| %>
-                    <div class="form-check">
-                      <%= check_box_tag "travel_plan[equipment_ids][]", equipment.id,
-                          false, # Start unchecked
-                          id: "equipment_#{equipment.id}",
-                          class: "form-check-input",
-                          data: { action: "change->travel-plan#toggle", equipmentId: equipment.id, equipmentName: equipment.name } %>
-                      <%= label_tag "equipment_#{equipment.id}", equipment.name, class: "form-check-label" %>
-                    </div>
-                  <% end %>
-                </div>
+          <div class="card-body" data-controller="equipment-selection">
+            <% Equipment.all.each do |equipment| %>
+              <div class="form-check">
+                <%= check_box_tag "travel_plan[equipment_ids][]", equipment.id,
+                    false, # Do NOT pre-check here, JavaScript will handle it
+                    id: "equipment_#{equipment.id}",
+                    class: "form-check-input",
+                    data: { action: "change->equipment-selection#toggle", equipmentId: equipment.id, equipmentName: equipment.name } %>
+                <%= label_tag "equipment_#{equipment.id}", equipment.name, class: "form-check-label" %>
               </div>
-            </div>
+            <% end %>
           </div>
-          <%# end up equipment portion  %>
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">Locations</h5>
-            </div>
-            <div class="card-body">
-              <div data-travel-plan-target="selectedLocations" class="mb-3"></div>
-              <input type="text"
+        </div>
+        <%# Locations Section %>
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Locations</h5>
+          </div>
+          <div class="card-body">
+            <div data-travel-plan-target="selectedLocations" class="mb-3"></div>
+            <input type="text"
                    class="form-control"
                    placeholder="Search locations..."
                    data-travel-plan-target="locationSearch"
                    data-action="input->travel-plan#searchLocations">
-              <div data-travel-plan-target="locationResults" class="list-group mt-2"></div>
-            </div>
+            <div data-travel-plan-target="locationResults" class="list-group mt-2"></div>
           </div>
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">Available Adventures</h5>
-            </div>
-            <div class="card-body">
-              <div data-travel-plan-target="selectedAdventures" class="mb-3"></div>
-              <div data-travel-plan-target="adventureResults" class="list-group mt-2"></div>
-            </div>
+        </div>
+        <%# Available Adventures %>
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Available Adventures</h5>
           </div>
-          <div class="d-flex justify-content-end gap-2">
-            <%= link_to 'Cancel', :back, class: "btn btn-secondary" %>
-            <%= f.submit 'Save', class: "btn btn-primary" %>
+          <div class="card-body">
+            <div data-travel-plan-target="selectedAdventures" class="mb-3"></div>
+            <div data-travel-plan-target="adventureResults" class="list-group mt-2"></div>
           </div>
-        <% end %>
-      </div>
+        </div>
+        <%# Submit & Cancel Buttons %>
+        <div class="d-flex justify-content-end gap-2">
+          <%= link_to 'Cancel', :back, class: "btn btn-secondary" %>
+          <%= f.submit 'Save', class: "btn btn-primary" %>
+        </div>
+      <% end %>
     </div>
   </div>
+</div>
