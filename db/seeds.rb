@@ -313,6 +313,11 @@ TravelPlan.create!([
   plan.adventures << (index.zero? ? Adventure.find_by(name: 'Rock Climbing') : Adventure.find_by(name: 'Hiking'))
 end
 
+# first clear existing equipment associations
+TravelPlanEquipment.destroy_all
+LocationEquipment.destroy_all
+AdventureEquipment.destroy_all
+
 # create basic equipment
 equipment_data = [
   {
@@ -376,3 +381,71 @@ equipment_data = [
     description: "Navigation tools for backcountry travel"
   }
 ]
+
+equipment_data.each do |data|
+  Equipment.find_or_create_by!(name: data[:name]) do |equipment|
+    equipment.description = data[:description]
+  end
+end
+
+puts "Created basic equipment"
+
+# associate equipment with adventures
+Adventure.all.each do |adventure|
+  case adventure.name.downcase
+  when /hiking|trekking|walking/
+    adventure.equipments << Equipment.where(name: [
+      "Hiking Boots",
+      "Backpack (30-40L)",
+      "First Aid Kit",
+      "Water Filter",
+      "Trekking Poles",
+      "Rain Jacket",
+      "Map and Compass"
+    ])
+  when /climbing|bouldering/
+    adventure.equipments << Equipment.where(name: [
+      "Climbing Harness",
+      "Climbing Shoes",
+      "Helmet",
+      "Rope (60m)",
+      "First Aid Kit"
+    ])
+  when /camping|overnight/
+    adventure.equipments << Equipment.where(name: [
+      "Tent",
+      "Sleeping Bag",
+      "Sleeping Pad",
+      "Headlamp",
+      "First Aid Kit",
+      "Water Filter"
+    ])
+  end
+end
+
+puts "Associated equipment with adventures"
+
+# associate equipment with locations
+Location.all.each do |location|
+  # base equipment for all mountain locations
+  if location.name.downcase.match?(/mountain|mt\./)
+    location.equipments << Equipment.where(name: [
+      "Hiking Boots",
+      "First Aid Kit",
+      "Water Filter",
+      "Rain Jacket",
+      "Map and Compass"
+    ])
+  end
+
+  # add specific equipment based on location
+  if location.name.downcase.match?(/fuji/)
+    location.equipments << Equipment.where(name: [
+      "Trekking Poles",
+      "Headlamp",
+      "Sleeping Bag"
+    ])
+  end
+end
+
+puts "Associated equipment with locations"
