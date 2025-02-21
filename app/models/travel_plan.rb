@@ -1,3 +1,4 @@
+# app/models/travel_plan.rb
 class TravelPlan < ApplicationRecord
   belongs_to :user
   has_many :travel_plans_locations, dependent: :destroy
@@ -9,5 +10,4 @@ class TravelPlan < ApplicationRecord
 
   validates :status, inclusion: { in: ['pending', 'completed', 'cancelled'], message: "%{value} is not a valid status" }, allow_nil: true
   validates :title, presence: true
-
 end
