@@ -2,42 +2,58 @@
 <div class="container mx-auto px-4">
   <div class="flex justify-between items-center mb-6 text-white">
     <h1 class="text-2xl font-bold"><%= @travel_plan.title %></h1>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="card">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="card">
         <div class="space-x-2" style="display: flex; gap: 5px; margin-top: 20px; position: absolute; top: 0px; right: 10px;">
-      <%= link_to "Edit", edit_travel_plan_path(@travel_plan),
+          <%= link_to "Edit", edit_travel_plan_path(@travel_plan),
           style: "background: linear-gradient(135deg,rgb(72, 145, 67), #3cb371); color: white; padding: 5px 10px; border-radius: 6px; font-size: 14px; text-decoration: none;
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); transition: all 0.3s ease-in-out; cursor: pointer;" %>
-      <%= button_to "Delete", travel_plan_path(@travel_plan), method: :delete,
+          <%= button_to "Delete", travel_plan_path(@travel_plan), method: :delete,
           style: "background: linear-gradient(135deg, #f1727f, #e53e5e); color: white; padding: 5px 10px; border-radius: 6px; font-size: 14px;
           border: none; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); transition: all 0.3s ease-in-out; cursor: pointer;",
       data: { turbo_confirm: "Are you sure?" } %>
-    </div>
-      <h2 class="text-xl font-semibold mb-3 ">Locations</h2>
-      <% @travel_plan.locations.each do |location| %>
-        <div class="mb-4">
-          <p><strong>Name:</strong> <%= location.name %></p>
-          <p><strong>City:</strong> <%= location.city %></p>
-          <p><strong>Prefecture:</strong> <%= location.prefecture %></p>
-          <p><strong>Details:</strong> <%= location.details %></p>
         </div>
-      <% end %>
+        <h2 class="text-xl font-semibold mb-3 ">Locations</h2>
+        <% @travel_plan.locations.each do |location| %>
+          <div class="mb-4">
+            <p><strong>Name:</strong> <%= location.name %></p>
+            <p><strong>City:</strong> <%= location.city %></p>
+            <p><strong>Prefecture:</strong> <%= location.prefecture %></p>
+            <p><strong>Details:</strong> <%= location.details %></p>
+          </div>
+        <% end %>
+      </div>
+      <div class="card">
+        <h2 class="text-xl font-semibold mb-3">Adventures</h2>
+        <% @travel_plan.adventures.each do |adventure| %>
+          <div class="mb-4">
+            <p><strong>Type:</strong> <%= adventure.name %></p>
+            <p><strong>Details:</strong> <%= adventure.details %></p>
+          </div>
+        <% end %>
+      </div>
     </div>
-
-    <div class="card">
-      <h2 class="text-xl font-semibold mb-3">Adventures</h2>
-      <% @travel_plan.adventures.each do |adventure| %>
-        <div class="mb-4">
-          <p><strong>Type:</strong> <%= adventure.name %></p>
-          <p><strong>Details:</strong> <%= adventure.details %></p>
-        </div>
-      <% end %>
+    <div class="mt-6 card">
+      <h2 class="text-xl font-semibold mb-3">Trip Details</h2>
+      <p><strong>Status:</strong> <span class="<%= status_color_class(@travel_plan.status) %>"><%= @travel_plan.status&.capitalize || 'Not Set' %></span></p>
+      <p><strong>Notes:</strong> <%= @travel_plan.content %></p>
+    </div>
+    <%# equipment %>
+    <div class="mt-6 card">
+      <h2 class="text-xl font-semibold mb-3">Equipment List</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <% @travel_plan.travel_plan_equipments.each do |tpe| %>
+          <div class="flex items-center gap-2">
+            <input type="checkbox"
+               <%= 'checked' if tpe.checked %>
+               disabled
+               class="form-checkbox h-5 w-5">
+            <div>
+              <p class="font-medium"><%= tpe.equipment.name %></p>
+              <p class="text-sm text-gray-600"><%= tpe.equipment.description %></p>
+            </div>
+          </div>
+        <% end %>
+      </div>
     </div>
   </div>
-
-  <div class="mt-6 card">
-    <h2 class="text-xl font-semibold mb-3">Trip Details</h2>
-    <p><strong>Status:</strong> <span class="<%= status_color_class(@travel_plan.status) %>"><%= @travel_plan.status&.capitalize || 'Not Set' %></span></p>
-    <p><strong>Notes:</strong> <%= @travel_plan.content %></p>
-  </div>
-</div>
