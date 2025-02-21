@@ -312,3 +312,67 @@ TravelPlan.create!([
   plan.locations << (index.zero? ? Location.find_by(name: 'Ogawayama') : Location.find_by(name: 'Mount Takao'))
   plan.adventures << (index.zero? ? Adventure.find_by(name: 'Rock Climbing') : Adventure.find_by(name: 'Hiking'))
 end
+
+# create basic equipment
+equipment_data = [
+  {
+    name: "Hiking Boots",
+    description: "Waterproof boots with good ankle support for rough terrain"
+  },
+  {
+    name: "Backpack (30-40L)",
+    description: "Day pack with hydration compatibility"
+  },
+  {
+    name: "First Aid Kit",
+    description: "Basic medical supplies for emergencies"
+  },
+  {
+    name: "Headlamp",
+    description: "Hands-free lighting for dawn/dusk activities"
+  },
+  {
+    name: "Water Filter",
+    description: "Portable water purification system"
+  },
+  {
+    name: "Climbing Harness",
+    description: "Safety-rated climbing harness with gear loops"
+  },
+  {
+    name: "Climbing Shoes",
+    description: "Tight-fitting shoes with sticky rubber soles"
+  },
+  {
+    name: "Helmet",
+    description: "Safety helmet for climbing and cycling"
+  },
+  {
+    name: "Rope (60m)",
+    description: "Dynamic climbing rope"
+  },
+  {
+    name: "Tent",
+    description: "3-season backpacking tent"
+  },
+  {
+    name: "Sleeping Bag",
+    description: "Temperature appropriate sleeping bag"
+  },
+  {
+    name: "Sleeping Pad",
+    description: "Insulated sleeping pad for comfort and warmth"
+  },
+  {
+    name: "Trekking Poles",
+    description: "Adjustable poles for stability on varied terrain"
+  },
+  {
+    name: "Rain Jacket",
+    description: "Waterproof, breathable shell"
+  },
+  {
+    name: "Map and Compass",
+    description: "Navigation tools for backcountry travel"
+  }
+]
