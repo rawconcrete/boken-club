@@ -23,12 +23,12 @@
                   <div class="d-flex align-items-center border rounded p-2">
                     <div class="form-check">
                       <input type="checkbox"
-                   class="form-check-input"
-                   id="equipment-<%= item.id %>"
-                   data-action="equipment-selection#toggle"
-                   data-equipment-selection-target="checkbox"
-                   data-equipment-id="<%= item.id %>"
-                   data-equipment-name="<%= item.name %>">
+                             class="form-check-input"
+                             id="equipment-<%= item.id %>"
+                             data-action="equipment-selection#toggle"
+                             data-equipment-selection-target="checkbox"
+                             data-equipment-id="<%= item.id %>"
+                             data-equipment-name="<%= item.name %>">
                       <label class="form-check-label" for="equipment-<%= item.id %>">
                         <strong><%= item.name %></strong>
                         <div class="small text-muted"><%= item.category %></div>
@@ -39,6 +39,12 @@
               <% end %>
             </div>
           <% end %>
+          <%= link_to "Plan a Trip Here", new_travel_plan_path(location_id: @location.id),
+              class: "btn btn-primary btn-sm flex-fill mt-3",
+              data: { turbo_frame: "_top" } %>
+          <%= link_to "Back", :back,
+              class: "btn btn-primary btn-sm flex-fill mt-2",
+              data: { turbo_frame: "_top" } %>
         </div>
       </div>
     </div>
@@ -52,9 +58,6 @@
               <p class="small mb-3"><%= adventure.details %></p>
               <div class="d-flex gap-2">
                 <%= link_to "View Adventure", adventure_path(adventure),
-                    class: "btn btn-primary btn-sm flex-fill",
-                    data: { turbo_frame: "_top" } %>
-                <%= link_to "Plan a Trip Here", new_travel_plan_path(location_id: @location.id),
                     class: "btn btn-primary btn-sm flex-fill",
                     data: { turbo_frame: "_top" } %>
                 <%= render 'shared/add_to_plan_button', item: adventure, item_type: 'adventure' %>
