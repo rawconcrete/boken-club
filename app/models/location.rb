@@ -4,4 +4,6 @@ class Location < ApplicationRecord
   has_many :adventures, through: :locations_adventures
   has_many :travel_plans_locations
   has_many :travel_plans, through: :travel_plans_locations
+  has_many :location_equipments
+  has_many :equipments, through: :location_equipments
 end

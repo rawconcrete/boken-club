@@ -312,3 +312,140 @@ TravelPlan.create!([
   plan.locations << (index.zero? ? Location.find_by(name: 'Ogawayama') : Location.find_by(name: 'Mount Takao'))
   plan.adventures << (index.zero? ? Adventure.find_by(name: 'Rock Climbing') : Adventure.find_by(name: 'Hiking'))
 end
+
+# first clear existing equipment associations
+TravelPlanEquipment.destroy_all
+LocationEquipment.destroy_all
+AdventureEquipment.destroy_all
+
+# create basic equipment
+equipment_data = [
+  {
+    name: "Hiking Boots",
+    description: "Waterproof boots with good ankle support for rough terrain"
+  },
+  {
+    name: "Backpack (30-40L)",
+    description: "Day pack with hydration compatibility"
+  },
+  {
+    name: "First Aid Kit",
+    description: "Basic medical supplies for emergencies"
+  },
+  {
+    name: "Headlamp",
+    description: "Hands-free lighting for dawn/dusk activities"
+  },
+  {
+    name: "Water Filter",
+    description: "Portable water purification system"
+  },
+  {
+    name: "Climbing Harness",
+    description: "Safety-rated climbing harness with gear loops"
+  },
+  {
+    name: "Climbing Shoes",
+    description: "Tight-fitting shoes with sticky rubber soles"
+  },
+  {
+    name: "Helmet",
+    description: "Safety helmet for climbing and cycling"
+  },
+  {
+    name: "Rope (60m)",
+    description: "Dynamic climbing rope"
+  },
+  {
+    name: "Tent",
+    description: "3-season backpacking tent"
+  },
+  {
+    name: "Sleeping Bag",
+    description: "Temperature appropriate sleeping bag"
+  },
+  {
+    name: "Sleeping Pad",
+    description: "Insulated sleeping pad for comfort and warmth"
+  },
+  {
+    name: "Trekking Poles",
+    description: "Adjustable poles for stability on varied terrain"
+  },
+  {
+    name: "Rain Jacket",
+    description: "Waterproof, breathable shell"
+  },
+  {
+    name: "Map and Compass",
+    description: "Navigation tools for backcountry travel"
+  }
+]
+
+equipment_data.each do |data|
+  Equipment.find_or_create_by!(name: data[:name]) do |equipment|
+    equipment.description = data[:description]
+  end
+end
+
+puts "Created basic equipment"
+
+# associate equipment with adventures
+Adventure.all.each do |adventure|
+  case adventure.name.downcase
+  when /hiking|trekking|walking/
+    adventure.equipments << Equipment.where(name: [
+      "Hiking Boots",
+      "Backpack (30-40L)",
+      "First Aid Kit",
+      "Water Filter",
+      "Trekking Poles",
+      "Rain Jacket",
+      "Map and Compass"
+    ])
+  when /climbing|bouldering/
+    adventure.equipments << Equipment.where(name: [
+      "Climbing Harness",
+      "Climbing Shoes",
+      "Helmet",
+      "Rope (60m)",
+      "First Aid Kit"
+    ])
+  when /camping|overnight/
+    adventure.equipments << Equipment.where(name: [
+      "Tent",
+      "Sleeping Bag",
+      "Sleeping Pad",
+      "Headlamp",
+      "First Aid Kit",
+      "Water Filter"
+    ])
+  end
+end
+
+puts "Associated equipment with adventures"
+
+# associate equipment with locations
+Location.all.each do |location|
+  # base equipment for all mountain locations
+  if location.name.downcase.match?(/mountain|mt\./)
+    location.equipments << Equipment.where(name: [
+      "Hiking Boots",
+      "First Aid Kit",
+      "Water Filter",
+      "Rain Jacket",
+      "Map and Compass"
+    ])
+  end
+
+  # add specific equipment based on location
+  if location.name.downcase.match?(/fuji/)
+    location.equipments << Equipment.where(name: [
+      "Trekking Poles",
+      "Headlamp",
+      "Sleeping Bag"
+    ])
+  end
+end
+
+puts "Associated equipment with locations"

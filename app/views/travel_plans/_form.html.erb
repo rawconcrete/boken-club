@@ -1,4 +1,10 @@
-<%# app/views/travel_plans/_form.html.erb %>
+# app/views/travel_plans/_form.html.erb
+<%# <% if @equipment_list.nil? %>
+<%# <p class="text-danger">Equipment list is nil!</p>
+<% else %>
+<%# <p class="text-muted">Found <%= @equipment_list.count %> equipment items</p>
+<%# <% end %>
+<%# debugging end %>
 <div class="container"
      data-controller="travel-plan"
      data-travel-plan-locations-value="<%= travel_plan.locations.to_json %>"
@@ -46,11 +52,35 @@
           <div class="card-body">
             <div data-travel-plan-target="selectedAdventures" class="mb-3"></div>
             <input type="text"
-           class="form-control"
-           placeholder="Search adventures..."
-           data-travel-plan-target="adventureSearch"
-           data-action="input->travel-plan#searchAdventures">
+                   class="form-control"
+                   placeholder="Search adventures..."
+                   data-travel-plan-target="adventureSearch"
+                   data-action="input->travel-plan#searchAdventures">
             <div data-travel-plan-target="adventureResults" class="list-group mt-2"></div>
+          </div>
+        </div>
+        <%# New Equipment Section %>
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Recommended Equipment</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <% @equipment_list&.each do |equipment| %>
+                <div class="col-md-6 mb-2">
+                  <div class="form-check">
+                    <%= check_box_tag 'equipment_ids[]',
+                        equipment.id,
+                        @travel_plan.equipments.include?(equipment),
+                        class: "form-check-input" %>
+                    <%= label_tag "equipment_#{equipment.id}",
+                        equipment.name,
+                        class: "form-check-label" %>
+                    <small class="d-block text-muted"><%= equipment.description %></small>
+                  </div>
+                </div>
+              <% end %>
+            </div>
           </div>
         </div>
         <div class="d-flex justify-content-end gap-2">
