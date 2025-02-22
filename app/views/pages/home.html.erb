@@ -11,13 +11,36 @@
 <div style="display: flex; justify-content: center; width: 100%;">
   <div class="search-container" style="width: 100%; max-width: 800px; position: relative;" data-controller="search">
     <input type="text"
-          id="search-bar"
-          class="search-bar"
-          style="width: 100%; max-width: 800px; padding: 16px; font-size: 20px; border-radius: 50px; border: 1px solid #ccc; text-align: center; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);"
-          placeholder="I want to..."
-          data-search-target="input">
+           id="search-bar"
+           class="search-bar"
+           style="width: 100%; max-width: 800px; padding: 16px; font-size: 20px; border-radius: 50px; border: 1px solid #ccc; text-align: center; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);"
+           placeholder="I want to..."
+           data-search-target="input">
     <div class="suggestions" data-search-target="suggestions"
-          style="position: absolute; width: 100%; background: white; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); display: none;">
+         style="position: absolute; width: 100%; background: white; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); display: none;">
+      <style>
+        .suggestion {
+          padding: 12px 16px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          color: #333;
+        }
+
+        .suggestion:hover {
+          background-color: #2d3748;
+          color: white;
+        }
+
+        .suggestion:first-child {
+          border-top-left-radius: 8px;
+          border-top-right-radius: 8px;
+        }
+
+        .suggestion:last-child {
+          border-bottom-left-radius: 8px;
+          border-bottom-right-radius: 8px;
+        }
+      </style>
     </div>
   </div>
 </div>
