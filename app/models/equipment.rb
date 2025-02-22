@@ -57,4 +57,22 @@ class Equipment < ApplicationRecord
       # .where(conditions: conditions)
       # .order(season_priority: :desc)
   # }
+
+  private
+
+  def self.get_season(date)
+    return nil unless date
+
+    month = date.month
+    case month
+    when 12, 1, 2
+      'winter'
+    when 3, 4, 5
+      'spring'
+    when 6, 7, 8
+      'summer'
+    when 9, 10, 11
+      'autumn'
+    end
+  end
 end
