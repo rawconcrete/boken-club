@@ -45,24 +45,27 @@ class Equipment < ApplicationRecord
 
   # combined equipment recommendations
   def self.recommended_for(location_ids: nil, adventure_ids: nil, date: nil)
-    equipment_sets = []
+    base_scope = all  # Start with all equipment
 
-    # get location-specific equipment
-    equipment_sets << for_location(location_ids) if location_ids.present?
-
-    # get adventure-specific equipment
-    equipment_sets << for_adventure(adventure_ids) if adventure_ids.present?
-
-    # get seasonal equipment
-    equipment_sets << for_season(date) if date.present?
-
-    # combine all equipment sets without duplicates
-    if equipment_sets.any?
-      ids = equipment_sets.map { |set| set.pluck(:id) }.flatten.uniq
-      where(id: ids)
-    else
-      none
+    # filter by location if provided
+    if location_ids.present?
+      location_equipment = for_location(location_ids)
+      base_scope = base_scope.merge(location_equipment) if location_equipment.exists?
     end
+
+    # filter by adventure if provided
+    if adventure_ids.present?
+      adventure_equipment = for_adventure(adventure_ids)
+      base_scope = base_scope.merge(adventure_equipment) if adventure_equipment.exists?
+    end
+
+    # filter by season if date provided
+    if date.present?
+      seasonal_equipment = for_season(date)
+      base_scope = base_scope.merge(seasonal_equipment) if seasonal_equipment.exists?
+    end
+
+    base_scope.distinct
   end
 
   # if we want equipment caching

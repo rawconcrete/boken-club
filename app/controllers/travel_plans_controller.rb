@@ -86,13 +86,17 @@ class TravelPlansController < ApplicationController
     adventure_ids = params[:adventure_ids].to_s.split(',').reject(&:blank?)
     start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : nil
 
-    equipment = Equipment.recommended_for(
+    @equipment = Equipment.recommended_for(
       location_ids: location_ids,
       adventure_ids: adventure_ids,
       date: start_date
     )
 
-    render json: equipment
+    render json: @equipment.select(:id, :name, :description, :category)
+    # debugger
+    result = @equipment.select(:id, :name, :description, :category)
+    Rails.logger.debug "Recommended equipment: #{result.to_json}"
+    render json: result
   end
 
   private

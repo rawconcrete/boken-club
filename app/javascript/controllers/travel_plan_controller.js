@@ -126,44 +126,51 @@ export default class extends Controller {
   }
 
   async updateEquipment() {
-    const locationIds = Array.from(this.selectedLocations).join(',')
-    const adventureIds = Array.from(this.selectedAdventures).join(',')
-    const startDate = this.hasStartDateTarget ? this.startDateTarget.value : null
+    const locationIds = Array.from(this.selectedLocations).join(',');
+    const adventureIds = Array.from(this.selectedAdventures).join(',');
+    const startDate = this.hasStartDateTarget ? this.startDateTarget.value : null;
 
     try {
-      const params = new URLSearchParams({
-        location_ids: locationIds,
-        adventure_ids: adventureIds
-      })
-      if (startDate) params.append('start_date', startDate)
+      const params = new URLSearchParams();
+      if (locationIds) params.append('location_ids', locationIds);
+      if (adventureIds) params.append('adventure_ids', adventureIds);
+      if (startDate) params.append('start_date', startDate);
 
-      const response = await fetch(`/travel_plans/get_recommended_equipment?${params}`)
+      const response = await fetch(`/travel_plans/get_recommended_equipment?${params}`);
+      if (!response.ok) throw new Error('Failed to fetch equipment');
 
-      if (!response.ok) throw new Error('failed to fetch equipment')
-
-      const equipment = await response.json()
-      this.renderEquipmentList(equipment)
+      const equipment = await response.json();
+      console.log('Received equipment:', equipment); // Debug log
+      this.renderEquipmentList(equipment);
     } catch (error) {
-      console.error('error updating equipment:', error)
+      console.error('Error updating equipment:', error);
     }
   }
+
   renderEquipmentList(equipment) {
+    if (!this.hasEquipmentListTarget) return;
+
+    if (!Array.isArray(equipment) || equipment.length === 0) {
+      this.equipmentListTarget.innerHTML = '<p class="text-muted">No specific equipment recommendations found.</p>';
+      return;
+    }
+
     this.equipmentListTarget.innerHTML = equipment.map(item => `
       <div class="col-md-6 mb-2">
         <div class="form-check">
           <input type="checkbox"
+                 id="equipment_${item.id}"
                  name="travel_plan[equipment_ids][]"
                  value="${item.id}"
                  class="form-check-input"
-                 id="equipment_${item.id}"
                  ${this.isEquipmentSelected(item.id) ? 'checked' : ''}>
           <label class="form-check-label" for="equipment_${item.id}">
             ${item.name}
           </label>
-          <small class="text-muted d-block">${item.description}</small>
+          <small class="d-block text-muted">${item.description || ''}</small>
         </div>
       </div>
-    `).join('')
+    `).join('');
   }
 
   isEquipmentSelected(equipmentId) {
