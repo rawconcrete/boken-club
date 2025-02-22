@@ -11,9 +11,19 @@ class LocationsController < ApplicationController
       "%#{params[:query]}%",
       "%#{params[:query]}%",
       "%#{params[:query]}%")
-    else
+  else
       Location.all
+
+    @markers = @locations.geocoded.map do |location|
+      {
+        name: location.name,
+        city: location.city,
+        prefecture: location.prefecture,
+        lat: location.latitude,
+        lng: location.longitude
+      }
     end
+  end
 
       respond_to do |format|
       format.html

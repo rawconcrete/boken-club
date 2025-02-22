@@ -12,10 +12,10 @@ class Location < ApplicationRecord
 
   # Combine attributes to form a full address
   def full_address
-    [name, city, prefecture].compact.join(', ')
+    [name, city, prefecture, latitude, longitude].compact.join(', ')
   end
   # Condition to check if geocoding is needed
   def should_geocode?
-    name_changed? || city_changed? || prefecture_changed?
+    name_changed? || city_changed? || prefecture_changed? || latitude_changed? || longitude_changed?
   end
 end

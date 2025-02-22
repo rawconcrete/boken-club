@@ -18,6 +18,9 @@
 @import "components/buttons";
 @import "components/treecursor";
 
+// for Geocoder Mapbox
+@import url("https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css");
+
 // Global Styles
 body {
   position: relative;
