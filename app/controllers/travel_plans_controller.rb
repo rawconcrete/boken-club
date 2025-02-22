@@ -81,6 +81,19 @@ class TravelPlansController < ApplicationController
     end
   end
 
+  def get_recommended_equipment
+    location_ids = params[:location_ids]&.split(',')
+    adventure_ids = params[:adventure_ids]&.split(',')
+    start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : nil
+
+    equipment = Equipment.all
+    equipment = equipment.for_season(start_date) if start_date
+    equipment = equipment.for_location(location_ids) if location_ids.present?
+    equipment = equipment.for_adventure(adventure_ids) if adventure_ids.present?
+
+    render json: equipment
+  end
+
   private
 
   def setup_equipment_list
@@ -132,9 +145,13 @@ class TravelPlansController < ApplicationController
       :title,
       :content,
       :status,
+      :start_date,
+      :end_date,
       location_ids: [],
       adventure_ids: [],
       equipment_ids: []
     )
   end
+
+
 end

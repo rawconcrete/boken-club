@@ -1,9 +1,11 @@
-// travel_plan_controller.js
+// app/javascript/controllers/travel_plan_controller.js
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["locationSearch", "locationResults", "selectedLocations",
-                    "selectedAdventures", "adventureResults"]
+                    "selectedAdventures", "adventureResults", "equipmentList",
+                    "startDate", "endDate"]
+
   static values = {
     locations: Array,
     adventures: Array
@@ -12,18 +14,16 @@ export default class extends Controller {
   connect() {
     this.selectedLocations = new Set()
     this.selectedAdventures = new Set()
-    this.initializeExistingSelections()
-    this.loadInitialSelections()
-    this.updateAvailableAdventures()
-  }
 
-  initializeExistingSelections() {
     if (this.hasLocationsValue) {
       this.locationsValue.forEach(location => this.addLocationTag(location))
     }
     if (this.hasAdventuresValue) {
       this.adventuresValue.forEach(adventure => this.addAdventureTag(adventure))
     }
+
+    this.loadInitialSelections()
+    this.updateAvailableAdventures()
   }
 
   async loadInitialSelections() {
@@ -90,7 +90,6 @@ export default class extends Controller {
   renderAdventureResults(adventures) {
     this.adventureResultsTarget.innerHTML = adventures.map(adventure => {
       const adventureJson = JSON.stringify(adventure).replace(/"/g, '&quot;')
-
       return `
         <div class="list-group-item d-flex justify-content-between align-items-center">
           ${adventure.name}
@@ -117,16 +116,57 @@ export default class extends Controller {
     event.preventDefault()
     event.stopPropagation()
 
-    console.log('Select adventure clicked')
-
     try {
       const adventureData = JSON.parse(event.currentTarget.dataset.adventure)
-      console.log('Adventure data:', adventureData)
       this.addAdventureTag(adventureData)
     } catch (error) {
       console.error('Error parsing adventure data:', error)
       console.log('Raw adventure data:', event.currentTarget.dataset.adventure)
     }
+  }
+
+  async updateEquipment() {
+    const locationIds = Array.from(this.selectedLocations).join(',')
+    const adventureIds = Array.from(this.selectedAdventures).join(',')
+    const startDate = this.startDateTarget.value
+
+    try {
+      const response = await fetch(`/travel_plans/get_recommended_equipment?${new URLSearchParams({
+        location_ids: locationIds,
+        adventure_ids: adventureIds,
+        start_date: startDate
+      })}`)
+
+      if (!response.ok) throw new Error('failed to fetch equipment')
+
+      const equipment = await response.json()
+      this.renderEquipmentList(equipment)
+    } catch (error) {
+      console.error('error updating equipment:', error)
+    }
+  }
+
+  renderEquipmentList(equipment) {
+    this.equipmentListTarget.innerHTML = equipment.map(item => `
+      <div class="col-md-6 mb-2">
+        <div class="form-check">
+          <input type="checkbox"
+                 name="travel_plan[equipment_ids][]"
+                 value="${item.id}"
+                 class="form-check-input"
+                 id="equipment_${item.id}"
+                 ${this.isEquipmentSelected(item.id) ? 'checked' : ''}>
+          <label class="form-check-label" for="equipment_${item.id}">
+            ${item.name}
+          </label>
+          <small class="text-muted d-block">${item.description}</small>
+        </div>
+      </div>
+    `).join('')
+  }
+
+  isEquipmentSelected(equipmentId) {
+    return this.element.querySelector(`input[name="travel_plan[equipment_ids][]"][value="${equipmentId}"]`)?.checked || false
   }
 
   addLocationTag(location) {
@@ -142,12 +182,11 @@ export default class extends Controller {
         <input type="hidden" name="travel_plan[location_ids][]" value="${location.id}">
       </div>
     `)
+    this.updateEquipment()
   }
 
   addAdventureTag(adventure) {
     if (this.selectedAdventures.has(adventure.id)) return
-
-    console.log('Adding adventure:', adventure)
 
     this.selectedAdventures.add(adventure.id)
     this.selectedAdventuresTarget.insertAdjacentHTML('beforeend', `
@@ -159,6 +198,7 @@ export default class extends Controller {
         <input type="hidden" name="travel_plan[adventure_ids][]" value="${adventure.id}">
       </div>
     `)
+    this.updateEquipment()
   }
 
   removeLocation(event) {
@@ -166,11 +206,13 @@ export default class extends Controller {
     this.selectedLocations.delete(locationId)
     event.currentTarget.closest('.badge').remove()
     this.updateAvailableAdventures()
+    this.updateEquipment()
   }
 
   removeAdventure(event) {
     const adventureId = event.currentTarget.dataset.adventureId
     this.selectedAdventures.delete(adventureId)
     event.currentTarget.closest('.badge').remove()
+    this.updateEquipment()
   }
 }

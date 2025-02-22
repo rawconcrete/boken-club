@@ -10,4 +10,10 @@ class TravelPlan < ApplicationRecord
 
   validates :status, inclusion: { in: ['pending', 'completed', 'cancelled'], message: "%{value} is not a valid status" }, allow_nil: true
   validates :title, presence: true
+
+  # if we want equipment recommendations based on weather at some point
+  # def recommended_equipment_for_weather
+    # integrate with weather API based on location and dates
+    # adjust equipment recommendations accordingly
+  # end
 end

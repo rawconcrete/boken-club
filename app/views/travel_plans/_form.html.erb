@@ -1,4 +1,4 @@
-# app/views/travel_plans/_form.html.erb
+<%# app/views/travel_plans/_form.html.erb %>
 <%# <% if @equipment_list.nil? %>
 <%# <p class="text-danger">Equipment list is nil!</p>
 <% else %>
@@ -12,6 +12,45 @@
   <div class="row justify-content-center">
     <div class="col-md-8">
       <%= form_with(model: travel_plan, local: true) do |f| %>
+        <%# new equipment section %>
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Recommended Equipment</h5>
+          </div>
+          <div class="card-body">
+            <div class="row" data-travel-plan-target="equipmentList">
+              <%# equipment will be dynamically inserted here %>
+            </div>
+          </div>
+        </div>
+        <%# new equipment section end %>
+        <%# dates section start %>
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Trip Dates</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <%= f.label :start_date, class: "form-label" %>
+                <%= f.date_field :start_date,
+            class: "form-control",
+            data: {
+              travel_plan_target: "startDate",
+              action: "change->travel-plan#updateEquipment"
+            } %>
+              </div>
+              <div class="col-md-6">
+                <%= f.label :end_date, class: "form-label" %>
+                <%= f.date_field :end_date,
+            class: "form-control",
+            data: { travel_plan_target: "endDate" } %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <%# dates section end %>
+        <%# general details card start %>
         <div class="card mb-4">
           <div class="card-header">
             <h5 class="mb-0">Plan Details</h5>
@@ -31,6 +70,8 @@
             </div>
           </div>
         </div>
+        <%# general details card end %>
+        <%# locations card start %>
         <div class="card mb-4">
           <div class="card-header">
             <h5 class="mb-0">Locations</h5>
@@ -45,6 +86,8 @@
             <div data-travel-plan-target="locationResults" class="list-group mt-2"></div>
           </div>
         </div>
+        <%# locations card end %>
+        <%# adventures card start %>
         <div class="card mb-4">
           <div class="card-header">
             <h5 class="mb-0">Available Adventures</h5>
@@ -59,30 +102,7 @@
             <div data-travel-plan-target="adventureResults" class="list-group mt-2"></div>
           </div>
         </div>
-        <%# New Equipment Section %>
-        <div class="card mb-4">
-          <div class="card-header">
-            <h5 class="mb-0">Recommended Equipment</h5>
-          </div>
-          <div class="card-body">
-            <div class="row">
-              <% @equipment_list&.each do |equipment| %>
-                <div class="col-md-6 mb-2">
-                  <div class="form-check">
-                    <%= check_box_tag 'equipment_ids[]',
-                        equipment.id,
-                        @travel_plan.equipments.include?(equipment),
-                        class: "form-check-input" %>
-                    <%= label_tag "equipment_#{equipment.id}",
-                        equipment.name,
-                        class: "form-check-label" %>
-                    <small class="d-block text-muted"><%= equipment.description %></small>
-                  </div>
-                </div>
-              <% end %>
-            </div>
-          </div>
-        </div>
+        <%# adventures card end %>
         <div class="d-flex justify-content-end gap-2">
           <%= link_to 'Cancel', :back, class: "btn btn-secondary" %>
           <%= f.submit 'Save', class: "btn btn-primary" %>
