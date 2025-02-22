@@ -128,14 +128,16 @@ export default class extends Controller {
   async updateEquipment() {
     const locationIds = Array.from(this.selectedLocations).join(',')
     const adventureIds = Array.from(this.selectedAdventures).join(',')
-    const startDate = this.startDateTarget.value
+    const startDate = this.hasStartDateTarget ? this.startDateTarget.value : null
 
     try {
-      const response = await fetch(`/travel_plans/get_recommended_equipment?${new URLSearchParams({
+      const params = new URLSearchParams({
         location_ids: locationIds,
-        adventure_ids: adventureIds,
-        start_date: startDate
-      })}`)
+        adventure_ids: adventureIds
+      })
+      if (startDate) params.append('start_date', startDate)
+
+      const response = await fetch(`/travel_plans/get_recommended_equipment?${params}`)
 
       if (!response.ok) throw new Error('failed to fetch equipment')
 
@@ -145,7 +147,6 @@ export default class extends Controller {
       console.error('error updating equipment:', error)
     }
   }
-
   renderEquipmentList(equipment) {
     this.equipmentListTarget.innerHTML = equipment.map(item => `
       <div class="col-md-6 mb-2">

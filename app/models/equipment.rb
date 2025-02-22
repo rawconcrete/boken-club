@@ -26,15 +26,18 @@ class Equipment < ApplicationRecord
     where(recommended_seasons: season)
   }
 
-  # add location/adventure scopes
-  scope :for_location, ->(location) {
-    return all unless location
-    joins(:location_equipments).where(location_equipments: { location_id: location.id })
+  scope :for_location, ->(location_ids) {
+    return all if location_ids.blank?
+    joins(:location_equipments)
+      .where(location_equipments: { location_id: location_ids })
+      .distinct
   }
 
-  scope :for_adventure, ->(adventure) {
-    return all unless adventure
-    joins(:adventure_equipments).where(adventure_equipments: { adventure_id: adventure.id })
+  scope :for_adventure, ->(adventure_ids) {
+    return all if adventure_ids.blank?
+    joins(:adventure_equipments)
+      .where(adventure_equipments: { adventure_id: adventure_ids })
+      .distinct
   }
 
   # if we want equipment caching
