@@ -86,10 +86,11 @@ class TravelPlansController < ApplicationController
     adventure_ids = params[:adventure_ids].to_s.split(',').reject(&:blank?)
     start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : nil
 
-    equipment = Equipment.all
-    equipment = equipment.for_season(start_date) if start_date
-    equipment = equipment.for_location(location_ids) if location_ids.present?
-    equipment = equipment.for_adventure(adventure_ids) if adventure_ids.present?
+    equipment = Equipment.recommended_for(
+      location_ids: location_ids,
+      adventure_ids: adventure_ids,
+      date: start_date
+    )
 
     render json: equipment
   end
