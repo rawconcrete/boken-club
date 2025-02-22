@@ -1,4 +1,5 @@
-// for homepage searchbar
+// app/javascript/controllers/search_controller.js
+// for homepage/landing page searchbar
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
