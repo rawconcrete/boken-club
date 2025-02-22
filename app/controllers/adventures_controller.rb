@@ -41,6 +41,11 @@ class AdventuresController < ApplicationController
 
     if @adventure.nil?
       redirect_to adventures_path, alert: "Adventure not found"
+    else
+      respond_to do |format|
+        format.html
+        format.json { render json: @adventure }
+      end
     end
   end
 
