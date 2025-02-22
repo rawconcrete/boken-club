@@ -82,8 +82,8 @@ class TravelPlansController < ApplicationController
   end
 
   def get_recommended_equipment
-    location_ids = params[:location_ids]&.split(',')
-    adventure_ids = params[:adventure_ids]&.split(',')
+    location_ids = params[:location_ids].to_s.split(',').reject(&:blank?)
+    adventure_ids = params[:adventure_ids].to_s.split(',').reject(&:blank?)
     start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : nil
 
     equipment = Equipment.all
