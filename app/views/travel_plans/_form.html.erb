@@ -1,4 +1,10 @@
 # app/views/travel_plans/_form.html.erb
+<% if @equipment_list.nil? %>
+  <p class="text-danger">Equipment list is nil!</p>
+<% else %>
+  <p class="text-muted">Found <%= @equipment_list.count %> equipment items</p>
+<% end %>
+<%# debugging end %>
 <div class="container"
      data-controller="travel-plan"
      data-travel-plan-locations-value="<%= travel_plan.locations.to_json %>"
