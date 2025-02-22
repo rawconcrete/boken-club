@@ -1,44 +1,69 @@
 # app/models/equipment.rb
 class Equipment < ApplicationRecord
-  # Update these lines to match the actual model names
+  # update to match the actual model names
   has_many :location_equipments
   has_many :locations, through: :location_equipments
   has_many :adventure_equipments
   has_many :adventures, through: :adventure_equipments
 
-  # Keep these existing associations
+  # existing associations
   has_many :user_equipments
   has_many :users, through: :user_equipments
   has_many :equipment_tips
   has_many :tips, through: :equipment_tips
 
-  # New association for travel plans
+  # new association for travel plans
   has_many :travel_plan_equipments
   has_many :travel_plans, through: :travel_plan_equipments
 
   validates :name, presence: true
   validates :description, presence: true
 
-  # add seasonal scope
+  # season-specific scopes
   scope :for_season, ->(date) {
-    return all unless date
+    return none unless date
     season = get_season(date)
-    where(recommended_seasons: season)
+    season_field = "#{season}_recommended"
+    where(season_field => true)
   }
 
+  # location-specific equipment
   scope :for_location, ->(location_ids) {
-    return all if location_ids.blank?
+    return none if location_ids.blank?
     joins(:location_equipments)
       .where(location_equipments: { location_id: location_ids })
       .distinct
   }
 
+  # adventure-specific equipment
   scope :for_adventure, ->(adventure_ids) {
-    return all if adventure_ids.blank?
+    return none if adventure_ids.blank?
     joins(:adventure_equipments)
       .where(adventure_equipments: { adventure_id: adventure_ids })
       .distinct
   }
+
+  # combined equipment recommendations
+  def self.recommended_for(location_ids: nil, adventure_ids: nil, date: nil)
+    equipment_sets = []
+
+    # get location-specific equipment
+    equipment_sets << for_location(location_ids) if location_ids.present?
+
+    # get adventure-specific equipment
+    equipment_sets << for_adventure(adventure_ids) if adventure_ids.present?
+
+    # get seasonal equipment
+    equipment_sets << for_season(date) if date.present?
+
+    # combine all equipment sets without duplicates
+    if equipment_sets.any?
+      ids = equipment_sets.map { |set| set.pluck(:id) }.flatten.uniq
+      where(id: ids)
+    else
+      none
+    end
+  end
 
   # if we want equipment caching
   # def self.cached_recommendations(location_ids, adventure_ids, date)
