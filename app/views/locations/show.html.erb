@@ -12,6 +12,14 @@
           <p><strong>Details:</strong> <%= @location.details %></p>
           <%= content_tag(:p, "<strong>Tips:</strong> #{@location.tips}".html_safe) if @location.tips.present? %>
           <%= content_tag(:p, "<strong>Warnings:</strong> #{@location.warnings}".html_safe, class: "text-danger") if @location.warnings.present? %>
+          <h1><%= @location.name %></h1>
+          <p>City: <%= @location.city %></p>
+          <p>Prefecture: <%= @location.prefecture %></p>
+      <div class="geocoder-map" style="width: 100%; height: 600px;"
+        data-controller="map"
+        data-map-markers-value="<%= @markers %>"
+        data-map-api-key-value="<%= ENV['MAPBOX_API_KEY'] %>">
+      </div>
           <%= link_to "Plan a Trip Here", new_travel_plan_path(location_id: @location.id),
           class: "btn btn-primary btn-sm flex-fill",
           data: { turbo_frame: "_top" } %>

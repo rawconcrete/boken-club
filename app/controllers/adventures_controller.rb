@@ -42,6 +42,10 @@ class AdventuresController < ApplicationController
     if @adventure.nil?
       redirect_to adventures_path, alert: "Adventure not found"
     end
-  end
 
+    respond_to do |format|
+      format.html
+    format.json { render json: { id: @location.id, name: @location.name, city: @location.city, prefecture: @location.prefecture, lat: location.latitude, lng: location.longitude } }
+    end
+  end
 end

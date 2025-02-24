@@ -11,9 +11,10 @@ class LocationsController < ApplicationController
       "%#{params[:query]}%",
       "%#{params[:query]}%",
       "%#{params[:query]}%")
-  else
+    else
       Location.all
-
+    end
+  puts "Locations: #{@locations.inspect}" # Debugging: Check the locations
     @markers = @locations.geocoded.map do |location|
       {
         name: location.name,
@@ -23,7 +24,6 @@ class LocationsController < ApplicationController
         lng: location.longitude
       }
     end
-  end
 
       respond_to do |format|
       format.html
@@ -42,7 +42,7 @@ class LocationsController < ApplicationController
 
     respond_to do |format|
       format.html
-      format.json { render json: { id: @location.id, name: @location.name, city: @location.city, prefecture: @location.prefecture } }
+      format.json { render json: { id: @location.id, name: @location.name, city: @location.city, prefecture: @location.prefecture, lat: location.latitude, lng: location.longitude } }
     end
   end
 end
