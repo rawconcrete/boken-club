@@ -46,17 +46,16 @@ class Equipment < ApplicationRecord
   }
 
   # combined equipment recommendations
-  # Combined equipment recommendations
   def self.recommended_for(location_ids: nil, adventure_ids: nil, date: nil)
     Rails.logger.debug "EQUIPMENT RECOMMENDATION REQUEST ----"
     Rails.logger.debug "Location IDs: #{location_ids.inspect}"
     Rails.logger.debug "Adventure IDs: #{adventure_ids.inspect}"
     Rails.logger.debug "Date: #{date.inspect}"
 
-    # Get matching equipment
+    # get matching equipment
     matches = []
 
-    # Add location-specific equipment
+    # add location-specific equipment
     if location_ids.present?
       location_equipment = for_location(location_ids)
       if location_equipment.exists?
@@ -65,7 +64,7 @@ class Equipment < ApplicationRecord
       end
     end
 
-    # Add adventure-specific equipment
+    # add adventure-specific equipment
     if adventure_ids.present?
       adventure_equipment = for_adventure(adventure_ids)
       if adventure_equipment.exists?
@@ -74,7 +73,7 @@ class Equipment < ApplicationRecord
       end
     end
 
-    # Add seasonal equipment
+    # add seasonal equipment
     if date.present?
       seasonal_equipment = for_season(date)
       if seasonal_equipment.exists?
@@ -83,17 +82,17 @@ class Equipment < ApplicationRecord
       end
     end
 
-    # Filter to matching equipment if we have matches
+    # filter to matching equipment if we have matches
     if matches.any?
-      # Flatten all matched IDs into a single array
+      # flatten all matched IDs into a single array
       matching_ids = matches.flatten.uniq
       Rails.logger.debug "Total unique matches: #{matching_ids.size}"
-      # Return only equipment with those IDs
+      # return only equipment with those IDs
       result = where(id: matching_ids)
       Rails.logger.debug "EQUIPMENT RESULT: #{result.count} items, IDs: #{result.pluck(:id).inspect}"
       result
     else
-      # If no matches, return a subset of general equipment
+      # if no matches, return a subset of general equipment
       basic =     where(name: ["First Aid Kit", "Water Bottle", "Backpack (30-40L)"])
       Rails.logger.debug "BASIC EQUIPMENT: #{basic.count} items, IDs: #{basic.pluck(:id).inspect}"
       basic
