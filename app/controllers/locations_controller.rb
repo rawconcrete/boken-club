@@ -41,13 +41,15 @@ class LocationsController < ApplicationController
       info_window: render_to_string(partial: "info_window", locals: {location: @location}) }]
 
     if @location.nil?
-      redirect_to locations_path, alert: "Location not found"
-      return
-    end
-
-    respond_to do |format|
-      format.html
-      format.json { render json: { id: @location.id, name: @location.name, city: @location.city, prefecture: @location.prefecture, lat: location.latitude, lng: location.longitude } }
+      respond_to do |format|
+        format.html { redirect_to locations_path, alert: "Location not found" }
+        format.json { render json: { error: "Location not found" }, status: :not_found }
+      end
+    else
+      respond_to do |format|
+        format.html
+        format.json { render json: { id: @location.id, name: @location.name, city: @location.city, prefecture: @location.prefecture, lat: location.latitude, lng: location.longitude } }
+      end
     end
   end
 end

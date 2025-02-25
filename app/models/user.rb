@@ -1,3 +1,4 @@
+# app/models/user.rb
 class User < ApplicationRecord
   has_many :travel_plans
 
@@ -13,4 +14,9 @@ class User < ApplicationRecord
   def admin?
     role == "admin"
   end
+
+  # if we want equipment user preferences
+  # def personalized_equipment_recommendations(travel_plan)
+    # Combine standard recommendations with user preferences
+  # end
 end
