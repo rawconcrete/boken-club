@@ -50,6 +50,10 @@ class AdventuresController < ApplicationController
         format.json { render json: @location }
       end
     end
-  end
 
+    respond_to do |format|
+      format.html
+    format.json { render json: { id: @location.id, name: @location.name, city: @location.city, prefecture: @location.prefecture, lat: location.latitude, lng: location.longitude } }
+    end
+  end
 end

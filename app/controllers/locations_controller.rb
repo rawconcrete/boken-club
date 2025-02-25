@@ -14,6 +14,16 @@ class LocationsController < ApplicationController
     else
       Location.all
     end
+  puts "Locations: #{@locations.inspect}" # Debugging: Check the locations
+    @markers = @locations.geocoded.map do |location|
+      {
+        name: location.name,
+        city: location.city,
+        prefecture: location.prefecture,
+        lat: location.latitude,
+        lng: location.longitude
+      }
+    end
 
       respond_to do |format|
       format.html
@@ -24,6 +34,11 @@ class LocationsController < ApplicationController
 
   def show
     @location = Location.find_by(id: params[:id])
+    @markers = [
+    {
+      lat: @location.latitude,
+      lng: @location.longitude,
+      info_window: render_to_string(partial: "info_window", locals: {location: @location}) }]
 
     if @location.nil?
       respond_to do |format|
@@ -33,7 +48,7 @@ class LocationsController < ApplicationController
     else
       respond_to do |format|
         format.html
-        format.json { render json: @location }
+        format.json { render json: { id: @location.id, name: @location.name, city: @location.city, prefecture: @location.prefecture, lat: location.latitude, lng: location.longitude } }
       end
     end
   end
