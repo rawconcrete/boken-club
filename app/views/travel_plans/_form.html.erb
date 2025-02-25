@@ -1,7 +1,8 @@
 <div class="container"
      data-controller="travel-plan"
      data-travel-plan-locations-value="<%= travel_plan.locations.to_json %>"
-     data-travel-plan-adventures-value="<%= travel_plan.adventures.to_json %>">
+     data-travel-plan-adventures-value="<%= travel_plan.adventures.reject(&:nil?).to_json %>">
+  <%# add removal of nil/undefined %>
   <!-- Rest of   form -->
   <div class="row justify-content-center">
     <div class="row justify-content-center">
@@ -14,7 +15,7 @@
             </div>
             <div class="card-body">
               <div class="row" data-travel-plan-target="equipmentList">
-                <%# Equipment will be dynamically inserted here %>
+                <%# equipment will be dynamically inserted here %>
               </div>
             </div>
           </div>
