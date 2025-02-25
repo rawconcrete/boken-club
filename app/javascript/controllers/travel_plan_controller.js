@@ -130,20 +130,29 @@ export default class extends Controller {
     const adventureIds = Array.from(this.selectedAdventures).join(',');
     const startDate = this.hasStartDateTarget ? this.startDateTarget.value : null;
 
+    console.log('Updating equipment with:', { locationIds, adventureIds, startDate });
+
     try {
       const params = new URLSearchParams();
       if (locationIds) params.append('location_ids', locationIds);
       if (adventureIds) params.append('adventure_ids', adventureIds);
       if (startDate) params.append('start_date', startDate);
 
-      const response = await fetch(`/travel_plans/get_recommended_equipment?${params}`);
-      if (!response.ok) throw new Error('Failed to fetch equipment');
+      const url = `/travel_plans/get_recommended_equipment?${params}`;
+      console.log('Fetching equipment from:', url);
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.error('Error response:', response.status, response.statusText);
+        throw new Error('Failed to fetch equipment');
+      }
 
       const equipment = await response.json();
-      console.log('Received equipment:', equipment); // Debug log
+      console.log('Received equipment:', equipment);
       this.renderEquipmentList(equipment);
     } catch (error) {
       console.error('Error updating equipment:', error);
+      this.equipmentListTarget.innerHTML = `<div class="alert alert-danger">Error loading equipment: ${error.message}</div>`;
     }
   }
 
