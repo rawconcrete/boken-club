@@ -245,6 +245,12 @@ export default class extends Controller {
   }
 
   addAdventureTag(adventure) {
+    // skip if adventure is null, undefined, or doesn't have an id
+    if (!adventure || !adventure.id || !adventure.name) {
+      console.log('Skipping invalid adventure:', adventure);
+      return;
+    }
+
     const adventureId = this.convertToId(adventure.id);
     if (this.selectedAdventures.has(adventureId)) return;
 
