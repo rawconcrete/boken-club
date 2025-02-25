@@ -16,15 +16,16 @@ export default class extends Controller {
       container: this.element,
       style: "mapbox://styles/mapbox/streets-v10"
     });
-
+    console.log("hihihi");
+    console.log(this.markersValue);
     this.#addMarkersToMap();
     this.#fitMapToMarkers();
   }
 
   #addMarkersToMap() {
-    console.log("hey");
-    console.log(this.markersValue);
     this.markersValue.forEach((marker) => {
+      console.log("hi");
+      console.log(marker.info_window);
       const popup = new mapboxgl.Popup({ offset: 25 })
       .setHTML(marker.info_window);
 
