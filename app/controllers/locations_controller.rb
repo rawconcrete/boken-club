@@ -26,13 +26,15 @@ class LocationsController < ApplicationController
     @location = Location.find_by(id: params[:id])
 
     if @location.nil?
-      redirect_to locations_path, alert: "Location not found"
-      return
-    end
-
-    respond_to do |format|
-      format.html
-      format.json { render json: { id: @location.id, name: @location.name, city: @location.city, prefecture: @location.prefecture } }
+      respond_to do |format|
+        format.html { redirect_to locations_path, alert: "Location not found" }
+        format.json { render json: { error: "Location not found" }, status: :not_found }
+      end
+    else
+      respond_to do |format|
+        format.html
+        format.json { render json: @location }
+      end
     end
   end
 end

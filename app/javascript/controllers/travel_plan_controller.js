@@ -3,8 +3,13 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["locationSearch", "locationResults", "selectedLocations",
-                    "selectedAdventures", "adventureResults", "equipmentList",
-                    "startDate", "endDate"]
+    "selectedAdventures", "adventureResults", "equipmentList",
+    "startDate", "endDate", "debugButton"]
+
+  debugForceUpdate(event) {
+    console.log("Debug force update called");
+    this.updateEquipment();
+  }
 
   static values = {
     locations: Array,
@@ -22,8 +27,19 @@ export default class extends Controller {
       this.adventuresValue.forEach(adventure => this.addAdventureTag(adventure))
     }
 
+    // Add this event listener
+    document.addEventListener('equipment-update', () => {
+      console.log("Manual equipment update triggered");
+      this.updateEquipment();
+    });
+
     this.loadInitialSelections()
     this.updateAvailableAdventures()
+  }
+
+  // helper method to properly handle ID conversions
+  convertToId(id) {
+    return typeof id === 'string' ? parseInt(id, 10) : id;
   }
 
   async loadInitialSelections() {
@@ -130,9 +146,20 @@ export default class extends Controller {
     const adventureIds = Array.from(this.selectedAdventures).join(',');
     const startDate = this.hasStartDateTarget ? this.startDateTarget.value : null;
 
-    console.log('Updating equipment with:', { locationIds, adventureIds, startDate });
+    console.log('Updating equipment with:', {
+      locationIds,
+      adventureIds,
+      startDate,
+      locationCount: this.selectedLocations.size,
+      adventureCount: this.selectedAdventures.size
+    });
 
     try {
+      // clear existing equipment while loading
+      if (this.hasEquipmentListTarget) {
+        this.equipmentListTarget.innerHTML = '<p class="text-center"><em>Loading equipment recommendations...</em></p>';
+      }
+
       const params = new URLSearchParams();
       if (locationIds) params.append('location_ids', locationIds);
       if (adventureIds) params.append('adventure_ids', adventureIds);
@@ -149,15 +176,24 @@ export default class extends Controller {
 
       const equipment = await response.json();
       console.log('Received equipment:', equipment);
-      this.renderEquipmentList(equipment);
+
+      // force a small delay to ensure DOM updates
+      setTimeout(() => {
+        this.renderEquipmentList(equipment);
+      }, 50);
     } catch (error) {
       console.error('Error updating equipment:', error);
-      this.equipmentListTarget.innerHTML = `<div class="alert alert-danger">Error loading equipment: ${error.message}</div>`;
+      if (this.hasEquipmentListTarget) {
+        this.equipmentListTarget.innerHTML =
+          `<div class="alert alert-danger">Error loading equipment: ${error.message}</div>`;
+      }
     }
   }
 
   renderEquipmentList(equipment) {
     if (!this.hasEquipmentListTarget) return;
+
+    console.log('🧰 Rendering equipment list with', equipment.length, 'items');
 
     if (!Array.isArray(equipment) || equipment.length === 0) {
       this.equipmentListTarget.innerHTML = '<p class="text-muted">No specific equipment recommendations found.</p>';
@@ -176,6 +212,7 @@ export default class extends Controller {
           <label class="form-check-label" for="equipment_${item.id}">
             ${item.name}
           </label>
+          ${item.sources ? `<div><small class="badge bg-info">${item.sources.join(', ')}</small></div>` : ''}
           <small class="d-block text-muted">${item.description || ''}</small>
         </div>
       </div>
@@ -187,49 +224,74 @@ export default class extends Controller {
   }
 
   addLocationTag(location) {
-    if (this.selectedLocations.has(location.id)) return
+    const locationId = this.convertToId(location.id);
+    if (this.selectedLocations.has(locationId)) return;
 
-    this.selectedLocations.add(location.id)
+    console.log('Adding location:', locationId, location.name);
+    this.selectedLocations.add(locationId);
+
     this.selectedLocationsTarget.insertAdjacentHTML('beforeend', `
       <div class="badge bg-primary p-2 m-1 d-inline-flex align-items-center">
         ${location.name}
         <button type="button" class="btn-close ms-2"
                 data-action="click->travel-plan#removeLocation"
-                data-location-id="${location.id}"></button>
-        <input type="hidden" name="travel_plan[location_ids][]" value="${location.id}">
+                data-location-id="${locationId}"></button>
+        <input type="hidden" name="travel_plan[location_ids][]" value="${locationId}">
       </div>
-    `)
-    this.updateEquipment()
+    `);
+
+    // call updateEquipment after DOM is updated
+    setTimeout(() => this.updateEquipment(), 50);
   }
 
   addAdventureTag(adventure) {
-    if (this.selectedAdventures.has(adventure.id)) return
+    const adventureId = this.convertToId(adventure.id);
+    if (this.selectedAdventures.has(adventureId)) return;
 
-    this.selectedAdventures.add(adventure.id)
+    console.log('Adding adventure:', adventureId, adventure.name);
+    this.selectedAdventures.add(adventureId);
+
     this.selectedAdventuresTarget.insertAdjacentHTML('beforeend', `
       <div class="badge bg-primary p-2 m-1 d-inline-flex align-items-center">
         ${adventure.name}
         <button type="button" class="btn-close ms-2"
                 data-action="click->travel-plan#removeAdventure"
-                data-adventure-id="${adventure.id}"></button>
-        <input type="hidden" name="travel_plan[adventure_ids][]" value="${adventure.id}">
+                data-adventure-id="${adventureId}"></button>
+        <input type="hidden" name="travel_plan[adventure_ids][]" value="${adventureId}">
       </div>
-    `)
-    this.updateEquipment()
+    `);
+
+    // call updateEquipment after DOM is updated
+    setTimeout(() => this.updateEquipment(), 50);
   }
 
+
   removeLocation(event) {
-    const locationId = event.currentTarget.dataset.locationId
-    this.selectedLocations.delete(locationId)
-    event.currentTarget.closest('.badge').remove()
-    this.updateAvailableAdventures()
-    this.updateEquipment()
+    const locationId = parseInt(event.currentTarget.dataset.locationId, 10);
+    console.log('ℹ️ REMOVING LOCATION:', locationId);
+    console.log('📋 Current locations BEFORE:', Array.from(this.selectedLocations));
+
+    // Make sure we delete it as the same type it was added
+    this.selectedLocations.delete(locationId);
+
+    // Log after removal to verify
+    console.log('📋 Current locations AFTER:', Array.from(this.selectedLocations));
+
+    event.currentTarget.closest('.badge').remove();
+
+    // Force refresh of both adventures and equipment
+    console.log('🔄 Forcing full refresh...');
+    this.updateAvailableAdventures();
+    setTimeout(() => this.updateEquipment(), 100);
   }
 
   removeAdventure(event) {
-    const adventureId = event.currentTarget.dataset.adventureId
-    this.selectedAdventures.delete(adventureId)
-    event.currentTarget.closest('.badge').remove()
-    this.updateEquipment()
+    const adventureId = parseInt(event.currentTarget.dataset.adventureId, 10);
+    console.log('Removing adventure:', adventureId);
+    this.selectedAdventures.delete(adventureId);
+    event.currentTarget.closest('.badge').remove();
+
+    // call updateEquipment after DOM is updated
+    setTimeout(() => this.updateEquipment(), 50);
   }
 }

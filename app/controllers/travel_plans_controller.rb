@@ -81,20 +81,75 @@ class TravelPlansController < ApplicationController
     end
   end
 
+  # equipment sorting stuff is here
   def get_recommended_equipment
     location_ids = params[:location_ids].to_s.split(',').reject(&:blank?)
     adventure_ids = params[:adventure_ids].to_s.split(',').reject(&:blank?)
     start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : nil
 
-    @equipment = Equipment.recommended_for(
-      location_ids: location_ids,
-      adventure_ids: adventure_ids,
-      date: start_date
-    )
+    # define basic equipment as default
+    basic_equipment_names = ["First Aid Kit", "Water Bottle", "Backpack (30-40L)"]
 
-    result = @equipment.select(:id, :name, :description, :category)
-    Rails.logger.debug "Recommended equipment: #{result.to_json}"
-    render json: result
+    # always load equipment
+    if location_ids.present? || adventure_ids.present? || start_date.present?
+      # fetch equipment for locations
+      location_equipment = location_ids.present? ?
+        Equipment.for_location(location_ids).pluck(:id) : []
+
+      # fetch equipment for adventures
+      adventure_equipment = adventure_ids.present? ?
+        Equipment.for_adventure(adventure_ids).pluck(:id) : []
+
+      # fetch seasonal equipment if date is provided
+      seasonal_equipment = start_date.present? ?
+        Equipment.for_season(start_date).pluck(:id) : []
+
+      # combine all equipment IDs
+      all_equipment_ids = (location_equipment + adventure_equipment + seasonal_equipment).uniq
+
+      # get equipment with sources
+      if all_equipment_ids.any?
+        equipment_items = Equipment.where(id: all_equipment_ids)
+
+        result = equipment_items.as_json(only: [:id, :name, :description, :category]).map do |item|
+          item["sources"] = []
+
+          # first check if it's a basic item
+          if basic_equipment_names.include?(item["name"])
+            item["sources"] << "Basic"
+          else
+            # otherwise, add source labels
+            if location_ids.present? && location_equipment.include?(item["id"])
+              item["sources"] << "Location"
+            end
+
+            if adventure_ids.present? && adventure_equipment.include?(item["id"])
+              item["sources"] << "Adventure"
+            end
+
+            if start_date.present? && seasonal_equipment.include?(item["id"])
+              item["sources"] << "Season"
+            end
+          end
+
+          item
+        end
+
+        @equipment = result
+      else
+        # fallback to basic equipment
+        @equipment = Equipment.where(name: basic_equipment_names)
+          .as_json(only: [:id, :name, :description, :category])
+          .map { |item| item.merge("sources" => ["Basic"]) }
+      end
+    else
+      # return only basic equipment when no filters are applied
+      @equipment = Equipment.where(name: basic_equipment_names)
+        .as_json(only: [:id, :name, :description, :category])
+        .map { |item| item.merge("sources" => ["Basic"]) }
+    end
+
+    render json: @equipment
   end
 
   private
@@ -103,7 +158,7 @@ class TravelPlansController < ApplicationController
     location_ids = params[:location_id].present? ? [params[:location_id]] : @travel_plan.location_ids
     adventure_ids = params[:adventure_id].present? ? [params[:adventure_id]] : @travel_plan.adventure_ids
 
-    # Handle empty arrays
+    # handle empty arrays
     location_ids = [0] if location_ids.empty?
     adventure_ids = [0] if adventure_ids.empty?
 
@@ -112,7 +167,7 @@ class TravelPlansController < ApplicationController
       .where('location_equipments.location_id IN (?) OR adventure_equipments.adventure_id IN (?)',
              location_ids, adventure_ids)
 
-    # If no specific locations/adventures, show all equipment
+    # if no specific locations/adventures, show the basic equipment
     @equipment_list = Equipment.all if @equipment_list.empty?
   end
 

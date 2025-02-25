@@ -40,11 +40,14 @@ class AdventuresController < ApplicationController
     @adventure = Adventure.find_by(id: params[:id])
 
     if @adventure.nil?
-      redirect_to adventures_path, alert: "Adventure not found"
+      respond_to do |format|
+        format.html { redirect_to adventures_path, alert: "Adventure not found" }
+        format.json { render json: { error: "Adventure not found" }, status: :not_found }
+      end
     else
       respond_to do |format|
         format.html
-        format.json { render json: @adventure }
+        format.json { render json: @location }
       end
     end
   end

@@ -32,13 +32,12 @@ class Equipment < ApplicationRecord
 
   # location-specific equipment
   scope :for_location, ->(location_ids) {
-    return none if location_ids.blank?
-    joins(:location_equipments)
-      .where(location_equipments: { location_id: location_ids })
-      .distinct
-  }
+  return none if location_ids.blank?
+  joins(:location_equipments)
+    .where(location_equipments: { location_id: location_ids })
+    .distinct
+}
 
-  # adventure-specific equipment
   scope :for_adventure, ->(adventure_ids) {
     return none if adventure_ids.blank?
     joins(:adventure_equipments)
@@ -47,39 +46,57 @@ class Equipment < ApplicationRecord
   }
 
   # combined equipment recommendations
+  # Combined equipment recommendations
   def self.recommended_for(location_ids: nil, adventure_ids: nil, date: nil)
-    base_scope = all  # start with all equipment
+    Rails.logger.debug "EQUIPMENT RECOMMENDATION REQUEST ----"
+    Rails.logger.debug "Location IDs: #{location_ids.inspect}"
+    Rails.logger.debug "Adventure IDs: #{adventure_ids.inspect}"
+    Rails.logger.debug "Date: #{date.inspect}"
 
-    # get matching equipment
+    # Get matching equipment
     matches = []
 
-    # add location-specific equipment
+    # Add location-specific equipment
     if location_ids.present?
       location_equipment = for_location(location_ids)
-      matches << location_equipment.pluck(:id) if location_equipment.exists?
+      if location_equipment.exists?
+        matches << location_equipment.pluck(:id)
+        Rails.logger.debug "Location equipment count: #{location_equipment.count}"
+      end
     end
 
-    # add adventure-specific equipment
+    # Add adventure-specific equipment
     if adventure_ids.present?
       adventure_equipment = for_adventure(adventure_ids)
-      matches << adventure_equipment.pluck(:id) if adventure_equipment.exists?
+      if adventure_equipment.exists?
+        matches << adventure_equipment.pluck(:id)
+        Rails.logger.debug "Adventure equipment count: #{adventure_equipment.count}"
+      end
     end
 
-    # add seasonal equipment
+    # Add seasonal equipment
     if date.present?
       seasonal_equipment = for_season(date)
-      matches << seasonal_equipment.pluck(:id) if seasonal_equipment.exists?
+      if seasonal_equipment.exists?
+        matches << seasonal_equipment.pluck(:id)
+        Rails.logger.debug "Seasonal equipment count: #{seasonal_equipment.count}"
+      end
     end
 
-    # filter to matching equipment if we have matches
+    # Filter to matching equipment if we have matches
     if matches.any?
-      # flatten all matched IDs into a single array
+      # Flatten all matched IDs into a single array
       matching_ids = matches.flatten.uniq
-      # return only equipment with those IDs
-      where(id: matching_ids)
+      Rails.logger.debug "Total unique matches: #{matching_ids.size}"
+      # Return only equipment with those IDs
+      result = where(id: matching_ids)
+      Rails.logger.debug "EQUIPMENT RESULT: #{result.count} items, IDs: #{result.pluck(:id).inspect}"
+      result
     else
-      # if no matches, return a subset of general equipment
-      where(category: ["essential", "safety"]).or(where(name: ["Water Bottle", "First Aid Kit"]))
+      # If no matches, return a subset of general equipment
+      basic =     where(name: ["First Aid Kit", "Water Bottle", "Backpack (30-40L)"])
+      Rails.logger.debug "BASIC EQUIPMENT: #{basic.count} items, IDs: #{basic.pluck(:id).inspect}"
+      basic
     end
   end
 
