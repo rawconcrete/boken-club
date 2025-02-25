@@ -92,8 +92,6 @@ class TravelPlansController < ApplicationController
       date: start_date
     )
 
-    render json: @equipment.select(:id, :name, :description, :category)
-    # debugger
     result = @equipment.select(:id, :name, :description, :category)
     Rails.logger.debug "Recommended equipment: #{result.to_json}"
     render json: result
