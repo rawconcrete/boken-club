@@ -34,6 +34,9 @@ class LocationsController < ApplicationController
 
   def show
     @location = Location.find_by(id: params[:id])
+    @markers = [
+    { lat: @location.latitude,
+      lng: @location.longitude }]
 
     if @location.nil?
       redirect_to locations_path, alert: "Location not found"

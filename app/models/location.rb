@@ -4,7 +4,7 @@ class Location < ApplicationRecord
   has_many :adventures, through: :locations_adventures
   has_many :travel_plans_locations
   has_many :travel_plans, through: :travel_plans_locations
-  has_many :location_equipments
+  has_many :location_equipments, dependent: :destroy
   has_many :equipments, through: :location_equipments
 
   geocoded_by :full_address
@@ -12,10 +12,10 @@ class Location < ApplicationRecord
 
   # Combine attributes to form a full address
   def full_address
-    [name, city, prefecture, latitude, longitude].compact.join(', ')
+    [name, city, prefecture].compact.join(', ')
   end
   # Condition to check if geocoding is needed
   def should_geocode?
-    name_changed? || city_changed? || prefecture_changed? || latitude_changed? || longitude_changed?
+    will_save_change_to_city? || city_changed? || prefecture_changed?
   end
 end
