@@ -1,6 +1,7 @@
 # app/controllers/travel_plans_controller.rb
 class TravelPlansController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_travel_plan, only: [:show, :edit, :update, :destroy, :mark_equipment_purchased]
 
   def index
     @travel_plans = current_user.travel_plans.includes(:locations, :adventures)
@@ -45,8 +46,15 @@ class TravelPlansController < ApplicationController
   end
 
   def show
-    @travel_plan = current_user.travel_plans.includes(:locations, :adventures).find_by(id: params[:id])
+    @travel_plan = current_user.travel_plans.includes(:locations, :adventures, :equipment).find_by(id: params[:id])
     return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
+
+    # get user's owned equipment
+    @user_equipment_ids = current_user.equipment_ids
+
+    # separate equipment into "pack" and "buy" lists
+    @equipment_to_pack = @travel_plan.travel_plan_equipments.includes(:equipment).where(equipment_id: @user_equipment_ids)
+    @equipment_to_buy = @travel_plan.travel_plan_equipments.includes(:equipment).where.not(equipment_id: @user_equipment_ids)
 
     respond_to do |format|
       format.html
@@ -81,6 +89,22 @@ class TravelPlansController < ApplicationController
     end
   end
 
+  # mark equipment as purchased and add to user's equipment
+  def mark_equipment_purchased
+    equipment_id = params[:equipment_id]
+
+    # find the equipment
+    equipment = Equipment.find_by(id: equipment_id)
+    return redirect_to @travel_plan, alert: "Equipment not found" unless equipment
+
+    # add to user's equipment if not already owned
+    unless current_user.owns_equipment?(equipment_id)
+      current_user.user_equipments.create(equipment_id: equipment_id)
+    end
+
+    redirect_to @travel_plan, notice: "#{equipment.name} marked as purchased and added to your equipment"
+  end
+
   # equipment sorting stuff is here
   def get_recommended_equipment
     location_ids = params[:location_ids].to_s.split(',').reject(&:blank?)
@@ -113,6 +137,7 @@ class TravelPlansController < ApplicationController
 
         result = equipment_items.as_json(only: [:id, :name, :description, :category]).map do |item|
           item["sources"] = []
+          item["user_owned"] = current_user.owns_equipment?(item["id"])
 
           # first check if it's a basic item
           if basic_equipment_names.include?(item["name"])
@@ -140,19 +165,34 @@ class TravelPlansController < ApplicationController
         # fallback to basic equipment
         @equipment = Equipment.where(name: basic_equipment_names)
           .as_json(only: [:id, :name, :description, :category])
-          .map { |item| item.merge("sources" => ["Basic"]) }
+          .map do |item|
+            item.merge({
+              "sources" => ["Basic"],
+              "user_owned" => current_user.owns_equipment?(item["id"])
+            })
+          end
       end
     else
       # return only basic equipment when no filters are applied
       @equipment = Equipment.where(name: basic_equipment_names)
         .as_json(only: [:id, :name, :description, :category])
-        .map { |item| item.merge("sources" => ["Basic"]) }
+        .map do |item|
+          item.merge({
+            "sources" => ["Basic"],
+            "user_owned" => current_user.owns_equipment?(item["id"])
+          })
+        end
     end
 
     render json: @equipment
   end
 
   private
+
+  def set_travel_plan
+    @travel_plan = current_user.travel_plans.find_by(id: params[:id])
+    redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
+  end
 
   def setup_equipment_list
     location_ids = params[:location_id].present? ? [params[:location_id]] : @travel_plan.location_ids
@@ -210,6 +250,4 @@ class TravelPlansController < ApplicationController
       equipment_ids: []
     )
   end
-
-
 end
