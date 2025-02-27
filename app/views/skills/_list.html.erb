@@ -1,0 +1,13 @@
+<%# app/views/skills/_list.html.erb %>
+<div class="row">
+  <% skills.each do |skill| %>
+    <div class="col-md-4 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title"><%= skill.name %></h5>
+          <%= link_to "View Details", skill_path(skill), class: "btn btn-primary", data: { turbo_frame: "_top" } %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

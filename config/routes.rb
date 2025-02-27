@@ -15,6 +15,12 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :skills, only: [:index, :show] do
+    collection do
+      get :index, format: :json
+    end
+  end
+
   resources :locations, only: [:index, :show] do
     collection do
       get :index, format: :json

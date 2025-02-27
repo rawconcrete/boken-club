@@ -109,6 +109,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_27_125804) do
     t.index ["location_id"], name: "index_locations_adventures_on_location_id"
   end
 
+  create_table "skills", force: :cascade do |t|
+    t.string "name"
+    t.text "details"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "tips", force: :cascade do |t|
     t.string "title"
     t.text "content"
