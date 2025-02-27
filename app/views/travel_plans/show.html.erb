@@ -1,5 +1,5 @@
 <%# app/views/travel_plans/show.html.erb %>
-<div class="container mx-auto px-4">
+<div class="container mx-auto px-4" data-controller="equipment-status">
   <div class="flex justify-between items-center mb-6 text-white">
     <h1 class="text-2xl font-bold"><%= @travel_plan.title %></h1>
   </div>
@@ -51,7 +51,7 @@
   </div>
   <div class="mt-6">
     <div class="row">
-      <!-- pack list (Equipment You Already Own) -->
+      <!-- Pack List (Equipment You Already Own) -->
       <div class="col-md-6 mb-4">
         <div class="card h-100">
           <div class="card-header bg-success bg-opacity-25">
@@ -66,7 +66,11 @@
                       <input type="checkbox"
                              id="packed_<%= tpe.equipment.id %>"
                              class="form-check-input"
-                             <%= tpe.checked ? 'checked' : '' %>>
+                             data-equipment-status-target="checkbox"
+                             data-action="change->equipment-status#toggle"
+                      data-equipment-id="<%= tpe.equipment.id %>"
+                      data-travel-plan-id="<%= @travel_plan.id %>"
+                      <%= tpe.checked ? 'checked' : '' %>>
                       <label class="form-check-label" for="packed_<%= tpe.equipment.id %>">
                         <%= tpe.equipment.name %>
                       </label>
@@ -83,7 +87,7 @@
           </div>
         </div>
       </div>
-      <!-- buy list (Equipment You Need to Purchase) -->
+      <!-- Buy List (Equipment You Need to Purchase) -->
       <div class="col-md-6 mb-4">
         <div class="card h-100">
           <div class="card-header bg-primary bg-opacity-25">
@@ -98,11 +102,13 @@
                       <h6><%= tpe.equipment.name %></h6>
                       <div class="text-muted small"><%= tpe.equipment.description %></div>
                     </div>
-                    <%= button_to mark_equipment_purchased_travel_plan_path(@travel_plan, equipment_id: tpe.equipment.id),
-                                 method: :post,
-                                 class: "btn btn-sm btn-success" do %>
+                    <button type="button"
+                           class="btn btn-sm btn-success"
+                           data-action="equipment-status#markPurchased"
+                           data-equipment-id="<%= tpe.equipment.id %>"
+                           data-travel-plan-id="<%= @travel_plan.id %>">
                       <i class="fa fa-check"></i> Mark as Purchased
-                    <% end %>
+                    </button>
                   </div>
                 <% end %>
               </div>
