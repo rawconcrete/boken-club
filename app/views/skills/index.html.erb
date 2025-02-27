@@ -1,0 +1,13 @@
+<%# app/views/skills/index.html.erb %>
+<div class="container text-white">
+  <h1>Skills</h1>
+  <div class="search-bar mb-4">
+    <%= form_with url: skills_path, method: :get,
+    data: { controller: "search-skills", turbo_frame: "adventures-list" } do |f| %>
+      <%= f.text_field :query, class: "form-control", placeholder: "Search skills..." %>
+    <% end %>
+  </div>
+  <turbo-frame id="skills-list">
+    <%= render "skills/list", skills: @skills %>
+  </turbo-frame>
+</div>
