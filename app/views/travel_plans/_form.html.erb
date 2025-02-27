@@ -8,18 +8,6 @@
     <div class="row justify-content-center">
       <div class="col-md-8">
         <%= form_with(model: travel_plan, local: true) do |f| %>
-          <%# new equipment section %>
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">Recommended Equipment</h5>
-            </div>
-            <div class="card-body">
-              <div class="row" data-travel-plan-target="equipmentList">
-                <%# equipment will be dynamically inserted here %>
-              </div>
-            </div>
-          </div>
-          <%# new equipment section end %>
           <%# dates section start %>
           <div class="card mb-4">
             <div class="card-header">
