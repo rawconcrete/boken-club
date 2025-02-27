@@ -27,7 +27,7 @@ export default class extends Controller {
       this.adventuresValue.forEach(adventure => this.addAdventureTag(adventure))
     }
 
-    // add event listener
+    // add this event listener
     document.addEventListener('equipment-update', () => {
       console.log("Manual equipment update triggered");
       this.updateEquipment();
@@ -221,6 +221,7 @@ export default class extends Controller {
 
       items.forEach(item => {
         const isChecked = this.isEquipmentSelected(item.id);
+        const isEssential = item.is_essential === true;
 
         // different styling based on whether user already owns the item
         const cardClasses = item.user_owned
@@ -229,6 +230,10 @@ export default class extends Controller {
 
         const ownedBadge = item.user_owned
           ? '<span class="badge bg-success ms-2">You own this</span>'
+          : '';
+
+        const essentialBadge = isEssential
+          ? '<span class="badge bg-danger ms-2">Essential</span>'
           : '';
 
         html += `
@@ -241,13 +246,15 @@ export default class extends Controller {
                          name="travel_plan[equipment_ids][]"
                          value="${item.id}"
                          class="form-check-input"
-                         ${isChecked || item.is_essential ? 'checked' : ''}>
+                         ${isChecked || isEssential ? 'checked' : ''}
+                         ${isEssential ? 'disabled' : ''}>
                   <label class="form-check-label" for="equipment_${item.id}">
-                    ${item.name} ${ownedBadge}
+                    ${item.name} ${ownedBadge} ${essentialBadge}
                   </label>
                   ${item.sources ? `<div><small class="badge bg-info">${item.sources.join(', ')}</small></div>` : ''}
                   <small class="d-block text-muted">${item.description || ''}</small>
                 </div>
+                ${isEssential ? `<input type="hidden" name="travel_plan[equipment_ids][]" value="${item.id}">` : ''}
               </div>
             </div>
           </div>
@@ -321,7 +328,7 @@ export default class extends Controller {
     console.log('ℹ️ REMOVING LOCATION:', locationId);
     console.log('📋 Current locations BEFORE:', Array.from(this.selectedLocations));
 
-    // make sure to delete as the same type was added
+    // make sure we delete it as the same type it was added
     this.selectedLocations.delete(locationId);
 
     // log after removal to verify
