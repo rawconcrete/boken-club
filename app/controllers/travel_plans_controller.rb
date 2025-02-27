@@ -49,10 +49,10 @@ class TravelPlansController < ApplicationController
     @travel_plan = current_user.travel_plans.includes(:locations, :adventures, :equipment).find_by(id: params[:id])
     return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
 
-    # Get user's owned equipment
+    # get user's owned equipment
     @user_equipment_ids = current_user.equipment_ids
 
-    # Separate equipment into "pack" and "buy" lists
+    # separate equipment into "pack" and "buy" lists
     @equipment_to_pack = @travel_plan.travel_plan_equipments.includes(:equipment).where(equipment_id: @user_equipment_ids)
     @equipment_to_buy = @travel_plan.travel_plan_equipments.includes(:equipment).where.not(equipment_id: @user_equipment_ids)
 
@@ -89,7 +89,7 @@ class TravelPlansController < ApplicationController
     end
   end
 
-  # Update the checked status of an equipment item in the travel plan
+  # update the checked status of an equipment item in the travel plan
   def update_equipment_status
     equipment_id = params[:equipment_id]
     checked = params[:checked]
@@ -116,11 +116,11 @@ class TravelPlansController < ApplicationController
     end
   end
 
-  # Mark equipment as purchased and add to user's equipment
+  # mark equipment as purchased and add to user's equipment
   def mark_equipment_purchased
     equipment_id = params[:equipment_id]
 
-    # Find the equipment
+    # find the equipment
     equipment = Equipment.find_by(id: equipment_id)
 
     unless equipment
@@ -131,7 +131,7 @@ class TravelPlansController < ApplicationController
       return
     end
 
-    # Add to user's equipment if not already owned
+    # add to user's equipment if not already owned
     unless current_user.owns_equipment?(equipment_id)
       user_equipment = current_user.user_equipments.create(equipment_id: equipment_id)
 
