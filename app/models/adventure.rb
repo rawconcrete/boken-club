@@ -1,5 +1,6 @@
 # app/models/adventure.rb
 class Adventure < ApplicationRecord
+  has_one_attached :image
   has_many :locations_adventures
   has_many :locations, through: :locations_adventures
   has_many :travel_plans_adventures

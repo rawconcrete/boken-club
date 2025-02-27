@@ -3,6 +3,21 @@
   <% adventures.each do |adventure| %>
     <div class="col-md-4 mb-4">
       <div class="card">
+        <% if adventure.image.attached? %>
+          <%= image_tag adventure.image, class: "card-img-top adventure-image" %>
+        <% else %>
+          <% placeholder_image = case adventure.name.downcase.strip %>
+            <% when "hiking" then "hiking.jpg" %>
+            <% when "camping" then "camping.jpg" %>
+            <% when "kayaking" then "kayaking.jpg" %>
+            <% when "skiing & snowboarding" then "snowboarding.jpeg" %>
+            <% when "rock climbing" then "rock-climbing.jpg" %>
+            <% when "trekking" then "trekking.jpeg" %>
+            <% else "placeholder.jpg" %>
+          <% end %>
+          <%= image_tag placeholder_image, class: "card-img-top adventure-image" %>
+        <% end %>
+
         <div class="card-body">
           <h5 class="card-title"><%= adventure.name %></h5>
           <p class="card-text"><%= adventure.details %></p>
