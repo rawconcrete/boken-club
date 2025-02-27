@@ -3,6 +3,12 @@ Rails.application.routes.draw do
   devise_for :users
   root 'pages#home'
 
+  # profile routes
+  resource :profile, only: [:show, :edit, :update]
+
+  # user equipment routes
+  resources :user_equipments, only: [:create, :update, :destroy]
+
   resources :adventures, only: [:index, :show] do
     collection do
       get :index, format: :json
@@ -27,6 +33,10 @@ Rails.application.routes.draw do
     end
     member do
       delete :destroy
+      post :mark_equipment_purchased
+
+      # equipment status updates
+      patch 'equipment/:equipment_id', to: 'travel_plans#update_equipment_status', as: :update_equipment
     end
   end
 
