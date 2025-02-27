@@ -1,0 +1,79 @@
+<%# app/views/profiles/show.html.erb %>
+<div class="container">
+  <h1 class="text-white mb-4">My Profile</h1>
+  <div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Profile Information</h5>
+      <%= link_to 'Edit Profile', edit_profile_path, class: 'btn btn-sm btn-primary' %>
+    </div>
+    <div class="card-body">
+      <p><strong>Email:</strong> <%= @user.email %></p>
+    </div>
+  </div>
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="mb-0">My Equipment</h5>
+    </div>
+    <div class="card-body">
+      <% if @user.equipment.any? %>
+        <div class="row">
+          <% @equipment_by_category.each do |category, equipment_list| %>
+            <% user_equipment_in_category = equipment_list.select { |e| @user_equipment_ids.include?(e.id) } %>
+            <% if user_equipment_in_category.any? %>
+              <div class="col-md-6 mb-4">
+                <h6 class="text-capitalize"><%= category %></h6>
+                <ul class="list-group">
+                  <% user_equipment_in_category.each do |equipment| %>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      <%= equipment.name %>
+                      <span class="text-muted small"><%= equipment.description %></span>
+                    </li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+        <%= link_to 'Edit My Equipment', edit_profile_path, class: 'btn btn-primary' %>
+      <% else %>
+        <div class="alert alert-info">
+          You haven't added any equipment to your profile yet.
+          <%= link_to 'Add Your Equipment', edit_profile_path, class: 'alert-link' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="mb-0">My Travel Plans</h5>
+    </div>
+    <div class="card-body">
+      <% if @user.travel_plans.any? %>
+        <div class="row">
+          <% @user.travel_plans.order(created_at: :desc).each do |plan| %>
+            <div class="col-md-4 mb-3">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h5 class="card-title"><%= plan.title %></h5>
+                  <p class="card-text"><%= plan.content %></p>
+                  <p class="card-text">
+                    <strong>Status:</strong>
+                    <span class="<%= status_color_class(plan.status) %>">
+                      <%= plan.status&.capitalize || 'Not Set' %>
+                    </span>
+                  </p>
+                  <%= link_to "View Plan", travel_plan_path(plan), class: "btn btn-primary btn-sm" %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="alert alert-info">
+          You don't have any travel plans yet.
+          <%= link_to 'Create a Travel Plan', new_travel_plan_path, class: 'alert-link' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
