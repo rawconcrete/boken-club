@@ -19,6 +19,8 @@ class User < ApplicationRecord
 
   # check if user owns specific equipment
   def owns_equipment?(equipment_id)
+    # convert to integer if string
+    equipment_id = equipment_id.to_i if equipment_id.is_a?(String)
     equipment_ids.include?(equipment_id)
   end
 
