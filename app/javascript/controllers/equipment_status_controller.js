@@ -46,12 +46,21 @@ export default class extends Controller {
     const equipmentId = button.dataset.equipmentId;
     const travelPlanId = button.dataset.travelPlanId;
 
+    // get CSRF token from meta tag
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+    if (!csrfToken) {
+      console.error('CSRF token not found');
+      return;
+    }
+
     // send request to mark equipment as purchased
     fetch(`/travel_plans/${travelPlanId}/mark_equipment_purchased`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        'X-CSRF-Token': csrfToken,
+        'Accept': 'application/json'
       },
       body: JSON.stringify({ equipment_id: equipmentId })
     })
