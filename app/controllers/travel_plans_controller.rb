@@ -1,7 +1,7 @@
 # app/controllers/travel_plans_controller.rb
 class TravelPlansController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_travel_plan, only: [:show, :edit, :update, :destroy, :mark_equipment_purchased]
+  before_action :set_travel_plan, only: [:show, :edit, :update, :destroy, :mark_equipment_purchased, :update_equipment_status]
 
   def index
     @travel_plans = current_user.travel_plans.includes(:locations, :adventures)
@@ -89,6 +89,33 @@ class TravelPlansController < ApplicationController
     end
   end
 
+  # update the checked status of an equipment item in the travel plan
+  def update_equipment_status
+    equipment_id = params[:equipment_id]
+    checked = params[:checked]
+
+    travel_plan_equipment = @travel_plan.travel_plan_equipments.find_by(equipment_id: equipment_id)
+
+    if travel_plan_equipment
+      if travel_plan_equipment.update(checked: checked)
+        respond_to do |format|
+          format.html { redirect_to @travel_plan, notice: 'Equipment status updated.' }
+          format.json { render json: { success: true } }
+        end
+      else
+        respond_to do |format|
+          format.html { redirect_to @travel_plan, alert: 'Failed to update equipment status.' }
+          format.json { render json: { success: false, errors: travel_plan_equipment.errors.full_messages }, status: :unprocessable_entity }
+        end
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to @travel_plan, alert: 'Equipment not found in this travel plan.' }
+        format.json { render json: { success: false, error: 'Equipment not found in this travel plan' }, status: :not_found }
+      end
+    end
+  end
+
   # mark equipment as purchased and add to user's equipment
   def mark_equipment_purchased
     equipment_id = params[:equipment_id]
@@ -102,7 +129,10 @@ class TravelPlansController < ApplicationController
       current_user.user_equipments.create(equipment_id: equipment_id)
     end
 
-    redirect_to @travel_plan, notice: "#{equipment.name} marked as purchased and added to your equipment"
+    respond_to do |format|
+      format.html { redirect_to @travel_plan, notice: "#{equipment.name} marked as purchased and added to your equipment" }
+      format.json { render json: { success: true, message: "#{equipment.name} marked as purchased" } }
+    end
   end
 
   # equipment sorting stuff is here
@@ -138,6 +168,7 @@ class TravelPlansController < ApplicationController
         result = equipment_items.as_json(only: [:id, :name, :description, :category]).map do |item|
           item["sources"] = []
           item["user_owned"] = current_user.owns_equipment?(item["id"])
+          item["is_essential"] = basic_equipment_names.include?(item["name"])
 
           # first check if it's a basic item
           if basic_equipment_names.include?(item["name"])
@@ -168,7 +199,8 @@ class TravelPlansController < ApplicationController
           .map do |item|
             item.merge({
               "sources" => ["Basic"],
-              "user_owned" => current_user.owns_equipment?(item["id"])
+              "user_owned" => current_user.owns_equipment?(item["id"]),
+              "is_essential" => true
             })
           end
       end
@@ -179,7 +211,8 @@ class TravelPlansController < ApplicationController
         .map do |item|
           item.merge({
             "sources" => ["Basic"],
-            "user_owned" => current_user.owns_equipment?(item["id"])
+            "user_owned" => current_user.owns_equipment?(item["id"]),
+            "is_essential" => true
           })
         end
     end
