@@ -17,6 +17,7 @@
 @import "components/searchbar";
 @import "components/buttons";
 @import "components/treecursor";
+@import 'components/adventure';
 
 // for Geocoder Mapbox
 @import url("https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css");
@@ -85,8 +86,44 @@ body:not(.home) {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   border-radius: 15px;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 97%;
+  background-color: rgba(255, 255, 255, 0.90);
+  transition: background-color 0.3s ease;
 }
 
+.card-body {
+  flex-grow: 1;
+  min-height: 100px;
+  overflow: hidden;
+}
+
+.card-img-top {
+  object-fit: cover;
+  height: 200px;
+}
+
+.card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.adventure-card {
+  transition: transform 0.3s ease-in-out; /* Transition for the adventure card */
+}
+
+.adventure-card .card-img-top {
+  transition: transform 0.3s ease-in-out; /* Transition for the image */
+}
+
+.adventure-card:hover {
+  transform: scale(1.05); /* Scale the adventure card */
+}
+
+.adventure-card:hover .card-img-top {
+  transform: scale(1.05); /* Scale the image when hovering over the adventure card */
+}
 // Keyframes for the bounce effect
 @keyframes moveBackgroundBounce {
   0% {

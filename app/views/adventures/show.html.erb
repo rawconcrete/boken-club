@@ -5,6 +5,8 @@
     <div class="col-md-8">
       <div class="card">
         <div class="card-body">
+        <h1><%= @adventure.name %></h1>
+          <p><%= @adventure.details %></p>
           <p><strong>Details:</strong> <%= @adventure.details %></p>
           <% if @adventure.tips.present? %>
             <p><strong>Tips:</strong> <%= @adventure.tips %></p>
@@ -15,8 +17,6 @@
           <% if @adventure.skills.present? %>
             <p><strong>Required Skills:</strong> <%= @adventure.skills %></p>
           <% end %>
-          <h1><%= @adventure.name %></h1>
-          <p><%= @adventure.details %></p>
 
           <div data-controller="map"
           data-map-api-key-value="<%= ENV['MAPBOX_API_KEY'] %>"
