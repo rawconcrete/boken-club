@@ -1,0 +1,25 @@
+<%# app/views/adventures/show.html.erb  %>
+<div class="container text-white">
+  <h1><%= @skill.name %></h1>
+  <div class="row mt-4">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <p><strong>Details:</strong> <%= @skill.details %></p>
+          <%= link_to "Back", :back,
+          class: "btn btn-primary mt-3",
+          data: { turbo_frame: "_top" } %>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5>Equipment Needed</h5>
+          <%# join table needed over here I think %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
