@@ -27,7 +27,7 @@ export default class extends Controller {
       this.adventuresValue.forEach(adventure => this.addAdventureTag(adventure))
     }
 
-    // Add this event listener
+    // add event listener
     document.addEventListener('equipment-update', () => {
       console.log("Manual equipment update triggered");
       this.updateEquipment();
@@ -200,23 +200,67 @@ export default class extends Controller {
       return;
     }
 
-    this.equipmentListTarget.innerHTML = equipment.map(item => `
-      <div class="col-md-6 mb-2">
-        <div class="form-check">
-          <input type="checkbox"
-                 id="equipment_${item.id}"
-                 name="travel_plan[equipment_ids][]"
-                 value="${item.id}"
-                 class="form-check-input"
-                 ${this.isEquipmentSelected(item.id) ? 'checked' : ''}>
-          <label class="form-check-label" for="equipment_${item.id}">
-            ${item.name}
-          </label>
-          ${item.sources ? `<div><small class="badge bg-info">${item.sources.join(', ')}</small></div>` : ''}
-          <small class="d-block text-muted">${item.description || ''}</small>
+    // group equipment by category
+    const equipmentByCategory = equipment.reduce((acc, item) => {
+      if (!acc[item.category]) {
+        acc[item.category] = [];
+      }
+      acc[item.category].push(item);
+      return acc;
+    }, {});
+
+    // generate HTML
+    let html = '';
+
+    Object.entries(equipmentByCategory).forEach(([category, items]) => {
+      html += `
+        <div class="col-12 mb-3">
+          <h6 class="text-capitalize">${category}</h6>
+          <div class="row">
+      `;
+
+      items.forEach(item => {
+        const isChecked = this.isEquipmentSelected(item.id);
+
+        // different styling based on whether user already owns the item
+        const cardClasses = item.user_owned
+          ? 'border-success bg-success bg-opacity-10'
+          : 'border-primary';
+
+        const ownedBadge = item.user_owned
+          ? '<span class="badge bg-success ms-2">You own this</span>'
+          : '';
+
+        html += `
+          <div class="col-md-6 mb-2">
+            <div class="card ${cardClasses}">
+              <div class="card-body p-3">
+                <div class="form-check">
+                  <input type="checkbox"
+                         id="equipment_${item.id}"
+                         name="travel_plan[equipment_ids][]"
+                         value="${item.id}"
+                         class="form-check-input"
+                         ${isChecked || item.is_essential ? 'checked' : ''}>
+                  <label class="form-check-label" for="equipment_${item.id}">
+                    ${item.name} ${ownedBadge}
+                  </label>
+                  ${item.sources ? `<div><small class="badge bg-info">${item.sources.join(', ')}</small></div>` : ''}
+                  <small class="d-block text-muted">${item.description || ''}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `
+          </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    });
+
+    this.equipmentListTarget.innerHTML = html;
   }
 
   isEquipmentSelected(equipmentId) {
@@ -277,15 +321,15 @@ export default class extends Controller {
     console.log('ℹ️ REMOVING LOCATION:', locationId);
     console.log('📋 Current locations BEFORE:', Array.from(this.selectedLocations));
 
-    // Make sure we delete it as the same type it was added
+    // make sure to delete as the same type was added
     this.selectedLocations.delete(locationId);
 
-    // Log after removal to verify
+    // log after removal to verify
     console.log('📋 Current locations AFTER:', Array.from(this.selectedLocations));
 
     event.currentTarget.closest('.badge').remove();
 
-    // Force refresh of both adventures and equipment
+    // force refresh of both adventures and equipment
     console.log('🔄 Forcing full refresh...');
     this.updateAvailableAdventures();
     setTimeout(() => this.updateEquipment(), 100);
