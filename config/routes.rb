@@ -3,6 +3,9 @@ Rails.application.routes.draw do
   devise_for :users
   root 'pages#home'
 
+    # profile routes
+    resource :profile, only: [:show, :edit, :update]
+
   resources :adventures, only: [:index, :show] do
     collection do
       get :index, format: :json
