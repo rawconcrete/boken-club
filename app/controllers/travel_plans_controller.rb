@@ -49,10 +49,10 @@ class TravelPlansController < ApplicationController
     @travel_plan = current_user.travel_plans.includes(:locations, :adventures, :equipment).find_by(id: params[:id])
     return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
 
-    # get user's owned equipment
+    # Get user's owned equipment
     @user_equipment_ids = current_user.equipment_ids
 
-    # separate equipment into "pack" and "buy" lists
+    # Separate equipment into "pack" and "buy" lists
     @equipment_to_pack = @travel_plan.travel_plan_equipments.includes(:equipment).where(equipment_id: @user_equipment_ids)
     @equipment_to_buy = @travel_plan.travel_plan_equipments.includes(:equipment).where.not(equipment_id: @user_equipment_ids)
 
@@ -89,7 +89,7 @@ class TravelPlansController < ApplicationController
     end
   end
 
-  # update the checked status of an equipment item in the travel plan
+  # Update the checked status of an equipment item in the travel plan
   def update_equipment_status
     equipment_id = params[:equipment_id]
     checked = params[:checked]
@@ -116,17 +116,32 @@ class TravelPlansController < ApplicationController
     end
   end
 
-  # mark equipment as purchased and add to user's equipment
+  # Mark equipment as purchased and add to user's equipment
   def mark_equipment_purchased
     equipment_id = params[:equipment_id]
 
-    # find the equipment
+    # Find the equipment
     equipment = Equipment.find_by(id: equipment_id)
-    return redirect_to @travel_plan, alert: "Equipment not found" unless equipment
 
-    # add to user's equipment if not already owned
+    unless equipment
+      respond_to do |format|
+        format.html { redirect_to @travel_plan, alert: "Equipment not found" }
+        format.json { render json: { success: false, error: "Equipment not found" }, status: :not_found }
+      end
+      return
+    end
+
+    # Add to user's equipment if not already owned
     unless current_user.owns_equipment?(equipment_id)
-      current_user.user_equipments.create(equipment_id: equipment_id)
+      user_equipment = current_user.user_equipments.create(equipment_id: equipment_id)
+
+      unless user_equipment.persisted?
+        respond_to do |format|
+          format.html { redirect_to @travel_plan, alert: "Failed to add equipment to your collection" }
+          format.json { render json: { success: false, errors: user_equipment.errors.full_messages }, status: :unprocessable_entity }
+        end
+        return
+      end
     end
 
     respond_to do |format|
