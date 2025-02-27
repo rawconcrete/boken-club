@@ -3,8 +3,11 @@ Rails.application.routes.draw do
   devise_for :users
   root 'pages#home'
 
-    # profile routes
-    resource :profile, only: [:show, :edit, :update]
+  # profile routes
+  resource :profile, only: [:show, :edit, :update]
+
+  # user equipment routes
+  resources :user_equipments, only: [:create, :update, :destroy]
 
   resources :adventures, only: [:index, :show] do
     collection do
@@ -24,6 +27,7 @@ Rails.application.routes.draw do
     end
     member do
       delete :destroy
+      post :mark_equipment_purchased
     end
   end
 
