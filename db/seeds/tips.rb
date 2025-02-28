@@ -6,12 +6,12 @@ def create_tips
     {
       title: "Essential Packing Tips",
       content: "Always pack layers and check weather forecasts",
-      category: "packing"
+      category: "Packing"
     },
     {
       title: "Safety First",
       content: "Tell someone your plans and expected return time",
-      category: "safety"
+      category: "Safety"
     }
   ]
 
