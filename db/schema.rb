@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_02_28_153718) do
+ActiveRecord::Schema[7.1].define(version: 2025_02_28_235447) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -83,6 +83,18 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_28_153718) do
     t.boolean "summer_recommended", default: false
     t.boolean "autumn_recommended", default: false
     t.boolean "winter_recommended", default: false
+  end
+
+  create_table "equipment_skills", force: :cascade do |t|
+    t.bigint "equipment_id", null: false
+    t.bigint "skill_id", null: false
+    t.text "usage_tips"
+    t.boolean "is_required", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["equipment_id", "skill_id"], name: "index_equipment_skills_on_equipment_id_and_skill_id", unique: true
+    t.index ["equipment_id"], name: "index_equipment_skills_on_equipment_id"
+    t.index ["skill_id"], name: "index_equipment_skills_on_skill_id"
   end
 
   create_table "location_equipments", force: :cascade do |t|
@@ -232,6 +244,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_28_153718) do
   add_foreign_key "adventure_equipments", "equipment"
   add_foreign_key "adventure_skills", "adventures"
   add_foreign_key "adventure_skills", "skills"
+  add_foreign_key "equipment_skills", "equipment"
+  add_foreign_key "equipment_skills", "skills"
   add_foreign_key "location_equipments", "equipment"
   add_foreign_key "location_equipments", "locations"
   add_foreign_key "location_skills", "locations"
