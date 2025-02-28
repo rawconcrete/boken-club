@@ -50,6 +50,13 @@ Rails.application.routes.draw do
     resources :locations, only: [:new, :create, :edit, :update, :destroy]
     resources :adventures, only: [:new, :create, :edit, :update, :destroy]
     get 'dashboard', to: 'admin#dashboard'
+    resources :skills do
+      member do
+        get :associations
+        patch :update_adventure_associations
+        patch :update_location_associations
+      end
+    end
   end
 
 end
