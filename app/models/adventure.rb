@@ -7,7 +7,9 @@ class Adventure < ApplicationRecord
   has_many :adventure_equipments, dependent: :destroy
   has_many :equipment, through: :adventure_equipments
 
-  # add the skill associations
   has_many :adventure_skills, dependent: :destroy
   has_many :skills, through: :adventure_skills
+
+  # Add Active Storage association
+  has_one_attached :image
 end
