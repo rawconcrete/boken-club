@@ -14,127 +14,6 @@ def create_skills
       safety_critical: true
     },
     {
-      name: "Backcountry Navigation with GPS",
-      details: "Using GPS devices and smartphone apps for wilderness navigation while understanding their limitations.",
-      difficulty: "intermediate",
-      category: "navigation",
-      instructions: "1. Learn to use your specific GPS device or app before heading out\n2. Always carry physical maps and compass as backup\n3. Understand coordinate systems and datum settings\n4. Pre-download maps for offline use\n5. Conserve battery power through proper settings\n6. Track your route and set waypoints at key locations",
-      resources: "- 'GPS Made Easy' by Lawrence Letham\n- Gaia GPS tutorials\n- AllTrails user guides",
-      video_url: "https://www.youtube.com/embed/V9qOU8Z5ws0",
-      safety_critical: false
-    },
-    {
-      name: "Backpack Fitting and Packing",
-      details: "Properly fitting a backpack to your body and efficiently organizing gear for comfort and accessibility.",
-      difficulty: "beginner",
-      category: "equipment",
-      instructions: "1. Measure your torso length for correct pack size\n2. Adjust hip belt to sit on hip bones\n3. Tighten shoulder straps appropriately\n4. Pack heaviest items close to your back and centered\n5. Keep frequently used items accessible\n6. Balance weight evenly\n7. Use compression straps to stabilize load",
-      resources: "- REI backpack fitting guides\n- 'The Ultimate Hiker's Gear Guide' by Andrew Skurka",
-      video_url: "https://www.youtube.com/embed/0SGiGZlppMM",
-      safety_critical: false
-    },
-    {
-      name: "Wilderness Signaling",
-      details: "Methods to signal for help in emergency situations in remote areas.",
-      difficulty: "intermediate",
-      category: "safety",
-      instructions: "1. Universal distress signal: 3 of anything (whistle blasts, fires, etc.)\n2. Use signal mirror on sunny days\n3. Create large, visible ground signals in clearings\n4. Use whistle (carries further than voice)\n5. Know how to operate emergency beacons/PLBs\n6. Understand radio communications protocols if carrying",
-      resources: "- 'Wilderness 911' by Eric Weiss\n- Search and Rescue organizations' recommendations",
-      video_url: "https://www.youtube.com/embed/tvBxPbQFUWA",
-      safety_critical: true
-    },
-    {
-      name: "Layering for Mountain Weather",
-      details: "Using clothing layers strategically to maintain comfort and safety in variable mountain conditions.",
-      difficulty: "beginner",
-      category: "equipment",
-      instructions: "1. Start with moisture-wicking base layer\n2. Add insulating mid-layer(s) as needed\n3. Top with waterproof/windproof shell\n4. Adjust layers before you get too hot or cold\n5. Keep a dry set of clothes for camp/sleeping\n6. Understand materials and their properties (down vs. synthetic, etc.)",
-      resources: "- 'Mountaineering: Freedom of the Hills' clothing chapter\n- Outdoor Research layering guide",
-      video_url: "https://www.youtube.com/embed/Wbu1E6yz_OY",
-      safety_critical: true
-    }
-  ]
-
-  # Create all the skills
-  skills_data.each do |skill_data|
-    Skill.create!(skill_data)
-  end
-
-  puts "Created #{Skill.count} skills"
-
-  # Associate skills with adventures
-  adventure_skills = {
-    "Hiking" => ["Map Reading & Navigation", "Weather Reading", "Trail Etiquette", "Bear Safety", "Wilderness First Aid", "Backcountry Navigation with GPS", "Backpack Fitting and Packing", "Layering for Mountain Weather"],
-
-    "Rock Climbing" => ["Rock Climbing Basics", "Knot Tying", "Weather Reading", "Wilderness First Aid", "Wilderness Signaling"],
-
-    "Camping" => ["Campsite Selection", "Tent Pitching", "Fire Building", "Water Purification", "Bear Safety", "Knot Tying", "Leave No Trace Principles", "Backcountry Cooking", "Backpack Fitting and Packing"],
-
-    "Trekking" => ["Map Reading & Navigation", "Wilderness First Aid", "Water Purification", "River Crossing", "Campsite Selection", "Weather Reading", "Tent Pitching", "Backcountry Navigation with GPS", "Backpack Fitting and Packing", "Layering for Mountain Weather"],
-
-    "Kayaking" => ["Water Purification", "Weather Reading", "Wilderness First Aid", "Wilderness Signaling"],
-
-    "Caving" => ["Wilderness First Aid", "Knot Tying", "Wilderness Signaling"],
-
-    "Snowshoeing" => ["Map Reading & Navigation", "Winter Camping", "Avalanche Safety", "Weather Reading", "Wilderness First Aid", "Layering for Mountain Weather"],
-
-    "Skiing & Snowboarding" => ["Avalanche Safety", "Winter Camping", "Weather Reading", "Wilderness First Aid", "Layering for Mountain Weather"],
-
-    "Mountaineering" => ["Map Reading & Navigation", "Knot Tying", "Weather Reading", "Avalanche Safety", "Wilderness First Aid", "Winter Camping", "Wilderness Signaling", "Layering for Mountain Weather"]
-  }
-
-  # Create the associations
-  adventure_skills.each do |adventure_name, skill_names|
-    adventure = Adventure.find_by(name: adventure_name)
-    next unless adventure
-
-    skill_names.each do |skill_name|
-      skill = Skill.find_by(name: skill_name)
-      next unless skill
-
-      # Create the association with some required and some optional
-      is_required = %w[Map\ Reading\ &\ Navigation Wilderness\ First\ Aid Weather\ Reading Avalanche\ Safety Water\ Purification].include?(skill_name)
-
-      AdventureSkill.create!(
-        adventure: adventure,
-        skill: skill,
-        is_required: is_required
-      )
-    end
-  end
-
-  # Associate skills with specific locations
-  location_skills = {
-    "Mount Fuji Fujiyoshida 5th Station" => ["Winter Camping", "Map Reading & Navigation", "Weather Reading", "Layering for Mountain Weather"],
-    "Shiretoko National Park" => ["Bear Safety", "Map Reading & Navigation", "Weather Reading", "Wilderness First Aid"],
-    "Zao Mountain Range" => ["Avalanche Safety", "Winter Camping", "Weather Reading", "Map Reading & Navigation"],
-    "Mount Tanigawa" => ["Avalanche Safety", "Weather Reading", "Rock Climbing Basics", "Wilderness First Aid", "Wilderness Signaling"]
-  }
-
-  # Create the associations
-  location_skills.each do |location_name, skill_names|
-    location = Location.find_by(name: location_name)
-    next unless location
-
-    skill_names.each do |skill_name|
-      skill = Skill.find_by(name: skill_name)
-      next unless skill
-
-      # Create the association with some required and some optional
-      is_required = %w[Avalanche\ Safety Bear\ Safety].include?(skill_name)
-
-      LocationSkill.create!(
-        location: location,
-        skill: skill,
-        is_required: is_required
-      )
-    end
-  end
-
-  puts "Created #{AdventureSkill.count} adventure-skill associations"
-  puts "Created #{LocationSkill.count} location-skill associations"
-end
-    {
       name: "Campsite Selection",
       details: "Selecting a safe, comfortable, and environmentally responsible campsite.",
       difficulty: "beginner",
@@ -284,6 +163,127 @@ end
       video_url: "https://www.youtube.com/embed/wDhLKGDCHzU",
       safety_critical: false
     },
+    {
+      name: "Backcountry Navigation with GPS",
+      details: "Using GPS devices and smartphone apps for wilderness navigation while understanding their limitations.",
+      difficulty: "intermediate",
+      category: "navigation",
+      instructions: "1. Learn to use your specific GPS device or app before heading out\n2. Always carry physical maps and compass as backup\n3. Understand coordinate systems and datum settings\n4. Pre-download maps for offline use\n5. Conserve battery power through proper settings\n6. Track your route and set waypoints at key locations",
+      resources: "- 'GPS Made Easy' by Lawrence Letham\n- Gaia GPS tutorials\n- AllTrails user guides",
+      video_url: "https://www.youtube.com/embed/V9qOU8Z5ws0",
+      safety_critical: false
+    },
+    {
+      name: "Backpack Fitting and Packing",
+      details: "Properly fitting a backpack to your body and efficiently organizing gear for comfort and accessibility.",
+      difficulty: "beginner",
+      category: "equipment",
+      instructions: "1. Measure your torso length for correct pack size\n2. Adjust hip belt to sit on hip bones\n3. Tighten shoulder straps appropriately\n4. Pack heaviest items close to your back and centered\n5. Keep frequently used items accessible\n6. Balance weight evenly\n7. Use compression straps to stabilize load",
+      resources: "- REI backpack fitting guides\n- 'The Ultimate Hiker's Gear Guide' by Andrew Skurka",
+      video_url: "https://www.youtube.com/embed/0SGiGZlppMM",
+      safety_critical: false
+    },
+    {
+      name: "Wilderness Signaling",
+      details: "Methods to signal for help in emergency situations in remote areas.",
+      difficulty: "intermediate",
+      category: "safety",
+      instructions: "1. Universal distress signal: 3 of anything (whistle blasts, fires, etc.)\n2. Use signal mirror on sunny days\n3. Create large, visible ground signals in clearings\n4. Use whistle (carries further than voice)\n5. Know how to operate emergency beacons/PLBs\n6. Understand radio communications protocols if carrying",
+      resources: "- 'Wilderness 911' by Eric Weiss\n- Search and Rescue organizations' recommendations",
+      video_url: "https://www.youtube.com/embed/tvBxPbQFUWA",
+      safety_critical: true
+    },
+    {
+      name: "Layering for Mountain Weather",
+      details: "Using clothing layers strategically to maintain comfort and safety in variable mountain conditions.",
+      difficulty: "beginner",
+      category: "equipment",
+      instructions: "1. Start with moisture-wicking base layer\n2. Add insulating mid-layer(s) as needed\n3. Top with waterproof/windproof shell\n4. Adjust layers before you get too hot or cold\n5. Keep a dry set of clothes for camp/sleeping\n6. Understand materials and their properties (down vs. synthetic, etc.)",
+      resources: "- 'Mountaineering: Freedom of the Hills' clothing chapter\n- Outdoor Research layering guide",
+      video_url: "https://www.youtube.com/embed/Wbu1E6yz_OY",
+      safety_critical: true
+    }
+  ]
+
+  # Create all the skills
+  skills_data.each do |skill_data|
+    Skill.create!(skill_data)
+  end
+
+  puts "Created #{Skill.count} skills"
+
+  # Associate skills with adventures
+  adventure_skills = {
+    "Hiking" => ["Map Reading & Navigation", "Weather Reading", "Trail Etiquette", "Bear Safety", "Wilderness First Aid", "Backcountry Navigation with GPS", "Backpack Fitting and Packing", "Layering for Mountain Weather"],
+
+    "Rock Climbing" => ["Rock Climbing Basics", "Knot Tying", "Weather Reading", "Wilderness First Aid", "Wilderness Signaling"],
+
+    "Camping" => ["Campsite Selection", "Tent Pitching", "Fire Building", "Water Purification", "Bear Safety", "Knot Tying", "Leave No Trace Principles", "Backcountry Cooking", "Backpack Fitting and Packing"],
+
+    "Trekking" => ["Map Reading & Navigation", "Wilderness First Aid", "Water Purification", "River Crossing", "Campsite Selection", "Weather Reading", "Tent Pitching", "Backcountry Navigation with GPS", "Backpack Fitting and Packing", "Layering for Mountain Weather"],
+
+    "Kayaking" => ["Water Purification", "Weather Reading", "Wilderness First Aid", "Wilderness Signaling"],
+
+    "Caving" => ["Wilderness First Aid", "Knot Tying", "Wilderness Signaling"],
+
+    "Snowshoeing" => ["Map Reading & Navigation", "Winter Camping", "Avalanche Safety", "Weather Reading", "Wilderness First Aid", "Layering for Mountain Weather"],
+
+    "Skiing & Snowboarding" => ["Avalanche Safety", "Winter Camping", "Weather Reading", "Wilderness First Aid", "Layering for Mountain Weather"],
+
+    "Mountaineering" => ["Map Reading & Navigation", "Knot Tying", "Weather Reading", "Avalanche Safety", "Wilderness First Aid", "Winter Camping", "Wilderness Signaling", "Layering for Mountain Weather"]
+  }
+
+  # Create the associations
+  adventure_skills.each do |adventure_name, skill_names|
+    adventure = Adventure.find_by(name: adventure_name)
+    next unless adventure
+
+    skill_names.each do |skill_name|
+      skill = Skill.find_by(name: skill_name)
+      next unless skill
+
+      # Create the association with some required and some optional
+      is_required = %w[Map\ Reading\ &\ Navigation Wilderness\ First\ Aid Weather\ Reading Avalanche\ Safety Water\ Purification].include?(skill_name)
+
+      AdventureSkill.create!(
+        adventure: adventure,
+        skill: skill,
+        is_required: is_required
+      )
+    end
+  end
+
+  # Associate skills with specific locations
+  location_skills = {
+    "Mount Fuji Fujiyoshida 5th Station" => ["Winter Camping", "Map Reading & Navigation", "Weather Reading", "Layering for Mountain Weather"],
+    "Shiretoko National Park" => ["Bear Safety", "Map Reading & Navigation", "Weather Reading", "Wilderness First Aid"],
+    "Zao Mountain Range" => ["Avalanche Safety", "Winter Camping", "Weather Reading", "Map Reading & Navigation"],
+    "Mount Tanigawa" => ["Avalanche Safety", "Weather Reading", "Rock Climbing Basics", "Wilderness First Aid", "Wilderness Signaling"]
+  }
+
+  # Create the associations
+  location_skills.each do |location_name, skill_names|
+    location = Location.find_by(name: location_name)
+    next unless location
+
+    skill_names.each do |skill_name|
+      skill = Skill.find_by(name: skill_name)
+      next unless skill
+
+      # Create the association with some required and some optional
+      is_required = %w[Avalanche\ Safety Bear\ Safety].include?(skill_name)
+
+      LocationSkill.create!(
+        location: location,
+        skill: skill,
+        is_required: is_required
+      )
+    end
+  end
+
+  puts "Created #{AdventureSkill.count} adventure-skill associations"
+  puts "Created #{LocationSkill.count} location-skill associations"
+end
 # old db/seeds/skills.rb
 # def create_skills
 #   puts "Creating skills..."
