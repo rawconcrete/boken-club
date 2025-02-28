@@ -1,0 +1,87 @@
+<%# app/views/admin/skills/_form.html.erb %>
+<%= form_with(model: [:admin, @skill], local: true) do |f| %>
+  <% if @skill.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(@skill.errors.count, "error") %> prohibited this skill from being saved:</h4>
+      <ul>
+        <% @skill.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4 class="mb-0">Basic Information</h4>
+    </div>
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <%= f.label :name, class: "form-label" %>
+          <%= f.text_field :name, class: "form-control" %>
+        </div>
+        <div class="col-md-3">
+          <%= f.label :difficulty, class: "form-label" %>
+          <%= f.select :difficulty,
+              options_for_select([
+                ['Beginner', 'beginner'],
+                ['Intermediate', 'intermediate'],
+                ['Advanced', 'advanced']
+              ], @skill.difficulty),
+              {}, { class: "form-select" } %>
+        </div>
+        <div class="col-md-3">
+          <%= f.label :category, class: "form-label" %>
+          <%= f.select :category,
+              options_for_select([
+                ['Navigation', 'navigation'],
+                ['Survival', 'survival'],
+                ['Camping', 'camping'],
+                ['Safety', 'safety'],
+                ['First Aid', 'first_aid'],
+                ['Climbing', 'climbing'],
+                ['Water', 'water'],
+                ['Environmental', 'environmental'],
+                ['Equipment', 'equipment']
+              ], @skill.category),
+              {}, { class: "form-select" } %>
+        </div>
+      </div>
+      <div class="mb-3">
+        <%= f.label :details, "Description", class: "form-label" %>
+        <%= f.text_area :details, class: "form-control", rows: 3 %>
+      </div>
+      <div class="form-check mb-3">
+        <%= f.check_box :safety_critical, class: "form-check-input" %>
+        <%= f.label :safety_critical, "This is a safety-critical skill", class: "form-check-label" %>
+        <div class="form-text">Safety-critical skills are essential for preventing accidents or responding to emergencies.</div>
+      </div>
+    </div>
+  </div>
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4 class="mb-0">Learning Information</h4>
+    </div>
+    <div class="card-body">
+      <div class="mb-3">
+        <%= f.label :instructions, "How to Learn This Skill", class: "form-label" %>
+        <div class="form-text mb-2">Step-by-step instructions for learning this skill. Use numbered lists.</div>
+        <%= f.text_area :instructions, class: "form-control", rows: 5 %>
+      </div>
+      <div class="mb-3">
+        <%= f.label :resources, "Additional Resources", class: "form-label" %>
+        <div class="form-text mb-2">Books, websites, courses, etc. for learning more.</div>
+        <%= f.text_area :resources, class: "form-control", rows: 3 %>
+      </div>
+      <div class="mb-3">
+        <%= f.label :video_url, "Tutorial Video URL", class: "form-label" %>
+        <div class="form-text mb-2">YouTube embed URL (e.g., https://www.youtube.com/embed/VIDEOID)</div>
+        <%= f.text_field :video_url, class: "form-control" %>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex justify-content-between">
+    <%= link_to "Cancel", admin_skills_path, class: "btn btn-secondary" %>
+    <%= f.submit "Save Skill", class: "btn btn-primary" %>
+  </div>
+<% end %>

@@ -120,6 +120,52 @@
           </div>
         </div>
       </div>
+      <%# travel plan show for skills %>
+      <div class="mt-6">
+        <div class="card mb-4">
+          <div class="card-header bg-primary bg-opacity-25">
+            <h2 class="text-xl font-semibold mb-0">Skills for This Adventure</h2>
+          </div>
+          <div class="card-body">
+            <% if @travel_plan.skills.any? %>
+              <div class="row">
+                <% @travel_plan.skills.group_by(&:category).each do |category, category_skills| %>
+                  <div class="col-md-6 mb-4">
+                    <h5 class="text-capitalize"><%= category || 'Other' %></h5>
+                    <div class="list-group">
+                      <% category_skills.each do |skill| %>
+                        <div class="list-group-item">
+                          <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                              <h6 class="mb-1">
+                                <%= skill.name %>
+                                <% if skill.safety_critical %>
+                                  <span class="badge bg-warning text-dark ms-1">Safety Critical</span>
+                                <% end %>
+                              </h6>
+                              <span class="badge bg-<%= skill.difficulty == 'advanced' ? 'danger' : (skill.difficulty == 'intermediate' ? 'primary' : 'success') %>">
+                                <%= skill.difficulty&.capitalize || 'Beginner' %>
+                              </span>
+                              <p class="text-muted mt-1 mb-0"><%= truncate(skill.details, length: 100) %></p>
+                            </div>
+                            <%= link_to "Learn More", skill_path(skill), class: "btn btn-sm btn-outline-primary", data: { turbo_frame: "_top" } %>
+                          </div>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            <% else %>
+              <div class="alert alert-info">
+                <p>No specific skills have been added to this travel plan.</p>
+                <p>Edit the plan to add recommended skills based on your locations and adventures.</p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <%# end show for skills %>
     </div>
   </div>
 </div>

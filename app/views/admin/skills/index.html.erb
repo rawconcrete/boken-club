@@ -1,0 +1,45 @@
+<%# app/views/admin/skills/index.html.erb %>
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Manage Skills</h1>
+    <%= link_to "Add New Skill", new_admin_skill_path, class: "btn btn-primary" %>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Difficulty</th>
+              <th>Category</th>
+              <th>Safety Critical</th>
+              <th>Adventures</th>
+              <th>Locations</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @skills.each do |skill| %>
+              <tr>
+                <td><%= link_to skill.name, skill_path(skill) %></td>
+                <td><span class="badge bg-<%= skill.difficulty == 'advanced' ? 'danger' : (skill.difficulty == 'intermediate' ? 'warning' : 'success') %>"><%= skill.difficulty.capitalize %></span></td>
+                <td><%= skill.category.capitalize if skill.category.present? %></td>
+                <td><%= skill.safety_critical ? '<span class="badge bg-danger">Yes</span>'.html_safe : 'No' %></td>
+                <td><%= skill.adventures.count %></td>
+                <td><%= skill.locations.count %></td>
+                <td>
+                  <div class="btn-group btn-group-sm">
+                    <%= link_to "Edit", edit_admin_skill_path(skill), class: "btn btn-primary" %>
+                    <%= button_to "Delete", admin_skill_path(skill), method: :delete, class: "btn btn-danger",
+                        data: { turbo_confirm: "Are you sure? This will remove all associations with adventures and locations." } %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

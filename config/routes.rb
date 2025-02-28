@@ -30,10 +30,13 @@ Rails.application.routes.draw do
   resources :travel_plans do
     collection do
       get :get_recommended_equipment
+      get :get_recommended_skills
     end
     member do
       delete :destroy
       post :mark_equipment_purchased
+      post :add_skill      # add this line
+      delete :remove_skill # add this line
 
       # equipment status updates
       patch 'equipment/:equipment_id', to: 'travel_plans#update_equipment_status', as: :update_equipment
@@ -49,6 +52,13 @@ Rails.application.routes.draw do
     resources :locations, only: [:new, :create, :edit, :update, :destroy]
     resources :adventures, only: [:new, :create, :edit, :update, :destroy]
     get 'dashboard', to: 'admin#dashboard'
+    resources :skills do
+      member do
+        get :associations
+        patch :update_adventure_associations
+        patch :update_location_associations
+      end
+    end
   end
 
 end

@@ -35,6 +35,9 @@ export default class extends Controller {
 
     this.loadInitialSelections()
     this.updateAvailableAdventures()
+
+    // updated for skills recommendation
+    this.notifyLocationAdventureChange();
   }
 
   // helper method to properly handle ID conversions
@@ -293,6 +296,9 @@ export default class extends Controller {
 
     // call updateEquipment after DOM is updated
     setTimeout(() => this.updateEquipment(), 50);
+
+    // updated for skills recommendation
+    this.notifyLocationAdventureChange();
   }
 
   addAdventureTag(adventure) {
@@ -317,9 +323,11 @@ export default class extends Controller {
         <input type="hidden" name="travel_plan[adventure_ids][]" value="${adventureId}">
       </div>
     `);
-
     // call updateEquipment after DOM is updated
     setTimeout(() => this.updateEquipment(), 50);
+
+    // update for skills recs
+    this.notifyLocationAdventureChange();
   }
 
 
@@ -328,7 +336,7 @@ export default class extends Controller {
     console.log('ℹ️ REMOVING LOCATION:', locationId);
     console.log('📋 Current locations BEFORE:', Array.from(this.selectedLocations));
 
-    // make sure we delete it as the same type it was added
+    // delete as the same type as was added
     this.selectedLocations.delete(locationId);
 
     // log after removal to verify
@@ -340,6 +348,10 @@ export default class extends Controller {
     console.log('🔄 Forcing full refresh...');
     this.updateAvailableAdventures();
     setTimeout(() => this.updateEquipment(), 100);
+
+    // update for skills recs
+    this.notifyLocationAdventureChange();
+
   }
 
   removeAdventure(event) {
@@ -350,5 +362,76 @@ export default class extends Controller {
 
     // call updateEquipment after DOM is updated
     setTimeout(() => this.updateEquipment(), 50);
+
+    // update for skills recs
+    this.notifyLocationAdventureChange();
+  }
+
+  notifyLocationAdventureChange() {
+    console.log("Notifying location/adventure change");
+    console.log("Location IDs:", Array.from(this.selectedLocations));
+    console.log("Adventure IDs:", Array.from(this.selectedAdventures));
+
+    // Create an event to notify other controllers about the change
+    const event = new CustomEvent('locations-adventures-changed', {
+      detail: {
+        locationIds: Array.from(this.selectedLocations),
+        adventureIds: Array.from(this.selectedAdventures)
+      }
+    });
+
+    // Dispatch the event
+    document.dispatchEvent(event);
+  }
+
+  formSubmit(event) {
+    console.log("Form submit detected");
+
+    // Get all skill inputs
+  const skillInputs = document.querySelectorAll('input[name="travel_plan[skill_ids][]"]');
+  console.log(`Found ${skillInputs.length} skill ID inputs`);
+
+  // Log their values
+  if (skillInputs.length > 0) {
+    const skillIds = Array.from(skillInputs).map(input => input.value);
+    console.log("Skill IDs being submitted:", skillIds);
+  } else {
+    console.warn("No skill IDs found in the form submission");
+
+    // Emergency check - see if we can find skill IDs from the skills recommendation controller
+    const skillsController = this.application.getControllerForElementAndIdentifier(
+      document.querySelector('[data-controller="skills-recommendation"]'),
+      'skills-recommendation'
+    );
+
+    if (skillsController) {
+      console.log("Found skills recommendation controller");
+      console.log("Selected skill IDs:", skillsController.selectedSkillIdsValue);
+
+      // Emergency fix - manually add the hidden inputs if they're missing
+      if (skillsController.selectedSkillIdsValue && skillsController.selectedSkillIdsValue.length > 0) {
+          console.log("Adding missing skill IDs to the form");
+
+          // Get or create container
+          let container = document.getElementById('selected-skills-container');
+          if (!container) {
+            container = document.createElement('div');
+            container.id = 'selected-skills-container';
+            document.querySelector('form').appendChild(container);
+          }
+
+          // Add inputs
+          skillsController.selectedSkillIdsValue.forEach(skillId => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'travel_plan[skill_ids][]';
+            input.value = skillId;
+            container.appendChild(input);
+          });
+
+          console.log("Added skill inputs. Now have:", document.querySelectorAll('input[name="travel_plan[skill_ids][]"]').length);
+        }
+      }
+    }
   }
 }

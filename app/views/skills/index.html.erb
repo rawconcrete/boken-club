@@ -1,13 +1,54 @@
 <%# app/views/skills/index.html.erb %>
 <div class="container text-white">
-  <h1>Skills</h1>
-  <div class="search-bar mb-4">
-    <%= form_with url: skills_path, method: :get,
-    data: { controller: "search-skills", turbo_frame: "adventures-list" } do |f| %>
-      <%= f.text_field :query, class: "form-control", placeholder: "Search skills..." %>
-    <% end %>
+  <h1 class="mb-4">Outdoor Skills</h1>
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <%= form_with url: skills_path, method: :get,
+          data: { controller: "search-skills" },
+          class: "row g-2" do |f| %>
+        <div class="col-md-4">
+          <%= f.text_field :query, class: "form-control", placeholder: "Search skills...", value: params[:query] %>
+        </div>
+        <div class="col-md-2">
+          <%= f.select :difficulty,
+              options_for_select([
+                ['All Difficulties', ''],
+                ['Beginner', 'beginner'],
+                ['Intermediate', 'intermediate'],
+                ['Advanced', 'advanced']
+              ], params[:difficulty]),
+              {}, { class: "form-select", onchange: "this.form.requestSubmit()" } %>
+        </div>
+        <div class="col-md-3">
+          <%= f.select :category,
+              options_for_select([
+                ['All Categories', ''],
+                ['Navigation', 'navigation'],
+                ['Survival', 'survival'],
+                ['Camping', 'camping'],
+                ['Safety', 'safety'],
+                ['First Aid', 'first_aid'],
+                ['Climbing', 'climbing'],
+                ['Water', 'water'],
+                ['Environmental', 'environmental'],
+                ['Equipment', 'equipment']
+              ], params[:category]),
+              {}, { class: "form-select", onchange: "this.form.requestSubmit()" } %>
+        </div>
+        <div class="col-md-3">
+          <div class="form-check form-switch mt-2">
+            <%= f.check_box :safety_critical,
+                class: "form-check-input",
+                id: "safety_critical",
+                checked: params[:safety_critical] == 'true',
+                onchange: "this.form.requestSubmit()" %>
+            <%= f.label :safety_critical, "Safety Critical", class: "form-check-label text-white", for: "safety_critical" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
   </div>
-  <turbo-frame id="skills-list">
+  <div id="skills-list">
     <%= render "skills/list", skills: @skills %>
-  </turbo-frame>
+  </div>
 </div>
