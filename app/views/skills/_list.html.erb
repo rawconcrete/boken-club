@@ -2,11 +2,30 @@
 <div class="row">
   <% skills.each do |skill| %>
     <div class="col-md-4 mb-4">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title"><%= skill.name %></h5>
-          <%= link_to "View Details", skill_path(skill), class: "btn btn-primary", data: { turbo_frame: "_top" } %>
+      <div class="card h-100">
+        <div class="card-header <%= skill.safety_critical ? 'bg-danger text-white' : '' %>">
+          <h5 class="card-title mb-0">
+            <%= skill.name %>
+            <% if skill.safety_critical %>
+              <span class="badge bg-warning text-dark ms-2">Safety Critical</span>
+            <% end %>
+          </h5>
         </div>
+        <div class="card-body">
+          <div class="mb-2">
+            <span class="badge bg-primary"><%= skill.difficulty.capitalize %></span>
+            <span class="badge bg-secondary"><%= skill.category.capitalize %></span>
+          </div>
+          <p class="card-text"><%= truncate(skill.details, length: 150) %></p>
+          <%= link_to "Learn More", skill_path(skill), class: "btn btn-primary" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+  <% if skills.empty? %>
+    <div class="col-12">
+      <div class="alert alert-info">
+        No skills found matching your criteria. Try adjusting your search filters.
       </div>
     </div>
   <% end %>
