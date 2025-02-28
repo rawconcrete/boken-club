@@ -99,6 +99,20 @@
             </div>
           </div>
           <%# adventures card end %>
+          <%# skills card start %>
+          <div class="card mb-4" data-controller="skills-recommendation">
+            <div class="card-header">
+              <h5 class="mb-0">Recommended Skills</h5>
+            </div>
+            <div class="card-body">
+              <div data-skills-recommendation-target="skillsList">
+                <div class="alert alert-info">
+                  Select locations and adventures to see recommended skills.
+                </div>
+              </div>
+            </div>
+          </div>
+          <%# skills card end %>
           <div class="d-flex justify-content-end gap-2">
             <%= link_to 'Cancel', :back, class: "btn btn-secondary" %>
             <%= f.submit 'Save', class: "btn btn-primary" %>
