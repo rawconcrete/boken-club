@@ -88,11 +88,32 @@ export default class extends Controller {
     this.suggestionsTarget.innerHTML = suggestions
       .map(item => {
         if (item.type === "location") {
-          return `<div class="suggestion" data-action="click->search#goToLocation" data-id="${item.id}">${item.name}</div>`;
+          return `<div class="suggestion" data-action="click->search#goToLocation" data-id="${item.id}">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <strong>${item.name}</strong>
+                ${item.prefecture ? `<div class="text-muted small">${item.city || ''}, ${item.prefecture}</div>` : ''}
+              </div>
+              <span class="badge bg-info">Location</span>
+            </div>
+          </div>`;
         } else if (item.type === "adventure") {
-          return `<div class="suggestion" data-action="click->search#goToAdventure" data-id="${item.id}">${item.name}</div>`;
+          return `<div class="suggestion" data-action="click->search#goToAdventure" data-id="${item.id}">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <strong>${item.name}</strong>
+                <div class="text-muted small">${item.details ? item.details.substring(0, 60) + (item.details.length > 60 ? '...' : '') : ''}</div>
+              </div>
+              <span class="badge bg-success">Adventure</span>
+            </div>
+          </div>`;
         } else {
-          return `<div class="suggestion" data-action="click->search#searchIndex" data-category="${item.category}" data-query="${item.query}">${item.name}</div>`;
+          return `<div class="suggestion" data-action="click->search#searchIndex" data-category="${item.category}" data-query="${item.query}">
+            <div class="d-flex justify-content-between align-items-center">
+              <strong>${item.name}</strong>
+              <span class="badge bg-secondary">Search</span>
+            </div>
+          </div>`;
         }
       })
       .join("");
