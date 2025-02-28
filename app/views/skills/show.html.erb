@@ -2,7 +2,7 @@
 <div class="container">
   <div class="row mb-4">
     <div class="col">
-      <%= link_to "← Back to Skills", skills_path, class: "btn btn-outline-light" %>
+      <%= link_to "← Back to Skills", skills_path, class: "btn btn-outline-light", data: { turbo_frame: "_top" } %>
     </div>
   </div>
   <div class="card mb-4">
@@ -10,8 +10,8 @@
       <div class="d-flex justify-content-between align-items-center">
         <h1 class="mb-0"><%= @skill.name %></h1>
         <div>
-          <span class="badge bg-primary"><%= @skill.difficulty.capitalize %></span>
-          <span class="badge bg-secondary"><%= @skill.category.capitalize %></span>
+          <span class="badge bg-primary"><%= @skill.difficulty&.capitalize || 'Beginner' %></span>
+          <span class="badge bg-secondary"><%= @skill.category&.capitalize || 'General' %></span>
           <% if @skill.safety_critical %>
             <span class="badge bg-warning text-dark">Safety Critical</span>
           <% end %>
@@ -66,7 +66,7 @@
           <div class="card-body">
             <div class="list-group">
               <% @related_adventures.each do |adventure| %>
-                <%= link_to adventure_path(adventure), class: "list-group-item list-group-item-action" do %>
+                <%= link_to adventure_path(adventure), class: "list-group-item list-group-item-action", data: { turbo_frame: "_top" } do %>
                   <div class="d-flex w-100 justify-content-between">
                     <h5 class="mb-1"><%= adventure.name %></h5>
                   </div>
@@ -87,7 +87,7 @@
           <div class="card-body">
             <div class="list-group">
               <% @related_locations.each do |location| %>
-                <%= link_to location_path(location), class: "list-group-item list-group-item-action" do %>
+                <%= link_to location_path(location), class: "list-group-item list-group-item-action", data: { turbo_frame: "_top" } do %>
                   <div class="d-flex w-100 justify-content-between">
                     <h5 class="mb-1"><%= location.name %></h5>
                     <small><%= location.prefecture %></small>

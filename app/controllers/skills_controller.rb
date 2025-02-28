@@ -57,17 +57,4 @@ class SkillsController < ApplicationController
       format.json { render json: @skill }
     end
   end
-
-  # API endpoint to get recommended skills based on selected locations and adventures
-  def recommended
-    location_ids = params[:location_ids].to_s.split(',').reject(&:blank?)
-    adventure_ids = params[:adventure_ids].to_s.split(',').reject(&:blank?)
-
-    @skills = Skill.recommended_for(
-      location_ids: location_ids,
-      adventure_ids: adventure_ids
-    )
-
-    render json: @skills
-  end
 end

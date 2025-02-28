@@ -13,11 +13,11 @@
         </div>
         <div class="card-body">
           <div class="mb-2">
-            <span class="badge bg-primary"><%= skill.difficulty.capitalize %></span>
-            <span class="badge bg-secondary"><%= skill.category.capitalize %></span>
+            <span class="badge bg-primary"><%= skill.difficulty.capitalize if skill.difficulty.present? %></span>
+            <span class="badge bg-secondary"><%= skill.category.capitalize if skill.category.present? %></span>
           </div>
           <p class="card-text"><%= truncate(skill.details, length: 150) %></p>
-          <%= link_to "Learn More", skill_path(skill), class: "btn btn-primary" %>
+          <%= link_to "Learn More", skill_path(skill), class: "btn btn-primary", data: { turbo_frame: "_top" } %>
         </div>
       </div>
     </div>

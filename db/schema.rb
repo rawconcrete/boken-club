@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_02_28_134257) do
+ActiveRecord::Schema[7.1].define(version: 2025_02_28_144133) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -160,6 +160,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_28_134257) do
     t.index ["travel_plan_id"], name: "index_travel_plan_equipments_on_travel_plan_id"
   end
 
+  create_table "travel_plan_skills", force: :cascade do |t|
+    t.bigint "travel_plan_id", null: false
+    t.bigint "skill_id", null: false
+    t.boolean "is_mastered", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["skill_id"], name: "index_travel_plan_skills_on_skill_id"
+    t.index ["travel_plan_id", "skill_id"], name: "index_travel_plan_skills_on_travel_plan_id_and_skill_id", unique: true
+    t.index ["travel_plan_id"], name: "index_travel_plan_skills_on_travel_plan_id"
+  end
+
   create_table "travel_plans", force: :cascade do |t|
     t.string "title"
     t.string "content"
@@ -229,6 +240,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_28_134257) do
   add_foreign_key "locations_adventures", "locations"
   add_foreign_key "travel_plan_equipments", "equipment"
   add_foreign_key "travel_plan_equipments", "travel_plans"
+  add_foreign_key "travel_plan_skills", "skills"
+  add_foreign_key "travel_plan_skills", "travel_plans"
   add_foreign_key "travel_plans", "users"
   add_foreign_key "travel_plans_adventures", "adventures"
   add_foreign_key "travel_plans_adventures", "travel_plans"

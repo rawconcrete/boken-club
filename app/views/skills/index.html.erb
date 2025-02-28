@@ -4,7 +4,7 @@
   <div class="row mb-4">
     <div class="col-md-8">
       <%= form_with url: skills_path, method: :get,
-          data: { controller: "search-skills", turbo_frame: "skills-list" },
+          data: { controller: "search-skills" },
           class: "row g-2" do |f| %>
         <div class="col-md-4">
           <%= f.text_field :query, class: "form-control", placeholder: "Search skills...", value: params[:query] %>
@@ -29,7 +29,9 @@
                 ['Safety', 'safety'],
                 ['First Aid', 'first_aid'],
                 ['Climbing', 'climbing'],
-                ['Water', 'water']
+                ['Water', 'water'],
+                ['Environmental', 'environmental'],
+                ['Equipment', 'equipment']
               ], params[:category]),
               {}, { class: "form-select", onchange: "this.form.requestSubmit()" } %>
         </div>
@@ -46,7 +48,7 @@
       <% end %>
     </div>
   </div>
-  <turbo-frame id="skills-list">
+  <div id="skills-list">
     <%= render "skills/list", skills: @skills %>
-  </turbo-frame>
+  </div>
 </div>
