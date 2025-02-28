@@ -290,7 +290,8 @@ export default class extends Controller {
         <input type="hidden" name="travel_plan[location_ids][]" value="${locationId}">
       </div>
     `);
-
+    // updated for skills recommendation
+    this.notifyLocationAdventureChange();
     // call updateEquipment after DOM is updated
     setTimeout(() => this.updateEquipment(), 50);
   }
