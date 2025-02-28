@@ -38,6 +38,7 @@ class TravelPlansController < ApplicationController
     @travel_plan = current_user.travel_plans.build(travel_plan_params)
     if @travel_plan.save
       create_equipment_selections
+      create_skill_selections
       redirect_to @travel_plan, notice: 'Travel plan was successfully created.'
     else
       setup_equipment_list
@@ -46,7 +47,7 @@ class TravelPlansController < ApplicationController
   end
 
   def show
-    @travel_plan = current_user.travel_plans.includes(:locations, :adventures, :equipment).find_by(id: params[:id])
+    @travel_plan = current_user.travel_plans.includes(:locations, :adventures, :equipment, :skills).find_by(id: params[:id])
     return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
 
     # get user's owned equipment
@@ -56,9 +57,12 @@ class TravelPlansController < ApplicationController
     @equipment_to_pack = @travel_plan.travel_plan_equipments.includes(:equipment).where(equipment_id: @user_equipment_ids)
     @equipment_to_buy = @travel_plan.travel_plan_equipments.includes(:equipment).where.not(equipment_id: @user_equipment_ids)
 
+    # get skills for this travel plan
+    @skills = @travel_plan.skills
+
     respond_to do |format|
       format.html
-      format.json { render json: @travel_plan.as_json(include: [:locations, :adventures]) }
+      format.json { render json: @travel_plan.as_json(include: [:locations, :adventures, :skills]) }
     end
   end
 
@@ -82,6 +86,7 @@ class TravelPlansController < ApplicationController
 
     if @travel_plan.update(travel_plan_params)
       update_equipment_selections
+      update_skill_selections
       redirect_to @travel_plan, notice: 'Travel plan updated successfully.'
     else
       setup_equipment_list
@@ -248,7 +253,65 @@ class TravelPlansController < ApplicationController
     render json: @skills
   end
 
+  def add_skill
+    @travel_plan = current_user.travel_plans.find_by(id: params[:id])
+    return render json: { error: "Travel plan not found" }, status: :not_found unless @travel_plan
+
+    skill_id = params[:skill_id]
+    skill = Skill.find_by(id: skill_id)
+    return render json: { error: "Skill not found" }, status: :not_found unless skill
+
+    # try to create the association
+    travel_plan_skill = @travel_plan.travel_plan_skills.find_or_create_by(skill_id: skill_id)
+
+    if travel_plan_skill.persisted?
+      render json: {
+        success: true,
+        message: "Skill added to travel plan",
+        skill: skill.as_json(only: [:id, :name, :difficulty, :category])
+      }
+    else
+      render json: { success: false, errors: travel_plan_skill.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  def remove_skill
+    @travel_plan = current_user.travel_plans.find_by(id: params[:id])
+    return render json: { error: "Travel plan not found" }, status: :not_found unless @travel_plan
+
+    skill_id = params[:skill_id]
+    travel_plan_skill = @travel_plan.travel_plan_skills.find_by(skill_id: skill_id)
+
+    if travel_plan_skill&.destroy
+      render json: { success: true, message: "Skill removed from travel plan" }
+    else
+      render json: { success: false, error: "Skill not found in travel plan" }, status: :not_found
+    end
+  end
+
+
+
   private
+
+  def create_skill_selections
+    return unless params[:skill_ids]
+
+    params[:skill_ids].each do |skill_id|
+      @travel_plan.travel_plan_skills.create(skill_id: skill_id)
+    end
+  end
+
+  def update_skill_selections
+    return unless params[:skill_ids]
+
+    # remove existing selections that aren't in new list
+    @travel_plan.travel_plan_skills.where.not(skill_id: params[:skill_ids]).destroy_all
+
+    # add new selections
+    params[:skill_ids].each do |skill_id|
+      @travel_plan.travel_plan_skills.find_or_create_by(skill_id: skill_id)
+    end
+  end
 
   def set_travel_plan
     @travel_plan = current_user.travel_plans.find_by(id: params[:id])
@@ -308,7 +371,9 @@ class TravelPlansController < ApplicationController
       :end_date,
       location_ids: [],
       adventure_ids: [],
-      equipment_ids: []
+      equipment_ids: [],
+      skill_ids: []  # add this line
     )
   end
+
 end
