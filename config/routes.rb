@@ -30,6 +30,7 @@ Rails.application.routes.draw do
   resources :travel_plans do
     collection do
       get :get_recommended_equipment
+      get :get_recommended_skills
     end
     member do
       delete :destroy
