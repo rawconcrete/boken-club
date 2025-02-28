@@ -127,9 +127,9 @@
             <h2 class="text-xl font-semibold mb-0">Skills for This Adventure</h2>
           </div>
           <div class="card-body">
-            <% if @skills.any? %>
+            <% if @travel_plan.skills.any? %>
               <div class="row">
-                <% @skills.group_by(&:category).each do |category, category_skills| %>
+                <% @travel_plan.skills.group_by(&:category).each do |category, category_skills| %>
                   <div class="col-md-6 mb-4">
                     <h5 class="text-capitalize"><%= category || 'Other' %></h5>
                     <div class="list-group">
@@ -148,7 +148,7 @@
                               </span>
                               <p class="text-muted mt-1 mb-0"><%= truncate(skill.details, length: 100) %></p>
                             </div>
-                            <%= link_to "Learn More", skill_path(skill), class: "btn btn-sm btn-outline-primary" %>
+                            <%= link_to "Learn More", skill_path(skill), class: "btn btn-sm btn-outline-primary", data: { turbo_frame: "_top" } %>
                           </div>
                         </div>
                       <% end %>

@@ -3,6 +3,20 @@ class TravelPlansController < ApplicationController
   before_action :authenticate_user!
   before_action :set_travel_plan, only: [:show, :edit, :update, :destroy, :mark_equipment_purchased, :update_equipment_status]
 
+  def travel_plan_params
+    params.require(:travel_plan).permit(
+      :title,
+      :content,
+      :status,
+      :start_date,
+      :end_date,
+      location_ids: [],
+      adventure_ids: [],
+      equipment_ids: [],
+      skill_ids: []  # Make sure this line is included
+    )
+  end
+
   def index
     @travel_plans = current_user.travel_plans.includes(:locations, :adventures)
   end
@@ -34,8 +48,14 @@ class TravelPlansController < ApplicationController
     puts "Equipment List: #{@equipment_list.inspect}"
   end
 
+
   def create
     @travel_plan = current_user.travel_plans.build(travel_plan_params)
+
+    # Log the incoming parameters to help with debugging
+    Rails.logger.debug "Creating travel plan with params: #{params.inspect}"
+    Rails.logger.debug "Skill IDs: #{params[:travel_plan][:skill_ids]}" if params[:travel_plan][:skill_ids].present?
+
     if @travel_plan.save
       create_equipment_selections
       create_skill_selections
@@ -47,24 +67,24 @@ class TravelPlansController < ApplicationController
   end
 
   def show
-    @travel_plan = current_user.travel_plans.includes(:locations, :adventures, :equipment, :skills).find_by(id: params[:id])
-    return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
+  @travel_plan = current_user.travel_plans.includes(:locations, :adventures, :equipment, :skills).find_by(id: params[:id])
+  return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
 
-    # get user's owned equipment
-    @user_equipment_ids = current_user.equipment_ids
+  # get user's owned equipment
+  @user_equipment_ids = current_user.equipment_ids
 
-    # separate equipment into "pack" and "buy" lists
-    @equipment_to_pack = @travel_plan.travel_plan_equipments.includes(:equipment).where(equipment_id: @user_equipment_ids)
-    @equipment_to_buy = @travel_plan.travel_plan_equipments.includes(:equipment).where.not(equipment_id: @user_equipment_ids)
+  # separate equipment into "pack" and "buy" lists
+  @equipment_to_pack = @travel_plan.travel_plan_equipments.includes(:equipment).where(equipment_id: @user_equipment_ids)
+  @equipment_to_buy = @travel_plan.travel_plan_equipments.includes(:equipment).where.not(equipment_id: @user_equipment_ids)
 
-    # get skills for this travel plan
-    @skills = @travel_plan.skills
+  # get skills for this travel plan
+  @skills = @travel_plan.skills
 
-    respond_to do |format|
-      format.html
-      format.json { render json: @travel_plan.as_json(include: [:locations, :adventures, :skills]) }
-    end
+  respond_to do |format|
+    format.html
+    format.json { render json: @travel_plan.as_json(include: [:locations, :adventures, :skills]) }
   end
+end
 
   def destroy
     @travel_plan = current_user.travel_plans.find_by(id: params[:id])
@@ -83,6 +103,10 @@ class TravelPlansController < ApplicationController
   def update
     @travel_plan = current_user.travel_plans.find_by(id: params[:id])
     return redirect_to travel_plans_path, alert: "Travel Plan not found" unless @travel_plan
+
+    # log the incoming parameters to help with debugging
+    Rails.logger.debug "Updating travel plan with params: #{params.inspect}"
+    Rails.logger.debug "Skill IDs: #{params[:travel_plan][:skill_ids]}" if params[:travel_plan][:skill_ids].present?
 
     if @travel_plan.update(travel_plan_params)
       update_equipment_selections
@@ -261,7 +285,7 @@ class TravelPlansController < ApplicationController
     skill = Skill.find_by(id: skill_id)
     return render json: { error: "Skill not found" }, status: :not_found unless skill
 
-    # try to create the association
+    # Try to create the association
     travel_plan_skill = @travel_plan.travel_plan_skills.find_or_create_by(skill_id: skill_id)
 
     if travel_plan_skill.persisted?
@@ -294,22 +318,30 @@ class TravelPlansController < ApplicationController
   private
 
   def create_skill_selections
-    return unless params[:skill_ids]
+    return unless params[:travel_plan][:skill_ids].present?
 
-    params[:skill_ids].each do |skill_id|
-      @travel_plan.travel_plan_skills.create(skill_id: skill_id)
+    # use find_or_create_by to prevent duplicate entries
+    params[:travel_plan][:skill_ids].uniq.each do |skill_id|
+      next if skill_id.blank?
+      @travel_plan.travel_plan_skills.find_or_create_by(skill_id: skill_id)
     end
   end
 
   def update_skill_selections
-    return unless params[:skill_ids]
+    return unless params[:travel_plan][:skill_ids].present?
 
-    # remove existing selections that aren't in new list
-    @travel_plan.travel_plan_skills.where.not(skill_id: params[:skill_ids]).destroy_all
+    # get existing and new skill IDs
+    existing_skill_ids = @travel_plan.skill_ids
+    new_skill_ids = params[:travel_plan][:skill_ids].reject(&:blank?).map(&:to_i)
 
-    # add new selections
-    params[:skill_ids].each do |skill_id|
-      @travel_plan.travel_plan_skills.find_or_create_by(skill_id: skill_id)
+    # remove skills that are no longer selected
+    skills_to_remove = existing_skill_ids - new_skill_ids
+    @travel_plan.travel_plan_skills.where(skill_id: skills_to_remove).destroy_all
+
+    # add new skills
+    skills_to_add = new_skill_ids - existing_skill_ids
+    skills_to_add.each do |skill_id|
+      @travel_plan.travel_plan_skills.create(skill_id: skill_id)
     end
   end
 

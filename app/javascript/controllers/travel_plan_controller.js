@@ -383,4 +383,55 @@ export default class extends Controller {
     // Dispatch the event
     document.dispatchEvent(event);
   }
+
+  formSubmit(event) {
+    console.log("Form submit detected");
+
+    // Get all skill inputs
+  const skillInputs = document.querySelectorAll('input[name="travel_plan[skill_ids][]"]');
+  console.log(`Found ${skillInputs.length} skill ID inputs`);
+
+  // Log their values
+  if (skillInputs.length > 0) {
+    const skillIds = Array.from(skillInputs).map(input => input.value);
+    console.log("Skill IDs being submitted:", skillIds);
+  } else {
+    console.warn("No skill IDs found in the form submission");
+
+    // Emergency check - see if we can find skill IDs from the skills recommendation controller
+    const skillsController = this.application.getControllerForElementAndIdentifier(
+      document.querySelector('[data-controller="skills-recommendation"]'),
+      'skills-recommendation'
+    );
+
+    if (skillsController) {
+      console.log("Found skills recommendation controller");
+      console.log("Selected skill IDs:", skillsController.selectedSkillIdsValue);
+
+      // Emergency fix - manually add the hidden inputs if they're missing
+      if (skillsController.selectedSkillIdsValue && skillsController.selectedSkillIdsValue.length > 0) {
+          console.log("Adding missing skill IDs to the form");
+
+          // Get or create container
+          let container = document.getElementById('selected-skills-container');
+          if (!container) {
+            container = document.createElement('div');
+            container.id = 'selected-skills-container';
+            document.querySelector('form').appendChild(container);
+          }
+
+          // Add inputs
+          skillsController.selectedSkillIdsValue.forEach(skillId => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'travel_plan[skill_ids][]';
+            input.value = skillId;
+            container.appendChild(input);
+          });
+
+          console.log("Added skill inputs. Now have:", document.querySelectorAll('input[name="travel_plan[skill_ids][]"]').length);
+        }
+      }
+    }
+  }
 }

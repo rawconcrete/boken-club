@@ -1,127 +1,124 @@
+<%# app/views/travel_plans/_form.html.erb %>
 <div class="container"
      data-controller="travel-plan"
      data-travel-plan-locations-value="<%= travel_plan.locations.to_json %>"
      data-travel-plan-adventures-value="<%= travel_plan.adventures.reject(&:nil?).to_json %>">
-  <%# add removal of nil/undefined %>
-  <!-- rest of form -->
-  <div class="row justify-content-center">
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <%= form_with(model: travel_plan, local: true) do |f| %>
-          <%# new equipment section %>
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">Recommended Equipment</h5>
-            </div>
-            <div class="card-body">
-              <div class="row" data-travel-plan-target="equipmentList">
-                <%# equipment will be dynamically inserted here %>
-              </div>
-            </div>
-          </div>
-          <%# new equipment section end %>
-          <%# dates section start %>
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">Trip Dates</h5>
-            </div>
-            <div class="card-body">
-              <div class="row">
-                <div class="col-md-6">
-                  <%= f.label :start_date, class: "form-label" %>
-                  <%= f.date_field :start_date,
-            class: "form-control",
-            data: {
-              travel_plan_target: "startDate",
-              action: "change->travel-plan#updateEquipment"
-            } %>
-                </div>
-                <div class="col-md-6">
-                  <%= f.label :end_date, class: "form-label" %>
-                  <%= f.date_field :end_date,
-            class: "form-control",
-            data: { travel_plan_target: "endDate" } %>
-                </div>
-              </div>
-            </div>
-          </div>
-          <%# dates section end %>
-          <%# general details card start %>
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">Plan Details</h5>
-            </div>
-            <div class="card-body">
-              <div class="mb-3">
-                <%= f.label :title, class: "form-label" %>
-                <%= f.text_field :title, class: "form-control" %>
-              </div>
-              <div class="mb-3">
-                <%= f.label :content, class: "form-label" %>
-                <%= f.text_area :content, class: "form-control" %>
-              </div>
-              <div class="mb-3">
-                <%= f.label :status, class: "form-label" %>
-                <%= f.select :status, [['Pending', 'pending'], ['Completed', 'completed'], ['Cancelled', 'cancelled']], { selected: travel_plan.status }, class: "form-control" %>
-              </div>
-            </div>
-          </div>
-          <%# general details card end %>
-          <%# locations card start %>
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">Locations</h5>
-            </div>
-            <div class="card-body">
-              <div data-travel-plan-target="selectedLocations" class="mb-3"></div>
-              <input type="text"
-                   class="form-control"
-                   placeholder="Search locations..."
-                   data-travel-plan-target="locationSearch"
-                   data-action="input->travel-plan#searchLocations">
-              <div data-travel-plan-target="locationResults" class="list-group mt-2"></div>
-            </div>
-          </div>
-          <%# locations card end %>
-          <%# adventures card start %>
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">Available Adventures</h5>
-            </div>
-            <div class="card-body">
-              <div data-travel-plan-target="selectedAdventures" class="mb-3"></div>
-              <input type="text"
-                   class="form-control"
-                   placeholder="Search adventures..."
-                   data-travel-plan-target="adventureSearch"
-                   data-action="input->travel-plan#searchAdventures">
-              <div data-travel-plan-target="adventureResults" class="list-group mt-2"></div>
-            </div>
-          </div>
-          <%# adventures card end %>
-          <%# skills card start %>
-          <div class="card mb-4"
-     data-controller="skills-recommendation"
-     data-skills-recommendation-travel-plan-id-value="<%= travel_plan.persisted? ? travel_plan.id : 0 %>"
-     data-skills-recommendation-selected-skill-ids-value="<%= travel_plan.skill_ids.to_json %>">
-            <div class="card-header">
-              <h5 class="mb-0">Recommended Skills</h5>
-              <p class="text-muted small mb-0">Click "Add to Plan" to include skills you want to learn or reference for this trip.</p>
-            </div>
-            <div class="card-body">
-              <div data-skills-recommendation-target="skillsList">
-                <div class="alert alert-info">
-                  Select locations and adventures to see recommended skills.
-                </div>
-              </div>
-            </div>
-          </div>
-          <%# skills card end %>
-          <div class="d-flex justify-content-end gap-2">
-            <%= link_to 'Cancel', :back, class: "btn btn-secondary" %>
-            <%= f.submit 'Save', class: "btn btn-primary" %>
-          </div>
-        <% end %>
+  <%= form_with(model: travel_plan, local: true, data: { action: "submit->travel-plan#formSubmit" }) do |f| %>
+    <%# equipment section %>
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Recommended Equipment</h5>
+      </div>
+      <div class="card-body">
+        <div class="row" data-travel-plan-target="equipmentList">
+          <%# equipment will be dynamically inserted here %>
+        </div>
       </div>
     </div>
-  </div>
+    <%# dates section %>
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Trip Dates</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <%= f.label :start_date, class: "form-label" %>
+            <%= f.date_field :start_date,
+                  class: "form-control",
+                  data: {
+                    travel_plan_target: "startDate",
+                    action: "change->travel-plan#updateEquipment"
+                  } %>
+          </div>
+          <div class="col-md-6">
+            <%= f.label :end_date, class: "form-label" %>
+            <%= f.date_field :end_date,
+                  class: "form-control",
+                  data: { travel_plan_target: "endDate" } %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <%# general details card %>
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Plan Details</h5>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <%= f.label :title, class: "form-label" %>
+          <%= f.text_field :title, class: "form-control" %>
+        </div>
+        <div class="mb-3">
+          <%= f.label :content, class: "form-label" %>
+          <%= f.text_area :content, class: "form-control" %>
+        </div>
+        <div class="mb-3">
+          <%= f.label :status, class: "form-label" %>
+          <%= f.select :status, [['Pending', 'pending'], ['Completed', 'completed'], ['Cancelled', 'cancelled']], { selected: travel_plan.status }, class: "form-control" %>
+        </div>
+      </div>
+    </div>
+    <%# locations card %>
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Locations</h5>
+      </div>
+      <div class="card-body">
+        <div data-travel-plan-target="selectedLocations" class="mb-3"></div>
+        <input type="text"
+               class="form-control"
+               placeholder="Search locations..."
+               data-travel-plan-target="locationSearch"
+               data-action="input->travel-plan#searchLocations">
+        <div data-travel-plan-target="locationResults" class="list-group mt-2"></div>
+      </div>
+    </div>
+    <%# adventures card %>
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Available Adventures</h5>
+      </div>
+      <div class="card-body">
+        <div data-travel-plan-target="selectedAdventures" class="mb-3"></div>
+        <input type="text"
+               class="form-control"
+               placeholder="Search adventures..."
+               data-travel-plan-target="adventureSearch"
+               data-action="input->travel-plan#searchAdventures">
+        <div data-travel-plan-target="adventureResults" class="list-group mt-2"></div>
+      </div>
+    </div>
+    <%# skills card %>
+    <div class="card mb-4"
+         data-controller="skills-recommendation"
+         data-skills-recommendation-travel-plan-id-value="<%= travel_plan.persisted? ? travel_plan.id : 0 %>"
+         data-skills-recommendation-selected-skill-ids-value="<%= travel_plan.skill_ids.to_json %>">
+      <div class="card-header">
+        <h5 class="mb-0">Recommended Skills</h5>
+        <p class="text-muted small mb-0">Click "Add to Plan" to include skills you want to learn or reference for this trip.</p>
+      </div>
+      <div class="card-body">
+        <div data-skills-recommendation-target="skillsList">
+          <div class="alert alert-info">
+            <p>Select locations and adventures to see recommended skills.</p>
+            <% if travel_plan.skills.any? %>
+              <p>You have <%= travel_plan.skills.count %> skills already selected.</p>
+            <% end %>
+          </div>
+        </div>
+        <%# Hidden container for selected skill IDs - will be populated by JS %>
+        <div id="selected-skills-container" style="display: none;">
+          <% travel_plan.skill_ids.each do |skill_id| %>
+            <input type="hidden" name="travel_plan[skill_ids][]" value="<%= skill_id %>">
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-end gap-2">
+      <%= link_to 'Cancel', :back, class: "btn btn-secondary" %>
+      <%= f.submit 'Save', class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

@@ -2,7 +2,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["skillsList"]
+  static targets = ["skillsList", "selectedSkillsContainer"]
   static values = {
     travelPlanId: Number,
     selectedSkillIds: Array
@@ -11,21 +11,31 @@ export default class extends Controller {
   connect() {
     console.log("Skills recommendation controller connected");
 
-    // initialize selectedSkillIds if not set
+    // Initialize selectedSkillIds if not set
     if (!this.hasSelectedSkillIdsValue) {
       this.selectedSkillIdsValue = [];
+    } else {
+      // Convert string IDs to numbers for consistency
+      this.selectedSkillIdsValue = this.selectedSkillIdsValue.map(id => Number(id));
     }
 
     console.log("Travel plan ID:", this.travelPlanIdValue);
     console.log("Initially selected skills:", this.selectedSkillIdsValue);
 
-    // listen for location or adventure changes from the travel plan controller
+    // Store for later reference
+    this.lastReceivedSkills = [];
+
+    // Listen for location or adventure changes from the travel plan controller
     document.addEventListener('locations-adventures-changed', this.updateSkills.bind(this));
 
-    // set initial state
+    // Render initial input fields for selected skills
+    this.updateHiddenInputs();
+
+    // Set initial state
     this.skillsListTarget.innerHTML = `
       <div class="alert alert-info">
-        Select locations and adventures to see recommended skills.
+        <p>Select locations and adventures to see recommended skills.</p>
+        ${this.selectedSkillIdsValue.length > 0 ? '<p>You have ' + this.selectedSkillIdsValue.length + ' skills already selected.</p>' : ''}
       </div>
     `;
   }
@@ -33,21 +43,25 @@ export default class extends Controller {
   updateSkills(event) {
     console.log("Skills update event received:", event.detail);
 
-    // get location and adventure IDs from the event
+    // Store the event detail for potential re-renders
+    this.lastDetail = event.detail;
+
+    // Get location and adventure IDs from the event
     const { locationIds, adventureIds } = event.detail;
 
-    // don't make the request if there are no locations or adventures
+    // Don't make the request if there are no locations or adventures
     if (!locationIds.length && !adventureIds.length) {
       console.log("No locations or adventures selected, showing default message");
       this.skillsListTarget.innerHTML = `
         <div class="alert alert-info">
-          Select locations and adventures to see recommended skills.
+          <p>Select locations and adventures to see recommended skills.</p>
+          ${this.selectedSkillIdsValue.length > 0 ? '<p>You have ' + this.selectedSkillIdsValue.length + ' skills already selected.</p>' : ''}
         </div>
       `;
       return;
     }
 
-    // create params for the API request
+    // Create params for the API request
     const params = new URLSearchParams();
     if (locationIds.length) params.append('location_ids', locationIds.join(','));
     if (adventureIds.length) params.append('adventure_ids', adventureIds.join(','));
@@ -55,7 +69,7 @@ export default class extends Controller {
     const url = `/travel_plans/get_recommended_skills?${params}`;
     console.log("Fetching skills from:", url);
 
-    // display loading state
+    // Display loading state
     this.skillsListTarget.innerHTML = `
       <div class="alert alert-info">
         <div class="d-flex align-items-center">
@@ -67,7 +81,7 @@ export default class extends Controller {
       </div>
     `;
 
-    // make the API request
+    // Make the API request
     fetch(url)
       .then(response => {
         if (!response.ok) {
@@ -78,6 +92,7 @@ export default class extends Controller {
       })
       .then(skills => {
         console.log("Received skills data:", skills);
+        this.lastReceivedSkills = skills; // Store for later re-renders
         this.renderSkills(skills);
       })
       .catch(error => {
@@ -92,17 +107,18 @@ export default class extends Controller {
   }
 
   renderSkills(skills) {
-    // handle empty or null skills
+    // Handle empty or null skills
     if (!skills || !skills.length) {
       this.skillsListTarget.innerHTML = `
         <div class="alert alert-info">
-          No specific skills recommended for this trip.
+          <p>No specific skills recommended for this trip.</p>
+          ${this.selectedSkillIdsValue.length > 0 ? '<p>You have ' + this.selectedSkillIdsValue.length + ' skills already selected.</p>' : ''}
         </div>
       `;
       return;
     }
 
-    // group skills by category
+    // Group skills by category
     const skillsByCategory = skills.reduce((acc, skill) => {
       const category = skill.category || 'Other';
       if (!acc[category]) acc[category] = [];
@@ -110,7 +126,7 @@ export default class extends Controller {
       return acc;
     }, {});
 
-    // build HTML
+    // Build HTML
     let html = '';
 
     Object.entries(skillsByCategory).forEach(([category, categorySkills]) => {
@@ -129,7 +145,7 @@ export default class extends Controller {
           ? `<span class="badge bg-${this.getDifficultyColor(skill.difficulty)}">${skill.difficulty}</span>`
           : '<span class="badge bg-secondary">beginner</span>';
 
-        const isSelected = this.selectedSkillIdsValue.includes(skill.id);
+        const isSelected = this.selectedSkillIdsValue.includes(Number(skill.id));
         const buttonClass = isSelected
           ? "btn-success"
           : "btn-outline-success";
@@ -165,125 +181,138 @@ export default class extends Controller {
       `;
     });
 
-    // if on a travel plan edit form, add hidden inputs for selected skills
-    if (this.hasTravelPlanIdValue && this.travelPlanIdValue > 0) {
-      html += `
-        <div class="selected-skills-inputs">
-          ${this.selectedSkillIdsValue.map(id =>
-            `<input type="hidden" name="travel_plan[skill_ids][]" value="${id}">`
-          ).join('')}
-        </div>
-      `;
-    }
-
     this.skillsListTarget.innerHTML = html;
   }
 
   toggleSkill(event) {
+    event.preventDefault(); // Prevent form submission
+
     const button = event.currentTarget;
     const skillId = parseInt(button.dataset.skillId, 10);
 
-    // for travel plan edit/new forms, just toggle the selection
-    if (this.hasTravelPlanIdValue && this.travelPlanIdValue === 0) {
-      this.toggleSkillSelection(skillId);
-      // refresh the UI
-      this.renderSkills(this.lastReceivedSkills);
-      return;
-    }
+    console.log(`Toggling skill ${skillId}`);
 
-    // for existing travel plans, make API call to add/remove
-    const isSelected = this.selectedSkillIdsValue.includes(skillId);
+    // For existing travel plans, make API call to add/remove
+    if (this.hasTravelPlanIdValue && this.travelPlanIdValue > 0) {
+      const isSelected = this.selectedSkillIdsValue.includes(skillId);
 
-    // set UI loading state
-    button.disabled = true;
-    button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+      // Set UI loading state
+      button.disabled = true;
+      button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
 
-    if (isSelected) {
-      // remove skill
-      fetch(`/travel_plans/${this.travelPlanIdValue}/remove_skill`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': this.getCSRFToken()
-        },
-        body: JSON.stringify({ skill_id: skillId })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          this.toggleSkillSelection(skillId);
-          // show success message
-          this.showToast('Skill removed from travel plan.');
-        } else {
-          console.error('Error removing skill:', data.error);
+      if (isSelected) {
+        // Remove skill
+        fetch(`/travel_plans/${this.travelPlanIdValue}/remove_skill`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': this.getCSRFToken()
+          },
+          body: JSON.stringify({ skill_id: skillId })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            this.toggleSkillSelection(skillId);
+            // Show success message
+            this.showToast('Skill removed from travel plan.');
+          } else {
+            console.error('Error removing skill:', data.error);
+            this.showToast('Error removing skill.', 'danger');
+          }
+          // Re-render UI
+          this.renderSkills(this.lastReceivedSkills);
+        })
+        .catch(error => {
+          console.error('Error:', error);
           this.showToast('Error removing skill.', 'danger');
-        }
-        // re-render UI
-        this.updateSkills({ detail: this.lastDetail });
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        this.showToast('Error removing skill.', 'danger');
-        button.disabled = false;
-        button.innerHTML = '<i class="fas fa-check"></i> Selected';
-      });
-    } else {
-      // add skill
-      fetch(`/travel_plans/${this.travelPlanIdValue}/add_skill`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': this.getCSRFToken()
-        },
-        body: JSON.stringify({ skill_id: skillId })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          this.toggleSkillSelection(skillId);
-          // show success message
-          this.showToast('Skill added to travel plan!');
-        } else {
-          console.error('Error adding skill:', data.errors);
+          button.disabled = false;
+          button.innerHTML = '<i class="fas fa-check"></i> Selected';
+        });
+      } else {
+        // Add skill
+        fetch(`/travel_plans/${this.travelPlanIdValue}/add_skill`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': this.getCSRFToken()
+          },
+          body: JSON.stringify({ skill_id: skillId })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            this.toggleSkillSelection(skillId);
+            // Show success message
+            this.showToast('Skill added to travel plan!');
+          } else {
+            console.error('Error adding skill:', data.errors);
+            this.showToast('Error adding skill.', 'danger');
+          }
+          // Re-render UI
+          this.renderSkills(this.lastReceivedSkills);
+        })
+        .catch(error => {
+          console.error('Error:', error);
           this.showToast('Error adding skill.', 'danger');
-        }
-        // re-render UI
-        this.updateSkills({ detail: this.lastDetail });
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        this.showToast('Error adding skill.', 'danger');
-        button.disabled = false;
-        button.innerHTML = '<i class="fas fa-plus"></i> Add to Plan';
-      });
+          button.disabled = false;
+          button.innerHTML = '<i class="fas fa-plus"></i> Add to Plan';
+        });
+      }
+    } else {
+      // For new travel plans - just toggle the selection locally
+      this.toggleSkillSelection(skillId);
+      // Refresh the UI
+      this.renderSkills(this.lastReceivedSkills);
     }
   }
 
   toggleSkillSelection(skillId) {
+    console.log("Before toggle:", this.selectedSkillIdsValue);
+    skillId = Number(skillId); // Ensure it's a number for consistent comparison
+
     const currentIds = [...this.selectedSkillIdsValue];
     const index = currentIds.indexOf(skillId);
 
     if (index > -1) {
-      // remove skill
+      // Remove skill
       currentIds.splice(index, 1);
     } else {
-      // add skill
+      // Add skill
       currentIds.push(skillId);
     }
 
     this.selectedSkillIdsValue = currentIds;
 
-    // update hidden inputs if in a form
+    // Update hidden inputs after changing selection
     this.updateHiddenInputs();
+
+    console.log("After toggle:", this.selectedSkillIdsValue);
   }
 
   updateHiddenInputs() {
-    const container = this.element.querySelector('.selected-skills-inputs');
-    if (!container) return;
+    // Get or create the container for selected skills
+    let container = document.getElementById('selected-skills-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'selected-skills-container';
+      container.style.display = 'none';
+      this.element.appendChild(container);
+    }
 
-    container.innerHTML = this.selectedSkillIdsValue.map(id =>
-      `<input type="hidden" name="travel_plan[skill_ids][]" value="${id}">`
-    ).join('');
+    // Clear the container
+    container.innerHTML = '';
+
+    // Add hidden inputs for each selected skill
+    this.selectedSkillIdsValue.forEach(skillId => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'travel_plan[skill_ids][]';
+      input.value = skillId;
+      container.appendChild(input);
+    });
+
+    console.log(`Updated hidden inputs: ${this.selectedSkillIdsValue.length} skills selected`);
   }
 
   getDifficultyColor(difficulty) {
@@ -330,16 +359,13 @@ export default class extends Controller {
 
     toastContainer.appendChild(toast);
 
-    // initialize and show toast
-    const bsToast = new bootstrap.Toast(toast, {
-      autohide: true,
-      delay: 3000
-    });
-    bsToast.show();
+    // Initialize and show toast using DOM API
+    toast.classList.add('show');
 
-    // remove toast after it's hidden
-    toast.addEventListener('hidden.bs.toast', () => {
-      toast.remove();
-    });
+    // Remove toast after timeout
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 500);
+    }, 3000);
   }
 }
