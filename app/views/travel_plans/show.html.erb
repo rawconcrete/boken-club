@@ -38,7 +38,8 @@
   </div>
   <div class="mt-6 card">
     <h2 class="text-xl font-semibold mb-3">Trip Details</h2>
-    <p><strong>Status:</strong> <span class="<%= status_color_class(@travel_plan.status) %>"><%= @travel_plan.status&.capitalize || 'Not Set' %></span></p>
+    <%# status field temporarily disabled %>
+    <%# <p><strong>Status:</strong> <span class="<%= status_color_class(@travel_plan.status) %><%#"><%= @travel_plan.status&.capitalize || 'Not Set' %><%#</span></p> %>
     <p><strong>Dates:</strong>
       <% if @travel_plan.start_date.present? %>
         <%= @travel_plan.start_date.strftime("%B %d, %Y") %>
