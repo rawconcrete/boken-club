@@ -6,14 +6,14 @@ class SearchController < ApplicationController
 
     # search locations and adventures by name, details, tips, warnings
     locations = Location.where("LOWER(name) LIKE :query OR LOWER(details) LIKE :query OR LOWER(tips) LIKE :query OR LOWER(warnings) LIKE :query", query: "%#{query}%")
-                        .select(:id, :name)
+                        .select(:id, :name, :city, :prefecture, :details)
 
     adventures = Adventure.where("LOWER(name) LIKE :query OR LOWER(details) LIKE :query OR LOWER(tips) LIKE :query OR LOWER(warnings) LIKE :query", query: "%#{query}%")
-                          .select(:id, :name)
+                          .select(:id, :name, :details)
 
     suggestions = []
-    suggestions += locations.map { |loc| { type: "location", id: loc.id, name: loc.name } }
-    suggestions += adventures.map { |adv| { type: "adventure", id: adv.id, name: adv.name } }
+    suggestions += locations.map { |loc| { type: "location", id: loc.id, name: loc.name, city: loc.city, prefecture: loc.prefecture, details: loc.details } }
+    suggestions += adventures.map { |adv| { type: "adventure", id: adv.id, name: adv.name, details: adv.details } }
 
     # always add "Search Locations for X" and "Search Adventures for X"
     suggestions.push({ type: "index_search", category: "locations", query: query, name: "Search Locations for \"#{query}\"" })
