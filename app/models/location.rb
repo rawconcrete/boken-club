@@ -6,6 +6,8 @@ class Location < ApplicationRecord
   has_many :travel_plans, through: :travel_plans_locations
   has_many :location_equipments, dependent: :destroy
   has_many :equipment, through: :location_equipments
+  has_many :location_skills, dependent: :destroy
+  has_many :skills, through: :location_skills
 
   geocoded_by :full_address
   after_validation :geocode, if: :should_geocode?
