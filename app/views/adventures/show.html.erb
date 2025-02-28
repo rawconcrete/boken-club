@@ -5,8 +5,6 @@
     <div class="col-md-8">
       <div class="card">
         <div class="card-body">
-        <h1><%= @adventure.name %></h1>
-          <p><%= @adventure.details %></p>
           <p><strong>Details:</strong> <%= @adventure.details %></p>
           <% if @adventure.tips.present? %>
             <p><strong>Tips:</strong> <%= @adventure.tips %></p>
@@ -15,9 +13,23 @@
             <p><strong>Warnings:</strong> <%= @adventure.warnings %></p>
           <% end %>
           <% if @adventure.skills.present? %>
-            <p><strong>Required Skills:</strong> <%= @adventure.skills %></p>
+            <p><strong>Required Skills:</strong></p>
+            <ul class="list-group mb-3">
+              <% @adventure.skills.each do |skill| %>
+                <li class="list-group-item">
+                  <strong><%= skill.name %></strong>
+                  <% if skill.difficulty.present? %>
+                    <span class="badge bg-info ms-2"><%= skill.difficulty %> level</span>
+                  <% end %>
+                  <% if defined?(skill.safety_critical) && skill.safety_critical %>
+                    <span class="badge bg-warning text-dark ms-1">Safety Critical</span>
+                  <% end %>
+                  <p class="mb-0 small text-muted"><%= truncate(skill.details, length: 100) %></p>
+                  <%= link_to "Learn More", skill_path(skill), class: "btn btn-sm btn-outline-primary mt-1" %>
+                </li>
+              <% end %>
+            </ul>
           <% end %>
-
           <div data-controller="map"
           data-map-api-key-value="<%= ENV['MAPBOX_API_KEY'] %>"
           data-map-markers-value="<%= @markers.to_json %>">
