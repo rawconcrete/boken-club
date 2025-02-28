@@ -13,24 +13,36 @@ class Skill < ApplicationRecord
 
   # scope to find skills recommended for specific adventures and locations
   scope :recommended_for, ->(location_ids: nil, adventure_ids: nil) {
-    skills = none
+    result = none
 
     # find skills related to adventures
     if adventure_ids.present?
-      adventure_skills = joins(:adventure_skills)
-        .where(adventure_skills: { adventure_id: adventure_ids })
-        .distinct
-      skills = skills.or(adventure_skills) if adventure_skills.exists?
+      adventure_skill_ids = AdventureSkill
+        .where(adventure_id: adventure_ids)
+        .pluck(:skill_id)
+
+      if adventure_skill_ids.any?
+        result = where(id: adventure_skill_ids)
+      end
     end
 
     # find skills related to locations
     if location_ids.present?
-      location_skills = joins(:location_skills)
-        .where(location_skills: { location_id: location_ids })
-        .distinct
-      skills = skills.or(location_skills) if location_skills.exists?
+      location_skill_ids = LocationSkill
+        .where(location_id: location_ids)
+        .pluck(:skill_id)
+
+      if location_skill_ids.any?
+        if result.any?
+          # combine with existing results
+          result = result.or(where(id: location_skill_ids))
+        else
+          result = where(id: location_skill_ids)
+        end
+      end
     end
 
-    skills.any? ? skills : all.limit(5) # fallback to some basic skills if none found
+    # return result or fallback to some basic skills
+    result.any? ? result : all.limit(5)
   }
 end
