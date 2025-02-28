@@ -1,6 +1,9 @@
 <%# app/views/adventures/show.html.erb  %>
 <div class="container text-white">
   <h1><%= @adventure.name %></h1>
+  <div class="adventure-tags mb-3">
+    <%= adventure_tags(@adventure) %>
+  </div>
   <div class="row mt-4">
     <div class="col-md-8">
       <div class="card">
