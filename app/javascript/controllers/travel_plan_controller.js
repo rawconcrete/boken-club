@@ -35,6 +35,9 @@ export default class extends Controller {
 
     this.loadInitialSelections()
     this.updateAvailableAdventures()
+
+    // updated for skills recommendation
+    this.notifyLocationAdventureChange();
   }
 
   // helper method to properly handle ID conversions
@@ -290,10 +293,12 @@ export default class extends Controller {
         <input type="hidden" name="travel_plan[location_ids][]" value="${locationId}">
       </div>
     `);
-    // updated for skills recommendation
-    this.notifyLocationAdventureChange();
+
     // call updateEquipment after DOM is updated
     setTimeout(() => this.updateEquipment(), 50);
+
+    // updated for skills recommendation
+    this.notifyLocationAdventureChange();
   }
 
   addAdventureTag(adventure) {
@@ -318,10 +323,11 @@ export default class extends Controller {
         <input type="hidden" name="travel_plan[adventure_ids][]" value="${adventureId}">
       </div>
     `);
-    // update for skills recs
-    this.notifyLocationAdventureChange();
     // call updateEquipment after DOM is updated
     setTimeout(() => this.updateEquipment(), 50);
+
+    // update for skills recs
+    this.notifyLocationAdventureChange();
   }
 
 
@@ -333,9 +339,6 @@ export default class extends Controller {
     // delete as the same type as was added
     this.selectedLocations.delete(locationId);
 
-    // update for skills recs
-    this.notifyLocationAdventureChange();
-
     // log after removal to verify
     console.log('📋 Current locations AFTER:', Array.from(this.selectedLocations));
 
@@ -345,6 +348,10 @@ export default class extends Controller {
     console.log('🔄 Forcing full refresh...');
     this.updateAvailableAdventures();
     setTimeout(() => this.updateEquipment(), 100);
+
+    // update for skills recs
+    this.notifyLocationAdventureChange();
+
   }
 
   removeAdventure(event) {
@@ -353,14 +360,18 @@ export default class extends Controller {
     this.selectedAdventures.delete(adventureId);
     event.currentTarget.closest('.badge').remove();
 
-    // update for skills recs
-    this.notifyLocationAdventureChange();
-
     // call updateEquipment after DOM is updated
     setTimeout(() => this.updateEquipment(), 50);
+
+    // update for skills recs
+    this.notifyLocationAdventureChange();
   }
 
   notifyLocationAdventureChange() {
+    console.log("Notifying location/adventure change");
+    console.log("Location IDs:", Array.from(this.selectedLocations));
+    console.log("Adventure IDs:", Array.from(this.selectedAdventures));
+
     // Create an event to notify other controllers about the change
     const event = new CustomEvent('locations-adventures-changed', {
       detail: {
