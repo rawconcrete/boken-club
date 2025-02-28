@@ -1,25 +1,104 @@
-<%# app/views/adventures/show.html.erb  %>
-<div class="container text-white">
-  <h1><%= @skill.name %></h1>
-  <div class="row mt-4">
-    <div class="col-md-8">
-      <div class="card">
-        <div class="card-body">
-          <p><strong>Details:</strong> <%= @skill.details %></p>
-          <%= link_to "Back", :back,
-          class: "btn btn-primary mt-3",
-          data: { turbo_frame: "_top" } %>
+<%# app/views/skills/show.html.erb %>
+<div class="container">
+  <div class="row mb-4">
+    <div class="col">
+      <%= link_to "← Back to Skills", skills_path, class: "btn btn-outline-light" %>
+    </div>
+  </div>
+  <div class="card mb-4">
+    <div class="card-header <%= @skill.safety_critical ? 'bg-danger text-white' : '' %>">
+      <div class="d-flex justify-content-between align-items-center">
+        <h1 class="mb-0"><%= @skill.name %></h1>
+        <div>
+          <span class="badge bg-primary"><%= @skill.difficulty.capitalize %></span>
+          <span class="badge bg-secondary"><%= @skill.category.capitalize %></span>
+          <% if @skill.safety_critical %>
+            <span class="badge bg-warning text-dark">Safety Critical</span>
+          <% end %>
         </div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="card">
-        <div class="card-body">
-          <h5>Equipment Needed</h5>
-          <%# join table needed over here I think %>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-8">
+          <h2>Description</h2>
+          <p class="lead"><%= @skill.details %></p>
+          <% if @skill.instructions.present? %>
+            <h2>How to Learn This Skill</h2>
+            <div class="mb-4">
+              <%= simple_format(@skill.instructions) %>
+            </div>
+          <% end %>
+          <% if @skill.safety_critical %>
+            <div class="alert alert-warning">
+              <h3 class="alert-heading">Safety Warning</h3>
+              <p>This is a safety-critical skill that could impact your wellbeing in outdoor environments.
+                Please take time to learn it properly and consider professional instruction.</p>
+            </div>
+          <% end %>
+        </div>
+        <div class="col-md-4">
+          <% if @skill.video_url.present? %>
+            <div class="mb-4">
+              <h3>Tutorial Video</h3>
+              <div class="ratio ratio-16x9">
+                <iframe src="<%= @skill.video_url %>" title="<%= @skill.name %> Tutorial" allowfullscreen></iframe>
+              </div>
+            </div>
+          <% end %>
+          <% if @skill.resources.present? %>
+            <div class="mb-4">
+              <h3>Additional Resources</h3>
+              <%= simple_format(@skill.resources) %>
+            </div>
+          <% end %>
         </div>
       </div>
     </div>
   </div>
-</div>
+  <div class="row">
+    <% if @related_adventures.any? %>
+      <div class="col-md-6 mb-4">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title mb-0">Adventures Requiring This Skill</h3>
+          </div>
+          <div class="card-body">
+            <div class="list-group">
+              <% @related_adventures.each do |adventure| %>
+                <%= link_to adventure_path(adventure), class: "list-group-item list-group-item-action" do %>
+                  <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1"><%= adventure.name %></h5>
+                  </div>
+                  <p class="mb-1"><%= truncate(adventure.details, length: 100) %></p>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+    <% if @related_locations.any? %>
+      <div class="col-md-6 mb-4">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title mb-0">Locations Where This Skill Is Useful</h3>
+          </div>
+          <div class="card-body">
+            <div class="list-group">
+              <% @related_locations.each do |location| %>
+                <%= link_to location_path(location), class: "list-group-item list-group-item-action" do %>
+                  <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1"><%= location.name %></h5>
+                    <small><%= location.prefecture %></small>
+                  </div>
+                  <p class="mb-1"><%= truncate(location.details, length: 100) %></p>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
 </div>
