@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_02_27_125804) do
+ActiveRecord::Schema[7.1].define(version: 2025_02_28_124815) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -51,6 +51,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_27_125804) do
     t.index ["equipment_id"], name: "index_adventure_equipments_on_equipment_id"
   end
 
+  create_table "adventure_skills", force: :cascade do |t|
+    t.bigint "adventure_id", null: false
+    t.bigint "skill_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["adventure_id"], name: "index_adventure_skills_on_adventure_id"
+    t.index ["skill_id"], name: "index_adventure_skills_on_skill_id"
+  end
+
   create_table "adventures", force: :cascade do |t|
     t.string "name"
     t.string "details"
@@ -82,6 +91,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_27_125804) do
     t.datetime "updated_at", null: false
     t.index ["equipment_id"], name: "index_location_equipments_on_equipment_id"
     t.index ["location_id"], name: "index_location_equipments_on_location_id"
+  end
+
+  create_table "location_skills", force: :cascade do |t|
+    t.bigint "location_id", null: false
+    t.bigint "skill_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["location_id"], name: "index_location_skills_on_location_id"
+    t.index ["skill_id"], name: "index_location_skills_on_skill_id"
   end
 
   create_table "locations", force: :cascade do |t|
@@ -193,8 +211,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_27_125804) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "adventure_equipments", "adventures"
   add_foreign_key "adventure_equipments", "equipment"
+  add_foreign_key "adventure_skills", "adventures"
+  add_foreign_key "adventure_skills", "skills"
   add_foreign_key "location_equipments", "equipment"
   add_foreign_key "location_equipments", "locations"
+  add_foreign_key "location_skills", "locations"
+  add_foreign_key "location_skills", "skills"
   add_foreign_key "locations_adventures", "adventures"
   add_foreign_key "locations_adventures", "locations"
   add_foreign_key "travel_plan_equipments", "equipment"
