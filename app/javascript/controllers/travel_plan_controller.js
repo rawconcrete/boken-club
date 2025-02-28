@@ -318,7 +318,8 @@ export default class extends Controller {
         <input type="hidden" name="travel_plan[adventure_ids][]" value="${adventureId}">
       </div>
     `);
-
+    // update for skills recs
+    this.notifyLocationAdventureChange();
     // call updateEquipment after DOM is updated
     setTimeout(() => this.updateEquipment(), 50);
   }
@@ -329,8 +330,11 @@ export default class extends Controller {
     console.log('ℹ️ REMOVING LOCATION:', locationId);
     console.log('📋 Current locations BEFORE:', Array.from(this.selectedLocations));
 
-    // make sure we delete it as the same type it was added
+    // delete as the same type as was added
     this.selectedLocations.delete(locationId);
+
+    // update for skills recs
+    this.notifyLocationAdventureChange();
 
     // log after removal to verify
     console.log('📋 Current locations AFTER:', Array.from(this.selectedLocations));
@@ -349,7 +353,23 @@ export default class extends Controller {
     this.selectedAdventures.delete(adventureId);
     event.currentTarget.closest('.badge').remove();
 
+    // update for skills recs
+    this.notifyLocationAdventureChange();
+
     // call updateEquipment after DOM is updated
     setTimeout(() => this.updateEquipment(), 50);
+  }
+
+  notifyLocationAdventureChange() {
+    // Create an event to notify other controllers about the change
+    const event = new CustomEvent('locations-adventures-changed', {
+      detail: {
+        locationIds: Array.from(this.selectedLocations),
+        adventureIds: Array.from(this.selectedAdventures)
+      }
+    });
+
+    // Dispatch the event
+    document.dispatchEvent(event);
   }
 }
