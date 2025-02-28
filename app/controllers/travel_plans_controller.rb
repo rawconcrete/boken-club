@@ -235,6 +235,18 @@ class TravelPlansController < ApplicationController
     render json: @equipment
   end
 
+  def get_recommended_skills
+    location_ids = params[:location_ids].to_s.split(',').reject(&:blank?)
+    adventure_ids = params[:adventure_ids].to_s.split(',').reject(&:blank?)
+
+    @skills = Skill.recommended_for(
+      location_ids: location_ids,
+      adventure_ids: adventure_ids
+    )
+
+    render json: @skills
+  end
+
   private
 
   def set_travel_plan
