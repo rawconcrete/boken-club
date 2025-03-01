@@ -1,0 +1,89 @@
+<%# app/views/quizzes/index.html.erb %>
+<div class="container">
+  <div class="row mb-4">
+    <div class="col">
+      <h1 class="text-white">Outdoor Knowledge Quizzes</h1>
+      <p class="text-white">Test your outdoor and survival knowledge with our interactive quizzes.</p>
+    </div>
+  </div>
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <%= form_with url: quizzes_path, method: :get, class: "row g-3" do |f| %>
+        <div class="col-md-4">
+          <%= f.select :category,
+            options_for_select([
+              ['All Categories', ''],
+              ['Wilderness Survival', 'survival'],
+              ['First Aid', 'first_aid'],
+              ['Navigation', 'navigation'],
+              ['Weather Safety', 'weather'],
+              ['Wildlife', 'wildlife'],
+              ['Mountain Safety', 'mountain'],
+              ['Water Safety', 'water']
+            ], params[:category]),
+            {}, { class: "form-select", onchange: "this.form.submit()" } %>
+        </div>
+        <div class="col-md-4">
+          <%= f.select :difficulty,
+            options_for_select([
+              ['All Levels', ''],
+              ['Beginner', 'beginner'],
+              ['Intermediate', 'intermediate'],
+              ['Advanced', 'advanced']
+            ], params[:difficulty]),
+            {}, { class: "form-select", onchange: "this.form.submit()" } %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <% if @skill %>
+    <div class="alert alert-info">
+      <h4>Showing quizzes for skill: <%= @skill.name %></h4>
+    </div>
+  <% elsif @adventure %>
+    <div class="alert alert-info">
+      <h4>Showing quizzes for adventure: <%= @adventure.name %></h4>
+    </div>
+  <% elsif @equipment %>
+    <div class="alert alert-info">
+      <h4>Showing quizzes for equipment: <%= @equipment.name %></h4>
+    </div>
+  <% end %>
+  <div class="row">
+    <% if @quizzes.any? %>
+      <% @quizzes.each do |quiz| %>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <div class="card-header">
+              <h5 class="card-title mb-0"><%= quiz.title %></h5>
+            </div>
+            <div class="card-body">
+              <p class="card-text"><%= quiz.description %></p>
+              <div class="mb-3">
+                <% if quiz.difficulty.present? %>
+                  <span class="badge bg-<%= quiz.difficulty == 'advanced' ? 'danger' : (quiz.difficulty == 'intermediate' ? 'warning' : 'success') %>">
+                    <%= quiz.difficulty.capitalize %>
+                  </span>
+                <% end %>
+                <% if quiz.category.present? %>
+                  <span class="badge bg-info"><%= quiz.category.capitalize %></span>
+                <% end %>
+                <span class="badge bg-secondary"><%= quiz.questions.count %> Questions</span>
+              </div>
+              <%= link_to "View Quiz", quiz_path(quiz), class: "btn btn-primary" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="col-12">
+        <div class="alert alert-warning">
+          <p>No quizzes found matching your criteria.</p>
+          <% if params[:category].present? || params[:difficulty].present? %>
+            <%= link_to "Clear filters", quizzes_path, class: "btn btn-sm btn-outline-dark mt-2" %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
