@@ -1,0 +1,101 @@
+<%# app/views/equipment/show.html.erb %>
+<div class="container">
+  <div class="row mb-4">
+    <div class="col">
+      <%= link_to "← Back to Equipment", equipment_index_path, class: "btn btn-outline-light" %>
+    </div>
+  </div>
+  <div class="card mb-4">
+    <div class="card-header">
+      <h1 class="mb-0"><%= @equipment.name %></h1>
+    </div>
+    <div class="card-body">
+      <div class="mb-3">
+        <span class="badge bg-secondary"><%= @equipment.category&.capitalize || 'General' %></span>
+        <% if @equipment.spring_recommended %>
+          <span class="badge bg-success">Spring</span>
+        <% end %>
+        <% if @equipment.summer_recommended %>
+          <span class="badge bg-danger">Summer</span>
+        <% end %>
+        <% if @equipment.autumn_recommended %>
+          <span class="badge bg-warning">Autumn</span>
+        <% end %>
+        <% if @equipment.winter_recommended %>
+          <span class="badge bg-info">Winter</span>
+        <% end %>
+      </div>
+      <p class="lead"><%= @equipment.description %></p>
+      <% if user_signed_in? && !current_user.owns_equipment?(@equipment.id) %>
+        <%= button_to "Add to My Equipment", user_equipments_path(user_equipment: { equipment_id: @equipment.id }),
+            method: :post, class: "btn btn-success mb-3" %>
+      <% end %>
+    </div>
+  </div>
+  <% if @related_skills.any? %>
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>Related Skills</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <% @related_skills.each do |skill| %>
+            <div class="col-md-6 mb-3">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">
+                    <%= skill.name %>
+                    <% if skill.safety_critical %>
+                      <span class="badge bg-warning text-dark ms-1">Safety Critical</span>
+                    <% end %>
+                  </h5>
+                  <div class="mb-2">
+                    <span class="badge bg-<%= skill.difficulty == 'advanced' ? 'danger' : (skill.difficulty == 'intermediate' ? 'primary' : 'success') %>">
+                      <%= skill.difficulty.capitalize %>
+                    </span>
+                  </div>
+                  <p class="card-text"><%= truncate(skill.details, length: 100) %></p>
+                  <%= link_to "Learn More", skill_path(skill), class: "btn btn-primary" %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+  <% if @equipment.adventures.any? %>
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>Used In Adventures</h3>
+      </div>
+      <div class="card-body">
+        <div class="list-group">
+          <% @equipment.adventures.each do |adventure| %>
+            <%= link_to adventure_path(adventure), class: "list-group-item list-group-item-action" do %>
+              <h5 class="mb-1"><%= adventure.name %></h5>
+              <p class="mb-1"><%= truncate(adventure.details, length: 100) %></p>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+  <% if @equipment.locations.any? %>
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>Recommended for Locations</h3>
+      </div>
+      <div class="card-body">
+        <div class="list-group">
+          <% @equipment.locations.each do |location| %>
+            <%= link_to location_path(location), class: "list-group-item list-group-item-action" do %>
+              <h5 class="mb-1"><%= location.name %></h5>
+              <p class="mb-1"><%= location.city %>, <%= location.prefecture %></p>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

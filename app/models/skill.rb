@@ -11,6 +11,9 @@ class Skill < ApplicationRecord
   validates :name, presence: true
   validates :details, presence: true
 
+  has_many :travel_plan_skills, dependent: :destroy
+  has_many :travel_plans, through: :travel_plan_skills
+
   # scope for searching skills
   scope :search_by_name, ->(query) { where("name ILIKE ?", "%#{query}%") }
 

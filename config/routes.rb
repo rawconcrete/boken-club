@@ -72,4 +72,10 @@ Rails.application.routes.draw do
 
   get '/search', to: 'search#index'
 
+  resources :equipment, only: [:index, :show] do
+    collection do
+      get :search
+    end
+  end
+
 end

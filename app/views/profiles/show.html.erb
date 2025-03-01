@@ -62,11 +62,12 @@
       <h5 class="mb-0">Skills I'm Learning</h5>
     </div>
     <div class="card-body">
-      <% skills_learned = Skill.joins(:travel_plan_skills)
-                              .joins("INNER JOIN travel_plans ON travel_plan_skills.travel_plan_id = travel_plans.id")
-                              .where("travel_plans.user_id = ?", @user.id)
-                              .distinct
-                              .limit(10) %>
+      <%# Alternative approach using subqueries %>
+      <% skill_ids = TravelPlanSkill.joins(:travel_plan)
+                .where(travel_plans: { user_id: @user.id })
+                .pluck(:skill_id).uniq
+          skills_learned = Skill.where(id: skill_ids).limit(10) %>
+      <%# end resolution %>
       <% if skills_learned.any? %>
         <div class="row">
           <% skills_learned.group_by(&:category).each do |category, skills| %>

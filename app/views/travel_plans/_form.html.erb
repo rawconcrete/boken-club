@@ -118,6 +118,19 @@
         </div>
       </div>
     </div>
+    <%# For travel_plans/_form.html.erb - Move notes field to bottom %>
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Notes</h5>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <%= f.label :content, "Trip Notes", class: "form-label" %>
+          <%= f.text_area :content, class: "form-control", rows: 5, placeholder: "Additional notes about your trip..." %>
+        </div>
+      </div>
+    </div>
+    <%# end notes %>
     <div class="d-flex justify-content-end gap-2">
       <%= link_to 'Cancel', :back, class: "btn btn-secondary" %>
       <%= f.submit 'Save', class: "btn btn-primary" %>

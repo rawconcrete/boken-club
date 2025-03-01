@@ -1,5 +1,5 @@
 # app/helpers/adventures_helper.rb
-module AdventuresHelper
+module AdventureHelper
   # Generate adventure tags based on the adventure name
   def adventure_tags(adventure)
     tags = []

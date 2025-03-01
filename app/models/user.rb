@@ -3,6 +3,7 @@ class User < ApplicationRecord
   has_many :travel_plans
   has_many :user_equipments, dependent: :destroy
   has_many :equipment, through: :user_equipments
+  has_many :quiz_attempts, dependent: :destroy
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
