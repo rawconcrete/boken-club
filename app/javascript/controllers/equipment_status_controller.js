@@ -14,12 +14,16 @@ export default class extends Controller {
     const travelPlanId = checkbox.dataset.travelPlanId
     const checked = checkbox.checked
 
-    // update the status of the equipment in the travel plan
+    // Prevent the default behavior to maintain the checked state
+    event.preventDefault()
+
+    // Update the status of the equipment in the travel plan
     fetch(`/travel_plans/${travelPlanId}/equipment/${equipmentId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        'Accept': 'application/json'
       },
       body: JSON.stringify({ checked })
     })
@@ -31,10 +35,12 @@ export default class extends Controller {
     })
     .then(data => {
       console.log('Equipment status updated:', data);
+      // Manually update the checkbox state after successful response
+      checkbox.checked = checked;
     })
     .catch(error => {
       console.error('Error updating equipment status:', error);
-      // revert checkbox state if there was an error
+      // Revert checkbox state if there was an error
       checkbox.checked = !checked;
     });
   }
@@ -46,7 +52,7 @@ export default class extends Controller {
     const equipmentId = button.dataset.equipmentId;
     const travelPlanId = button.dataset.travelPlanId;
 
-    // get CSRF token from meta tag
+    // Get CSRF token from meta tag
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
 
     if (!csrfToken) {
@@ -54,7 +60,7 @@ export default class extends Controller {
       return;
     }
 
-    // send request to mark equipment as purchased
+    // Send request to mark equipment as purchased
     fetch(`/travel_plans/${travelPlanId}/mark_equipment_purchased`, {
       method: 'POST',
       headers: {
@@ -72,7 +78,7 @@ export default class extends Controller {
     })
     .then(data => {
       console.log('Equipment marked as purchased:', data);
-      // reload the page to reflect the changes
+      // Reload the page to reflect the changes
       window.location.reload();
     })
     .catch(error => {

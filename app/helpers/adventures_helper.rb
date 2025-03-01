@@ -53,7 +53,9 @@ module AdventuresHelper
 
   private
 
-  def tag_pill(text, style)
-    "<span class='badge bg-#{style} me-1 mb-1'>#{text}</span>"
-  end
+def tag_pill(text, style)
+  # Change 'light' to 'secondary' for better visibility
+  style = 'secondary' if style == 'light'
+  "<span class='badge bg-#{style} me-1 mb-1'>#{text}</span>"
+end
 end
