@@ -8,13 +8,20 @@
     <div class="col-md-8">
       <div class="card">
         <div class="card-body">
-          <p><strong>Details:</strong> <%= @adventure.details %></p>
+          <p class="mb-1 text-muted small">About</p>
+          <%# details start %>
+          <p class="mb-3"><%= @adventure.details %></p>
           <% if @adventure.tips.present? %>
-            <p><strong>Tips:</strong> <%= @adventure.tips %></p>
+            <p class="mb-1 text-muted small">Tips for Success</p>
+            <p class="mb-3"><%= @adventure.tips %></p>
           <% end %>
           <% if @adventure.warnings.present? %>
-            <p><strong>Warnings:</strong> <%= @adventure.warnings %></p>
+            <div class="alert alert-warning">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              <%= @adventure.warnings %>
+            </div>
           <% end %>
+          <%# details end %>
           <% if @adventure.skills.present? %>
             <p><strong>Required Skills:</strong></p>
             <ul class="list-group mb-3">
