@@ -147,41 +147,41 @@ body:not(.home) {
 
 /* Compact card styling */
 .compact-card {
-  border-radius: 8px; /* Ligero ajuste en el radio de las esquinas para hacerlo más suave */
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15); /* Suavizar la sombra para que sea más sutil */
-  margin-bottom: 12px; /* Menos margen inferior para mejorar el flujo */
-  padding: 4px; /* Reducido aún más el padding para mayor compacidad */
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
+  margin-bottom: 12px;
+  padding: 4px;
 }
 
 .compact-card .card-header {
-  padding: 4px 8px; /* Ajuste en el padding del header para mantener la compacidad */
-  font-size: 13px; /* Fuente más pequeña para hacerlo más sutil */
+  padding: 4px 8px;
+  font-size: 13px;
 }
 
 .compact-card .card-body {
-  padding: 4px; /* Reducir aún más el padding en el cuerpo de la tarjeta */
-  font-size: 12px; /* Reducir el tamaño de la fuente para mejorar la legibilidad en tarjetas más compactas */
-  height: auto; /* Ajustar la altura para que se adapte al contenido */
-  overflow: hidden; /* Evitar desbordamiento de contenido */
+  padding: 4px;
+  font-size: 12px;
+  height: auto;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* Asegura que el contenido se alinee al inicio */
+  justify-content: flex-start;
 }
 
 /* Sticky sidebar */
 .sticky-sidebar {
   position: sticky;
   top: 10px;
-  max-height: 80vh; /* Ajustar altura máxima para que ocupe menos espacio */
+  max-height: 80vh;
   overflow-y: auto;
 }
 
 /* Equipment Grid Layout */
 .equipment-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Reducir aún más el tamaño mínimo de los ítems para optimizar espacio */
-  gap: 6px; /* Reducir el gap entre los elementos para hacerlo más compacto */
-  padding: 4px; /* Reducir padding para ahorrar espacio */
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 6px;
+  padding: 4px;
 }
 
 /* Equipment Item */
@@ -189,17 +189,17 @@ body:not(.home) {
   display: flex;
   align-items: center;
   background: #f8f9fa;
-  padding: 4px; /* Menos padding en los items de equipo */
-  border-radius: 5px; /* Bordes más sutiles */
-  font-size: 12px; /* Fuente más pequeña */
-  gap: 6px; /* Menor espacio entre el texto y la imagen */
+  padding: 4px;
+  border-radius: 5px;
+  font-size: 12px;
+  gap: 6px;
   box-sizing: border-box;
   width: 100%;
 }
 
 /* Equipment Image */
 .equipment-item img {
-  width: 32px; /* Imagen un poco más pequeña */
+  width: 32px;
   height: 32px;
   object-fit: cover;
   border-radius: 4px;
@@ -216,14 +216,14 @@ body:not(.home) {
   background: rgba(255, 255, 255, 0.8);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  padding: 20px; /* Adjusted padding */
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  height: auto; /* Allow height to adjust based on content */
+  height: auto;
   background-color: rgba(255, 255, 255, 0.90);
   transition: background-color 0.3s ease;
-  max-width: 100%; /* Change this to 100% for flexibility */
-  margin: 15px 0; /* Adjust margin for spacing */
+  max-width: 100%;
+  margin: 15px 0;
   font-size: 16px;
 }
 
@@ -239,40 +239,37 @@ body:not(.home) {
   min-height: 120px;
   padding: 15px;
   overflow: hidden;
-  position: relative; /* Added to avoid content overlap */
-  z-index: 1; /* Ensure the body content is in front */
+  position: relative;
+  z-index: 1;
   font-size: 14px;
 }
 
 .col-md-6 .specific-card .card-body {
-  padding: 10px; /* Reduce el padding */
-  margin-bottom: 10px; /* Espacio inferior más pequeño */
-  flex-grow: 0; /* Evitar que el contenido crezca demasiado */
-  min-height: 100px; /* Ajusta la altura mínima para que no sea tan grande */
+  padding: 10px;
+  margin-bottom: 10px;
+  flex-grow: 0;
+  min-height: 100px;
 }
 
-/* Ajuste adicional para eliminar el espacio innecesario */
 .card-body {
-  padding-bottom: 5px; /* Reduce el espacio en la font-size: 16px;parte inferior */
+  padding-bottom: 5px;
   font-size: 16px;
 }
 
-/* Ajuste la card image (si aplica) */
 .specific-card .card-img-top {
   object-fit: cover;
-  height: 180px; /* Ajusted image height */
-  margin-bottom: 15px; /* Spacing below the image */
+  height: 180px;
+  margin-bottom: 15px;
 }
 
-/* Notes section (if it's a separate section) */
 .notes-section {
   padding: 10px;
   background-color: #f8f9fa;
   border-radius: 8px;
   margin-top: 12px;
-  max-height: 200px; /* Add max-height to prevent overflow */
-  overflow-y: auto; /* Ensure overflow is handled gracefully */
-  z-index: 0; /* Keep notes behind other sections */
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 0;
 }
 
 /* For plan detail cards */
@@ -291,8 +288,8 @@ body:not(.home) {
 
 /* For main content (center column) cards */
 .col-md-6 .specific-card {
-  max-width: 600px; /* Increased max-width */
-  margin: 15px auto; /* Center the cards and space them out */
+  max-width: 600px;
+  margin: 15px auto;
 }
 
 /* Adjust plan details padding */
@@ -309,19 +306,19 @@ body:not(.home) {
   margin-top: 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px; /* Adding space between details */
+  gap: 12px;
 }
 
 /* Form and label styling */
 .form-label {
   font-size: 13px;
-  font-weight: normal; /* Fuente más ligera */
+  font-weight: normal;
 }
 
 .form-control {
-  font-size: 13px; /* Fuente ligeramente más pequeña */
-  padding: 6px; /* Menos padding para mayor compacidad */
-  border-radius: 6px; /* Bordes más redondeados */
+  font-size: 13px;
+  padding: 6px;
+  border-radius: 6px;
   box-sizing: border-box;
 }
 
@@ -329,10 +326,10 @@ body:not(.home) {
 .card-body .skills-recommendation {
   display: flex;
   flex-direction: column;
-  gap: 8px; /* Espacio reducido entre los items de habilidades */
+  gap: 8px;
 }
 
 .card-body .skills-recommendation .skill-item {
-  padding: 6px 10px; /* Menos padding en los items de habilidades */
-  font-size: 12px; /* Fuente más pequeña */
+  padding: 6px 10px;
+  font-size: 12px;
 }
