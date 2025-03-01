@@ -108,7 +108,7 @@
             <% word = travel_plan.skills.count == 1 ? "skill" : "skills" %>
             <% string = "You have #{travel_plan.skills.count} #{word} already selected." %>
             <% if travel_plan.skills.any? %>
-              <p><%= word %></p>
+              <p><%= string %></p>
             <% end %>
           </div>
         </div>

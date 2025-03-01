@@ -14,10 +14,11 @@
           <span class="badge bg-secondary"><%= @skill.category&.capitalize || 'General' %></span>
           <%# warning at the bottom of the page if safety critical %>
           <% if @skill.safety_critical %>
-            <div class="alert alert-warning alert-dismissible fade show">
+            <div class="alert alert-yellow alert-warning alert-dismissible fade show">
               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Safety-Critical Skill</h5>
               <p class="mb-0">This skill could impact your wellbeing in outdoor environments. Consider professional instruction.</p>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
           <% end %>
           <%# end warning %>
@@ -36,10 +37,11 @@
             </div>
           <% end %>
           <% if @skill.safety_critical %>
-            <div class="alert alert-warning">
+            <div class="alert alert-yellow alert-warning alert-dismissible fade show" role="alert">
               <h3 class="alert-heading">Safety Warning</h3>
               <p>This is a safety-critical skill that could impact your wellbeing in outdoor environments.
                 Please take time to learn it properly and consider professional instruction.</p>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
           <% end %>
         </div>
