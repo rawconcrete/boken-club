@@ -362,7 +362,7 @@ export default class extends Controller {
           : '';
 
         html += `
-          <div class="col-md-6 mb-2">
+          <div class="col-md-12 mb-2">
             <div class="card ${cardClasses}">
               <div class="card-body p-3">
                 <div class="form-check">
