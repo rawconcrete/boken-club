@@ -4,8 +4,7 @@ class CreateQuizAttempts < ActiveRecord::Migration[7.1]
       t.references :user, null: false, foreign_key: true
       t.references :quiz, null: false, foreign_key: true
       t.integer :score
-      t.boolean :completed
-
+      t.boolean :completed, default: false
       t.timestamps
     end
   end

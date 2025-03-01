@@ -4,7 +4,6 @@ class CreateQuizAnswers < ActiveRecord::Migration[7.1]
       t.references :quiz_attempt, null: false, foreign_key: true
       t.references :question, null: false, foreign_key: true
       t.references :answer, null: false, foreign_key: true
-
       t.timestamps
     end
   end
