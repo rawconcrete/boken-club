@@ -1,21 +1,24 @@
 <%# app/views/travel_plans/show.html.erb %>
 <div class="container mx-auto px-4" data-controller="equipment-status">
-  <<div class="flex justify-between items-center mb-6 text-white">
-    <h1 class="text-2xl font-bold"><%= @travel_plan.title %></h1>
+  <!-- Title and Buttons Row -->
+  <div class="flex justify-between items-center mb-6 no-print">
+    <h1 class="text-2xl font-bold text-white"><%= @travel_plan.title %></h1>
+    <div class="flex justify-end items-center">
+      <%= link_to "Printer Friendly Version", print_travel_plan_path(@travel_plan),
+          class: "btn btn-secondary mr-3" %>
+      <%= link_to "Edit", edit_travel_plan_path(@travel_plan),
+          class: "btn btn-success text-white px-3 py-1 rounded-md shadow-md hover:shadow-lg transition-all mr-3" %>
+      <%= button_to "Delete", travel_plan_path(@travel_plan),
+          method: :delete,
+          class: "btn btn-danger text-white px-3 py-1 rounded-md shadow-md hover:shadow-lg transition-all",
+          form: { style: "margin: 0; display: inline-block;" },
+          data: { turbo_confirm: "Are you sure?" } %>
+    </div>
   </div>
   <%# Display safety warnings %>
   <%= render 'shared/safety_warnings', warnings: @travel_plan.safety_warnings %>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div class="card">
-      <div class="space-x-2" style="display: flex; gap: 5px; margin-top: 20px; position: absolute; top: 0px; right: 10px;">
-        <%= link_to "Edit", edit_travel_plan_path(@travel_plan),
-            style: "background: linear-gradient(135deg,rgb(72, 145, 67), #3cb371); color: white; padding: 5px 10px; border-radius: 6px; font-size: 14px; text-decoration: none;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); transition: all 0.3s ease-in-out; cursor: pointer;" %>
-        <%= button_to "Delete", travel_plan_path(@travel_plan), method: :delete,
-            style: "background: linear-gradient(135deg, #f1727f, #e53e5e); color: white; padding: 5px 10px; border-radius: 6px; font-size: 14px;
-            border: none; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); transition: all 0.3s ease-in-out; cursor: pointer;",
-            data: { turbo_confirm: "Are you sure?" } %>
-      </div>
       <h2 class="text-xl font-semibold mb-3">Locations</h2>
       <% @travel_plan.locations.each do |location| %>
         <div class="mb-4">
@@ -38,8 +41,6 @@
   </div>
   <div class="mt-6 card">
     <h2 class="text-xl font-semibold mb-3">Trip Details</h2>
-    <%# status field temporarily disabled %>
-    <%# <p><strong>Status:</strong> <span class="<%= status_color_class(@travel_plan.status) %><%#"><%= @travel_plan.status&.capitalize || 'Not Set' %><%#</span></p> %>
     <p><strong>Dates:</strong>
       <% if @travel_plan.start_date.present? %>
         <%= @travel_plan.start_date.strftime("%B %d, %Y") %>
@@ -106,7 +107,7 @@
                       <div class="text-muted small"><%= tpe.equipment.description %></div>
                     </div>
                     <button type="button"
-                           class="btn btn-sm btn-success"
+                           class="btn btn-sm btn-success no-print"
                            data-action="equipment-status#markPurchased"
                            data-equipment-id="<%= tpe.equipment.id %>"
                            data-travel-plan-id="<%= @travel_plan.id %>">
@@ -123,7 +124,7 @@
           </div>
         </div>
       </div>
-      <%# travel plan show for skills %>
+      <!-- Skills for This Adventure -->
       <div class="mt-6">
         <div class="card mb-4">
           <div class="card-header bg-primary bg-opacity-25">
@@ -151,7 +152,7 @@
                               </span>
                               <p class="text-muted mt-1 mb-0"><%= truncate(skill.details, length: 100) %></p>
                             </div>
-                            <%= link_to "Learn More", skill_path(skill), class: "btn btn-sm btn-outline-primary", data: { turbo_frame: "_top" } %>
+                            <%= link_to "Learn More", skill_path(skill), class: "btn btn-sm btn-outline-primary no-print", data: { turbo_frame: "_top" } %>
                           </div>
                         </div>
                       <% end %>
@@ -168,7 +169,6 @@
           </div>
         </div>
       </div>
-      <%# end show for skills %>
     </div>
   </div>
 </div>

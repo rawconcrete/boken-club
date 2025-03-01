@@ -1,0 +1,111 @@
+<!-- app/views/travel_plans/print.html.erb -->
+<div class="print-container">
+  <div class="print-header">
+    <h1 class="print-title"><%= @travel_plan.title %></h1>
+    <p><strong>Dates:</strong>
+      <% if @travel_plan.start_date.present? %>
+        <%= @travel_plan.start_date.strftime("%B %d, %Y") %>
+        <% if @travel_plan.end_date.present? && @travel_plan.end_date != @travel_plan.start_date %>
+          to <%= @travel_plan.end_date.strftime("%B %d, %Y") %>
+        <% end %>
+      <% else %>
+        Not set
+      <% end %>
+    </p>
+    <p><strong>Notes:</strong> <%= @travel_plan.content %></p>
+  </div>
+  <!-- Two-column grid for pack list + buy list -->
+  <div class="print-grid">
+    <!-- Pack List Column -->
+    <section class="print-section half-width">
+      <h2>Pack List (Equipment You Own)</h2>
+      <% if @equipment_to_pack.any? %>
+        <table class="checklist">
+          <tbody>
+            <% @equipment_to_pack.each do |tpe| %>
+              <tr>
+                <td style="width:30px;">
+                  <!-- Disabled checkbox so user can physically check on paper -->
+                  <input type="checkbox" disabled="disabled" <%= "checked" if tpe.checked %> />
+                </td>
+                <td style="width:150px;"><strong><%= tpe.equipment.name %></strong></td>
+                <td><%= tpe.equipment.description %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p>No equipment to pack.</p>
+      <% end %>
+    </section>
+    <!-- Buy List Column -->
+    <section class="print-section half-width">
+      <h2>Buy List (Equipment You Need)</h2>
+      <% if @equipment_to_buy.any? %>
+        <table class="checklist">
+          <tbody>
+            <% @equipment_to_buy.each do |tpe| %>
+              <tr>
+                <td style="width:30px;">
+                  <input type="checkbox" disabled="disabled" />
+                </td>
+                <td style="width:150px;"><strong><%= tpe.equipment.name %></strong></td>
+                <td><%= tpe.equipment.description %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p>No equipment to buy.</p>
+      <% end %>
+    </section>
+    <!-- Locations Section -->
+    <section class="print-section full-width">
+      <h2>Locations</h2>
+      <% @travel_plan.locations.each do |loc| %>
+        <div class="print-item">
+          <p><strong>Name:</strong> <%= loc.name %></p>
+          <p><strong>City:</strong> <%= loc.city %></p>
+          <p><strong>Prefecture:</strong> <%= loc.prefecture %></p>
+          <p><strong>Details:</strong> <%= loc.details %></p>
+        </div>
+      <% end %>
+    </section>
+    <!-- Adventures Section -->
+    <section class="print-section full-width">
+      <h2>Adventures</h2>
+      <% @travel_plan.adventures.each do |adv| %>
+        <div class="print-item">
+          <p><strong>Type:</strong> <%= adv.name %></p>
+          <p><strong>Details:</strong> <%= adv.details %></p>
+        </div>
+      <% end %>
+    </section>
+    <!-- Expanded Skills -->
+    <section class="print-section full-width">
+      <h2>Skills for This Adventure</h2>
+      <% if @travel_plan.skills.any? %>
+        <% @travel_plan.skills.group_by(&:category).each do |category, skills| %>
+          <h3><%= category || 'Other' %></h3>
+          <% skills.each do |skill| %>
+            <p><strong>Name:</strong> <%= skill.name %></p>
+            <p><strong>Difficulty:</strong> <%= skill.difficulty.capitalize %></p>
+            <% if skill.safety_critical %>
+              <p><strong>SAFETY WARNING:</strong> This skill is safety-critical. Consider professional instruction.</p>
+            <% end %>
+            <p><strong>Description:</strong> <%= skill.details %></p>
+            <% if skill.instructions.present? %>
+              <p><strong>Instructions:</strong> <%= skill.instructions %></p>
+            <% end %>
+            <% if skill.resources.present? %>
+              <p><strong>Resources:</strong> <%= skill.resources %></p>
+            <% end %>
+            <hr>
+          <% end %>
+        <% end %>
+      <% else %>
+        <p>No skills added.</p>
+      <% end %>
+    </section>
+  </div>
+</div>

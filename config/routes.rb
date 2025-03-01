@@ -35,8 +35,9 @@ Rails.application.routes.draw do
     member do
       delete :destroy
       post :mark_equipment_purchased
-      post :add_skill      # add this line
-      delete :remove_skill # add this line
+      post :add_skill
+      delete :remove_skill
+      get :print
 
       # equipment status updates
       patch 'equipment/:equipment_id', to: 'travel_plans#update_equipment_status', as: :update_equipment

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Print - Travel Plan</title>
+    <%= stylesheet_link_tag "application", media: "all" %>
+    <%= stylesheet_link_tag "print", media: "print" %>
+    <%= csrf_meta_tags %>
+    <style>
+      /* Force a plain white background */
+      body {
+        background-color: #fff !important;
+      }
+    </style>
+  </head>
+  <!-- Trigger print dialog immediately on page load -->
+  <body onload="window.print()">
+    <%= yield %>
+  </body>
+</html>
