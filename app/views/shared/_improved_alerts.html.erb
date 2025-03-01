@@ -1,5 +1,5 @@
 <%# app/views/shared/_improved_alerts.html.erb %>
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 5">
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 5; display: flex; flex-direction: column; gap: 10px;">
   <% if notice %>
     <div class="toast show bg-success text-white" role="alert" aria-live="assertive" aria-atomic="true">
       <div class="toast-header bg-success text-white">
@@ -28,19 +28,49 @@
   <% end %>
 </div>
 <script>
-  // Initialize all toasts
+  // Add draggable functionality to toasts
   document.addEventListener('turbo:load', function() {
-    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
-    var toastList = toastElList.map(function(toastEl) {
-      return new bootstrap.Toast(toastEl, {
-        autohide: true,
-        delay: 5000
-      })
-    })
+    var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+    toastElList.forEach(function(toastEl) {
+      // Make draggable
+      toastEl.style.cursor = 'move';
+      toastEl.addEventListener('mousedown', dragStart);
 
-    // Auto-dismiss alerts after 5 seconds
+      // Initialize toast
+      new bootstrap.Toast(toastEl, {
+        autohide: true,
+        delay: 10000
+      });
+    });
+
+    // Auto-dismiss alerts after 10 seconds
     setTimeout(function() {
-      toastList.forEach(toast => toast.hide());
-    }, 5000);
+      toastElList.forEach(toast => {
+        var bsToast = bootstrap.Toast.getInstance(toast);
+        if (bsToast) bsToast.hide();
+      });
+    }, 10000);
   });
+
+  // Draggable functionality
+  function dragStart(e) {
+    var toast = e.target.closest('.toast');
+    var offsetX = e.clientX - toast.getBoundingClientRect().left;
+    var offsetY = e.clientY - toast.getBoundingClientRect().top;
+
+    function dragMove(e) {
+      toast.style.position = 'fixed';
+      toast.style.left = (e.clientX - offsetX) + 'px';
+      toast.style.top = (e.clientY - offsetY) + 'px';
+      toast.style.zIndex = '10000';
+    }
+
+    function dragEnd() {
+      document.removeEventListener('mousemove', dragMove);
+      document.removeEventListener('mouseup', dragEnd);
+    }
+
+    document.addEventListener('mousemove', dragMove);
+    document.addEventListener('mouseup', dragEnd);
+  }
 </script>
