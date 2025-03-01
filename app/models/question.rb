@@ -10,3 +10,9 @@ class Question < ApplicationRecord
   def correct_answers
     answers.where(is_correct: true)
   end
+
+  # check if a specific answer is correct
+  def correct_answer?(answer_id)
+    answers.where(id: answer_id, is_correct: true).exists?
+  end
+end
