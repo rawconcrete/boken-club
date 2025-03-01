@@ -1,0 +1,114 @@
+<%# app/views/quizzes/result.html.erb %>
+<div class="container">
+  <div class="row mb-4">
+    <div class="col">
+      <%= link_to "← Back to Quiz", quiz_path(@quiz), class: "btn btn-outline-light" %>
+    </div>
+  </div>
+  <div class="card mb-4">
+    <div class="card-header">
+      <h1 class="h3 mb-0">Your Results: <%= @quiz.title %></h1>
+    </div>
+    <div class="card-body">
+      <div class="text-center mb-4">
+        <div class="display-1 mb-3 <%= @score >= 70 ? 'text-success' : 'text-danger' %>">
+          <%= @score %>%
+        </div>
+        <p class="lead">
+          <% if @score >= 90 %>
+            Excellent! You've mastered this content.
+          <% elsif @score >= 70 %>
+            Good job! You have a solid understanding of the material.
+          <% elsif @score >= 50 %>
+            You're making progress, but could use more practice.
+          <% else %>
+            You might need to review this material more thoroughly.
+          <% end %>
+        </p>
+      </div>
+      <hr>
+      <h2 class="h4 mb-3">Question Review</h2>
+      <div class="question-review">
+        <% @quiz_answers.each_with_index do |quiz_answer, index| %>
+          <div class="card mb-3 <%= quiz_answer.correct? ? 'border-success' : 'border-danger' %>">
+            <div class="card-header <%= quiz_answer.correct? ? 'bg-success text-white' : 'bg-danger text-white' %>">
+              Question <%= index + 1 %>: <%= quiz_answer.correct? ? 'Correct' : 'Incorrect' %>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title"><%= quiz_answer.question.content %></h5>
+              <div class="mb-3">
+                <p class="mb-1"><strong>Your answer:</strong></p>
+                <div class="p-2 <%= quiz_answer.correct? ? 'bg-success bg-opacity-10' : 'bg-danger bg-opacity-10' %> rounded">
+                  <%= quiz_answer.answer.content %>
+                  <% if quiz_answer.correct? %>
+                    <i class="fas fa-check-circle text-success ms-2"></i>
+                  <% else %>
+                    <i class="fas fa-times-circle text-danger ms-2"></i>
+                  <% end %>
+                </div>
+              </div>
+              <% unless quiz_answer.correct? %>
+                <div class="mb-3">
+                  <p class="mb-1"><strong>Correct answer:</strong></p>
+                  <div class="p-2 bg-success bg-opacity-10 rounded">
+                    <%= quiz_answer.question.correct_answers.first.content %>
+                    <i class="fas fa-check-circle text-success ms-2"></i>
+                  </div>
+                </div>
+              <% end %>
+              <% if quiz_answer.question.explanation.present? %>
+                <div class="mt-3">
+                  <p class="mb-1"><strong>Explanation:</strong></p>
+                  <p class="mb-0"><%= quiz_answer.question.explanation %></p>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <div class="d-grid gap-2 mt-4">
+        <%= link_to "Take Quiz Again", take_quiz_path(@quiz), class: "btn btn-primary btn-lg" %>
+      </div>
+    </div>
+  </div>
+  <% if @quiz.skill.present? || @quiz.adventure.present? || @quiz.equipment.present? %>
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3 class="h5 mb-0">Resources to Improve Your Knowledge</h3>
+      </div>
+      <div class="card-body">
+        <% if @quiz.skill.present? %>
+          <div class="mb-3">
+            <h4 class="h6">Learn more about this skill:</h4>
+            <p>
+              <%= link_to @quiz.skill.name, skill_path(@quiz.skill), class: "btn btn-outline-primary" %>
+            </p>
+          </div>
+        <% end %>
+        <% if @quiz.adventure.present? %>
+          <div class="mb-3">
+            <h4 class="h6">Explore this adventure:</h4>
+            <p>
+              <%= link_to @quiz.adventure.name, adventure_path(@quiz.adventure), class: "btn btn-outline-primary" %>
+            </p>
+          </div>
+        <% end %>
+        <% if @quiz.equipment.present? %>
+          <div class="mb-3">
+            <h4 class="h6">Learn more about this equipment:</h4>
+            <p>
+              <%= link_to @quiz.equipment.name, "#", class: "btn btn-outline-primary" %>
+            </p>
+          </div>
+        <% end %>
+        <div class="alert alert-info">
+          <p class="mb-0">
+            <i class="fas fa-info-circle me-2"></i>
+            Remember that outdoor and survival knowledge is best reinforced with practical experience.
+            Consider taking a class or practicing these skills in a controlled environment.
+          </p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

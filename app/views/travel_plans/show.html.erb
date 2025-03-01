@@ -1,8 +1,10 @@
 <%# app/views/travel_plans/show.html.erb %>
 <div class="container mx-auto px-4" data-controller="equipment-status">
-  <div class="flex justify-between items-center mb-6 text-white">
+  <<div class="flex justify-between items-center mb-6 text-white">
     <h1 class="text-2xl font-bold"><%= @travel_plan.title %></h1>
   </div>
+  <%# Display safety warnings %>
+  <%= render 'shared/safety_warnings', warnings: @travel_plan.safety_warnings %>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div class="card">
       <div class="space-x-2" style="display: flex; gap: 5px; margin-top: 20px; position: absolute; top: 0px; right: 10px;">
@@ -36,7 +38,8 @@
   </div>
   <div class="mt-6 card">
     <h2 class="text-xl font-semibold mb-3">Trip Details</h2>
-    <p><strong>Status:</strong> <span class="<%= status_color_class(@travel_plan.status) %>"><%= @travel_plan.status&.capitalize || 'Not Set' %></span></p>
+    <%# status field temporarily disabled %>
+    <%# <p><strong>Status:</strong> <span class="<%= status_color_class(@travel_plan.status) %><%#"><%= @travel_plan.status&.capitalize || 'Not Set' %><%#</span></p> %>
     <p><strong>Dates:</strong>
       <% if @travel_plan.start_date.present? %>
         <%= @travel_plan.start_date.strftime("%B %d, %Y") %>

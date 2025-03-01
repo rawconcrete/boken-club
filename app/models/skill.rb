@@ -5,6 +5,9 @@ class Skill < ApplicationRecord
   has_many :location_skills, dependent: :destroy
   has_many :locations, through: :location_skills
 
+  has_many :equipment_skills, dependent: :destroy
+  has_many :equipment, through: :equipment_skills
+
   validates :name, presence: true
   validates :details, presence: true
 

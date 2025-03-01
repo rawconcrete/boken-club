@@ -6,141 +6,257 @@ export default class extends Controller {
     "selectedAdventures", "adventureResults", "equipmentList",
     "startDate", "endDate", "debugButton"]
 
-  debugForceUpdate(event) {
-    console.log("Debug force update called");
-    this.updateEquipment();
-  }
-
   static values = {
     locations: Array,
     adventures: Array
   }
 
   connect() {
-    this.selectedLocations = new Set()
-    this.selectedAdventures = new Set()
+    console.log("Travel plan controller connected");
+    this.selectedLocations = new Set();
+    this.selectedAdventures = new Set();
 
-    if (this.hasLocationsValue) {
-      this.locationsValue.forEach(location => this.addLocationTag(location))
-    }
-    if (this.hasAdventuresValue) {
-      this.adventuresValue.forEach(adventure => this.addAdventureTag(adventure))
+    // Initialize from passed-in values
+    if (this.hasLocationsValue && this.locationsValue.length > 0) {
+      console.log("Initializing with locations:", this.locationsValue);
+      this.locationsValue.forEach(location => {
+        if (location && location.id) {
+          this.addLocationTag(location);
+        }
+      });
     }
 
-    // add this event listener
+    if (this.hasAdventuresValue && this.adventuresValue.length > 0) {
+      console.log("Initializing with adventures:", this.adventuresValue);
+      this.adventuresValue.forEach(adventure => {
+        if (adventure && adventure.id) {
+          this.addAdventureTag(adventure);
+        }
+      });
+    }
+
+    // Add event listener for equipment updates
     document.addEventListener('equipment-update', () => {
       console.log("Manual equipment update triggered");
       this.updateEquipment();
     });
 
-    this.loadInitialSelections()
-    this.updateAvailableAdventures()
+    // Also check for URL parameters for location_id and adventure_id
+    this.loadInitialSelections();
 
-    // updated for skills recommendation
+    // Initialize once connected
+    this.updateAvailableAdventures();
+    this.updateEquipment();
     this.notifyLocationAdventureChange();
   }
 
-  // helper method to properly handle ID conversions
+  // Helper method to properly handle ID conversions
   convertToId(id) {
     return typeof id === 'string' ? parseInt(id, 10) : id;
   }
 
   async loadInitialSelections() {
-    const urlParams = new URLSearchParams(window.location.search)
-    const locationId = urlParams.get('location_id')
-    const adventureId = urlParams.get('adventure_id')
+    const urlParams = new URLSearchParams(window.location.search);
+    const locationId = urlParams.get('location_id');
+    const adventureId = urlParams.get('adventure_id');
 
-    if (locationId) await this.fetchAndAddLocation(locationId)
-    if (adventureId) await this.fetchAndAddAdventure(adventureId)
+    if (locationId) {
+      console.log(`Loading location from URL param: ${locationId}`);
+      await this.fetchAndAddLocation(locationId);
+    }
+
+    if (adventureId) {
+      console.log(`Loading adventure from URL param: ${adventureId}`);
+      await this.fetchAndAddAdventure(adventureId);
+    }
   }
 
   async fetchAndAddLocation(id) {
     try {
-      const response = await fetch(`/locations/${id}.json`)
-      const location = await response.json()
-      this.addLocationTag(location)
+      console.log(`Fetching location: ${id}`);
+      const response = await fetch(`/locations/${id}.json`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const location = await response.json();
+      console.log("Fetched location:", location);
+      this.addLocationTag(location);
     } catch (error) {
-      console.error('Error fetching location:', error)
+      console.error('Error fetching location:', error);
     }
   }
 
   async fetchAndAddAdventure(id) {
     try {
-      const response = await fetch(`/adventures/${id}.json`)
-      const adventure = await response.json()
-      this.addAdventureTag(adventure)
+      console.log(`Fetching adventure: ${id}`);
+      const response = await fetch(`/adventures/${id}.json`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const adventure = await response.json();
+      console.log("Fetched adventure:", adventure);
+      this.addAdventureTag(adventure);
     } catch (error) {
-      console.error('Error fetching adventure:', error)
+      console.error('Error fetching adventure:', error);
     }
   }
 
   async updateAvailableAdventures() {
-    const locationIds = Array.from(this.selectedLocations).join(',')
-    const queryParams = new URLSearchParams()
-    if (locationIds) {
-      queryParams.append('location_ids', locationIds)
-    }
+    const locationIds = Array.from(this.selectedLocations).join(',');
 
-    const response = await fetch(`/adventures.json?${queryParams}`)
-    const adventures = await response.json()
-    this.renderAdventureResults(adventures)
+    try {
+      const queryParams = new URLSearchParams();
+      if (locationIds) {
+        queryParams.append('location_ids', locationIds);
+      }
+
+      console.log(`Fetching adventures for locations: ${locationIds || 'none'}`);
+      const response = await fetch(`/adventures.json?${queryParams}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const adventures = await response.json();
+      console.log(`Found ${adventures.length} adventures`);
+      this.renderAdventureResults(adventures);
+    } catch (error) {
+      console.error('Error updating adventures:', error);
+      if (this.hasAdventureResultsTarget) {
+        this.adventureResultsTarget.innerHTML = `<div class="alert alert-danger">Error loading adventures: ${error.message}</div>`;
+      }
+    }
   }
 
   async searchLocations(event) {
-    const query = event.target.value.trim()
-    this.locationResultsTarget.innerHTML = ''
+    const query = event.target.value.trim();
 
-    if (query.length < 2) return
+    if (!this.hasLocationResultsTarget) {
+      console.error("Missing locationResults target");
+      return;
+    }
 
-    const response = await fetch(`/locations.json?query=${encodeURIComponent(query)}`)
-    const locations = await response.json()
-    this.renderLocationResults(locations)
+    this.locationResultsTarget.innerHTML = '';
+
+    if (query.length < 2) return;
+
+    try {
+      console.log(`Searching locations with query: ${query}`);
+      const response = await fetch(`/locations.json?query=${encodeURIComponent(query)}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const locations = await response.json();
+      console.log(`Found ${locations.length} locations`);
+      this.renderLocationResults(locations);
+    } catch (error) {
+      console.error('Error searching locations:', error);
+      this.locationResultsTarget.innerHTML = `<div class="alert alert-danger">Error searching locations: ${error.message}</div>`;
+    }
   }
 
   renderLocationResults(locations) {
-    this.locationResultsTarget.innerHTML = locations.map(location => `
-      <div class="list-group-item" data-action="click->travel-plan#selectLocation"
-           data-location='${JSON.stringify(location)}'>
-        ${location.name} - ${location.city}, ${location.prefecture}
-      </div>
-    `).join('')
+    if (!this.hasLocationResultsTarget) {
+      console.error("Missing locationResults target");
+      return;
+    }
+
+    if (locations.length === 0) {
+      this.locationResultsTarget.innerHTML = '<div class="list-group-item">No locations found</div>';
+      return;
+    }
+
+    this.locationResultsTarget.innerHTML = locations.map(location => {
+      // Safely encode the location data
+      const locationData = JSON.stringify(location).replace(/"/g, '&quot;');
+
+      return `
+        <div class="list-group-item" data-action="click->travel-plan#selectLocation"
+             data-location="${locationData}">
+          ${location.name} - ${location.city || ''}, ${location.prefecture || ''}
+        </div>
+      `;
+    }).join('');
   }
 
   renderAdventureResults(adventures) {
+    if (!this.hasAdventureResultsTarget) {
+      console.error("Missing adventureResults target");
+      return;
+    }
+
+    if (adventures.length === 0) {
+      this.adventureResultsTarget.innerHTML = '<div class="list-group-item">No adventures available</div>';
+      return;
+    }
+
     this.adventureResultsTarget.innerHTML = adventures.map(adventure => {
-      const adventureJson = JSON.stringify(adventure).replace(/"/g, '&quot;')
+      // Safely encode the adventure data
+      const adventureData = JSON.stringify(adventure).replace(/"/g, '&quot;');
+
       return `
         <div class="list-group-item d-flex justify-content-between align-items-center">
           ${adventure.name}
           <button type="button"
                   class="btn btn-sm btn-primary"
                   data-action="click->travel-plan#selectAdventure"
-                  data-adventure="${adventureJson}">
+                  data-adventure="${adventureData}">
             Add
           </button>
         </div>
-      `
-    }).join('')
+      `;
+    }).join('');
   }
 
   selectLocation(event) {
-    const location = JSON.parse(event.currentTarget.dataset.location)
-    this.addLocationTag(location)
-    this.locationSearchTarget.value = ''
-    this.locationResultsTarget.innerHTML = ''
-    this.updateAvailableAdventures()
+    try {
+      const locationStr = event.currentTarget.getAttribute('data-location');
+      const location = JSON.parse(locationStr);
+
+      if (!location || !location.id) {
+        console.error("Invalid location data:", locationStr);
+        return;
+      }
+
+      this.addLocationTag(location);
+
+      if (this.hasLocationSearchTarget) {
+        this.locationSearchTarget.value = '';
+      }
+
+      if (this.hasLocationResultsTarget) {
+        this.locationResultsTarget.innerHTML = '';
+      }
+
+      this.updateAvailableAdventures();
+    } catch (error) {
+      console.error('Error in selectLocation:', error);
+    }
   }
 
   selectAdventure(event) {
-    event.preventDefault()
-    event.stopPropagation()
+    event.preventDefault();
+    event.stopPropagation();
 
     try {
-      const adventureData = JSON.parse(event.currentTarget.dataset.adventure)
-      this.addAdventureTag(adventureData)
+      const adventureData = event.currentTarget.getAttribute('data-adventure');
+      const adventure = JSON.parse(adventureData);
+
+      if (!adventure || !adventure.id) {
+        console.error("Invalid adventure data:", adventureData);
+        return;
+      }
+
+      this.addAdventureTag(adventure);
     } catch (error) {
-      console.error('Error parsing adventure data:', error)
-      console.log('Raw adventure data:', event.currentTarget.dataset.adventure)
+      console.error('Error in selectAdventure:', error);
+      console.log('Raw adventure data:', event.currentTarget.dataset.adventure);
     }
   }
 
@@ -158,9 +274,12 @@ export default class extends Controller {
     });
 
     try {
-      // clear existing equipment while loading
+      // Clear existing equipment while loading
       if (this.hasEquipmentListTarget) {
         this.equipmentListTarget.innerHTML = '<p class="text-center"><em>Loading equipment recommendations...</em></p>';
+      } else {
+        console.error("Missing equipmentList target");
+        return;
       }
 
       const params = new URLSearchParams();
@@ -180,7 +299,7 @@ export default class extends Controller {
       const equipment = await response.json();
       console.log('Received equipment:', equipment);
 
-      // force a small delay to ensure DOM updates
+      // Force a small delay to ensure DOM updates
       setTimeout(() => {
         this.renderEquipmentList(equipment);
       }, 50);
@@ -194,7 +313,10 @@ export default class extends Controller {
   }
 
   renderEquipmentList(equipment) {
-    if (!this.hasEquipmentListTarget) return;
+    if (!this.hasEquipmentListTarget) {
+      console.error("Missing equipmentList target");
+      return;
+    }
 
     console.log('🧰 Rendering equipment list with', equipment.length, 'items');
 
@@ -203,7 +325,7 @@ export default class extends Controller {
       return;
     }
 
-    // group equipment by category
+    // Group equipment by category
     const equipmentByCategory = equipment.reduce((acc, item) => {
       if (!acc[item.category]) {
         acc[item.category] = [];
@@ -212,7 +334,7 @@ export default class extends Controller {
       return acc;
     }, {});
 
-    // generate HTML
+    // Generate HTML
     let html = '';
 
     Object.entries(equipmentByCategory).forEach(([category, items]) => {
@@ -226,7 +348,7 @@ export default class extends Controller {
         const isChecked = this.isEquipmentSelected(item.id);
         const isEssential = item.is_essential === true;
 
-        // different styling based on whether user already owns the item
+        // Different styling based on whether user already owns the item
         const cardClasses = item.user_owned
           ? 'border-success bg-success bg-opacity-10'
           : 'border-primary';
@@ -278,11 +400,25 @@ export default class extends Controller {
   }
 
   addLocationTag(location) {
+    if (!location || !location.id) {
+      console.error("Invalid location:", location);
+      return;
+    }
+
     const locationId = this.convertToId(location.id);
-    if (this.selectedLocations.has(locationId)) return;
+
+    if (this.selectedLocations.has(locationId)) {
+      console.log(`Location ${locationId} already selected`);
+      return;
+    }
 
     console.log('Adding location:', locationId, location.name);
     this.selectedLocations.add(locationId);
+
+    if (!this.hasSelectedLocationsTarget) {
+      console.error("Missing selectedLocations target");
+      return;
+    }
 
     this.selectedLocationsTarget.insertAdjacentHTML('beforeend', `
       <div class="badge bg-primary p-2 m-1 d-inline-flex align-items-center">
@@ -294,25 +430,34 @@ export default class extends Controller {
       </div>
     `);
 
-    // call updateEquipment after DOM is updated
+    // Call updateEquipment after DOM is updated
     setTimeout(() => this.updateEquipment(), 50);
 
-    // updated for skills recommendation
+    // Updated for skills recommendation
     this.notifyLocationAdventureChange();
   }
 
   addAdventureTag(adventure) {
-    // skip if adventure is null, undefined, or doesn't have an id
+    // Skip if adventure is null, undefined, or doesn't have an id
     if (!adventure || !adventure.id || !adventure.name) {
       console.log('Skipping invalid adventure:', adventure);
       return;
     }
 
     const adventureId = this.convertToId(adventure.id);
-    if (this.selectedAdventures.has(adventureId)) return;
+
+    if (this.selectedAdventures.has(adventureId)) {
+      console.log(`Adventure ${adventureId} already selected`);
+      return;
+    }
 
     console.log('Adding adventure:', adventureId, adventure.name);
     this.selectedAdventures.add(adventureId);
+
+    if (!this.hasSelectedAdventuresTarget) {
+      console.error("Missing selectedAdventures target");
+      return;
+    }
 
     this.selectedAdventuresTarget.insertAdjacentHTML('beforeend', `
       <div class="badge bg-primary p-2 m-1 d-inline-flex align-items-center">
@@ -323,10 +468,11 @@ export default class extends Controller {
         <input type="hidden" name="travel_plan[adventure_ids][]" value="${adventureId}">
       </div>
     `);
-    // call updateEquipment after DOM is updated
+
+    // Call updateEquipment after DOM is updated
     setTimeout(() => this.updateEquipment(), 50);
 
-    // update for skills recs
+    // Update for skills recs
     this.notifyLocationAdventureChange();
   }
 
@@ -336,22 +482,21 @@ export default class extends Controller {
     console.log('ℹ️ REMOVING LOCATION:', locationId);
     console.log('📋 Current locations BEFORE:', Array.from(this.selectedLocations));
 
-    // delete as the same type as was added
+    // Delete as the same type as was added
     this.selectedLocations.delete(locationId);
 
-    // log after removal to verify
+    // Log after removal to verify
     console.log('📋 Current locations AFTER:', Array.from(this.selectedLocations));
 
     event.currentTarget.closest('.badge').remove();
 
-    // force refresh of both adventures and equipment
+    // Force refresh of both adventures and equipment
     console.log('🔄 Forcing full refresh...');
     this.updateAvailableAdventures();
     setTimeout(() => this.updateEquipment(), 100);
 
-    // update for skills recs
+    // Update for skills recs
     this.notifyLocationAdventureChange();
-
   }
 
   removeAdventure(event) {
@@ -360,10 +505,10 @@ export default class extends Controller {
     this.selectedAdventures.delete(adventureId);
     event.currentTarget.closest('.badge').remove();
 
-    // call updateEquipment after DOM is updated
+    // Call updateEquipment after DOM is updated
     setTimeout(() => this.updateEquipment(), 50);
 
-    // update for skills recs
+    // Update for skills recs
     this.notifyLocationAdventureChange();
   }
 
@@ -388,28 +533,28 @@ export default class extends Controller {
     console.log("Form submit detected");
 
     // Get all skill inputs
-  const skillInputs = document.querySelectorAll('input[name="travel_plan[skill_ids][]"]');
-  console.log(`Found ${skillInputs.length} skill ID inputs`);
+    const skillInputs = document.querySelectorAll('input[name="travel_plan[skill_ids][]"]');
+    console.log(`Found ${skillInputs.length} skill ID inputs`);
 
-  // Log their values
-  if (skillInputs.length > 0) {
-    const skillIds = Array.from(skillInputs).map(input => input.value);
-    console.log("Skill IDs being submitted:", skillIds);
-  } else {
-    console.warn("No skill IDs found in the form submission");
+    // Log their values
+    if (skillInputs.length > 0) {
+      const skillIds = Array.from(skillInputs).map(input => input.value);
+      console.log("Skill IDs being submitted:", skillIds);
+    } else {
+      console.warn("No skill IDs found in the form submission");
 
-    // Emergency check - see if we can find skill IDs from the skills recommendation controller
-    const skillsController = this.application.getControllerForElementAndIdentifier(
-      document.querySelector('[data-controller="skills-recommendation"]'),
-      'skills-recommendation'
-    );
+      // Emergency check - see if we can find skill IDs from the skills recommendation controller
+      const skillsController = this.application.getControllerForElementAndIdentifier(
+        document.querySelector('[data-controller="skills-recommendation"]'),
+        'skills-recommendation'
+      );
 
-    if (skillsController) {
-      console.log("Found skills recommendation controller");
-      console.log("Selected skill IDs:", skillsController.selectedSkillIdsValue);
+      if (skillsController) {
+        console.log("Found skills recommendation controller");
+        console.log("Selected skill IDs:", skillsController.selectedSkillIdsValue);
 
-      // Emergency fix - manually add the hidden inputs if they're missing
-      if (skillsController.selectedSkillIdsValue && skillsController.selectedSkillIdsValue.length > 0) {
+        // Emergency fix - manually add the hidden inputs if they're missing
+        if (skillsController.selectedSkillIdsValue && skillsController.selectedSkillIdsValue.length > 0) {
           console.log("Adding missing skill IDs to the form");
 
           // Get or create container

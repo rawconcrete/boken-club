@@ -22,6 +22,10 @@ class Equipment < ApplicationRecord
   validates :name, presence: true
   validates :description, presence: true
 
+  # new association for skills
+  has_many :equipment_skills, dependent: :destroy
+  has_many :skills, through: :equipment_skills
+
   # season-specific scopes
   scope :for_season, ->(date) {
     return none unless date

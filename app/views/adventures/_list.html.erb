@@ -5,36 +5,39 @@
         <div class="card adventure-card">
           <!-- Card body with name and description -->
           <div class="card-body">
-            <h3 class="card-title"><%= adventure.name %></h3>
+            <h5 class="card-title"><%= adventure.name %></h5>
+            <div class="mb-2">
+              <%= adventure_tags(adventure) %>
+            </div>
+            <p class="card-text"><%= adventure.details %></p>
             <p class="card-text"><%= adventure.details %></p>
           </div>
-
           <!-- Display image or placeholder if no image is attached -->
           <% if adventure.image.attached? %>
             <%= image_tag adventure.image, class: "card-img-top adventure-image" %>
           <% else %>
             <% placeholder_image = case adventure.name.downcase.strip %>
-              <% when "hiking" then "hiking.png" %>
-              <% when "camping" then "camping.png" %>
-              <% when "caving" then "caving.png" %>
-              <% when "cycling" then "cycling.png" %>
-              <% when "fishing" then "fishing.png" %>
-              <% when "kayaking" then "kayaking.png" %>
-              <% when "paragliding" then "paragliding.png" %>
-              <% when "rafting" then "rafting.png" %>
-              <% when "rock climbing" then "rock-climbing.png" %>
-              <% when "skiing & snowboarding" then "skiingandsnowboarding.png" %>
-              <% when "snowshoeing" then "snowshowing.png" %>
-              <% when "star gazing" then "stargazing.png" %>
-              <% when "trail running" then "trail_running.png" %>
-              <% when "trekking" then "trekking.png" %>
-              <% when "wildlife watching" then "wildlifewatching.png" %>
-              <% else "placeholder.jpg" %>
-            <% end %>
-            <%= image_tag asset_path(placeholder_image), class: "card-img-top adventure-image" %>
+          <% when "hiking" then "hiking.png" %>
+          <% when "camping" then "camping.png" %>
+          <% when "caving" then "caving.png" %>
+          <% when "cycling" then "cycling.png" %>
+          <% when "fishing" then "fishing.png" %>
+          <% when "kayaking" then "kayaking.png" %>
+          <% when "paragliding" then "paragliding.png" %>
+          <% when "rafting" then "rafting.png" %>
+          <% when "rock climbing" then "rock-climbing.png" %>
+          <% when "skiing & snowboarding" then "skiingandsnowboarding.png" %>
+          <% when "snowshoeing" then "snowshowing.png" %>
+          <% when "star gazing" then "stargazing.png" %>
+          <% when "trail running" then "trail_running.png" %>
+          <% when "trekking" then "trekking.png" %>
+          <% when "wildlife watching" then "wildlifewatching.png" %>
+          <% else "placeholder.jpg" %>
           <% end %>
-        </div>
-      <% end %>
-    </div>
-  <% end %>
+          <%= image_tag asset_path(placeholder_image), class: "card-img-top adventure-image" %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
 </div>

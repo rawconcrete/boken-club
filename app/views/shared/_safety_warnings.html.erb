@@ -1,0 +1,22 @@
+<%# app/views/shared/_safety_warnings.html.erb %>
+<% if warnings.any? %>
+  <div class="card mb-4 border-danger">
+    <div class="card-header bg-danger text-white d-flex align-items-center">
+      <i class="fas fa-exclamation-triangle me-2"></i>
+      <h3 class="mb-0">Safety Warnings</h3>
+    </div>
+    <div class="card-body">
+      <div class="alert alert-danger">
+        <p><strong>Important:</strong> These safety warnings are generated based on your trip details. Always check current conditions and local advisories before departure.</p>
+      </div>
+      <ul class="list-group">
+        <% warnings.each do |warning| %>
+          <li class="list-group-item list-group-item-danger">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <%= warning %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+<% end %>

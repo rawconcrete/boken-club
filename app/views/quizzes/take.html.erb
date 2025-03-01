@@ -1,0 +1,61 @@
+<%# app/views/quizzes/take.html.erb %>
+<div class="container">
+  <div class="row mb-4">
+    <div class="col">
+      <%= link_to "← Exit Quiz", quiz_path(@quiz), class: "btn btn-outline-light",
+          data: { turbo_confirm: "Your progress will be saved. Are you sure you want to exit?" } %>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h1 class="h4 mb-0"><%= @quiz.title %></h1>
+      <span class="badge bg-primary">Question <%= @answered_questions.size + 1 %> of <%= @questions.size %></span>
+    </div>
+    <div class="card-body">
+      <div class="progress mb-4">
+        <div class="progress-bar" role="progressbar"
+             style="width: <%= (@answered_questions.size.to_f / @questions.size * 100).round %>%;"
+             aria-valuenow="<%= (@answered_questions.size.to_f / @questions.size * 100).round %>"
+             aria-valuemin="0"
+             aria-valuemax="100">
+          <%= (@answered_questions.size.to_f / @questions.size * 100).round %>%
+        </div>
+      </div>
+      <div class="question-container mb-4">
+        <h2 class="h5 mb-4"><%= @question.content %></h2>
+        <%= form_with url: submit_quiz_path(@quiz), method: :post, data: { turbo: false } do |f| %>
+          <%= f.hidden_field :question_id, value: @question.id %>
+          <div class="answer-options">
+            <% @answers.each do |answer| %>
+              <div class="form-check answer-option mb-3">
+                <label class="form-check-label answer-label p-3 w-100 border rounded">
+                  <%= f.radio_button :answer_id, answer.id, class: "form-check-input me-2", required: true %>
+                  <%= answer.content %>
+                </label>
+              </div>
+            <% end %>
+          </div>
+          <div class="d-grid mt-4">
+            <%= f.submit "Submit Answer", class: "btn btn-primary btn-lg" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  .answer-label {
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .answer-label:hover {
+    background-color: #f8f9fa;
+  }
+
+  .form-check-input:checked + .answer-label,
+  .answer-label:has(.form-check-input:checked) {
+    background-color: #cfe2ff;
+    border-color: #0d6efd !important;
+  }
+</style>

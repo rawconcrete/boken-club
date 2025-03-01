@@ -1,4 +1,6 @@
 # app/models/travel_plan.rb
+require_relative '../../lib/safety_warnings'
+
 class TravelPlan < ApplicationRecord
   belongs_to :user
   has_many :travel_plans_locations, dependent: :destroy
@@ -12,6 +14,11 @@ class TravelPlan < ApplicationRecord
 
   validates :status, inclusion: { in: ['pending', 'completed', 'cancelled'], message: "%{value} is not a valid status" }, allow_nil: true
   validates :title, presence: true
+
+  # Generate safety warnings for this travel plan
+  def safety_warnings
+    SafetyWarnings::Generator.for_travel_plan(self)
+  end
 
   # if we want equipment recommendations based on weather at some point
   # def recommended_equipment_for_weather

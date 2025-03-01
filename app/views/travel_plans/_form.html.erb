@@ -54,10 +54,12 @@
           <%= f.label :content, class: "form-label" %>
           <%= f.text_area :content, class: "form-control" %>
         </div>
-        <div class="mb-3">
+        <%# Status field temporarily disabled %>
+        <%# <div class="mb-3">
           <%= f.label :status, class: "form-label" %>
-          <%= f.select :status, [['Pending', 'pending'], ['Completed', 'completed'], ['Cancelled', 'cancelled']], { selected: travel_plan.status }, class: "form-control" %>
-        </div>
+        <%# <%= f.select :status, [['Pending', 'pending'], ['Completed', 'completed'], ['Cancelled', 'cancelled']], { selected: travel_plan.status }, class: "form-control" %>
+        <%# </div> %>
+        <%= f.hidden_field :status, value: 'pending' %>
       </div>
     </div>
     <%# locations card %>
