@@ -6,18 +6,29 @@
     <div class="col-md-8">
       <div class="card">
         <div class="card-body">
-          <p><strong>City:</strong> <%= @location.city %></p>
-          <p><strong>Prefecture:</strong> <%= @location.prefecture %></p>
-          <p><strong>Adventure Type:</strong> <%= @location.adventures.map(&:name).join(", ") %></p>
-          <p><strong>Details:</strong> <%= @location.details %></p>
-          <%= content_tag(:p, "<strong>Tips:</strong> #{@location.tips}".html_safe) if @location.tips.present? %>
-          <%= content_tag(:p, "<strong>Warnings:</strong> #{@location.warnings}".html_safe, class: "text-danger") if @location.warnings.present? %>
-
-      <div class="geocoder-map" style="width: 100%; height: 600px;"
+          <%# make details more subtle here %>
+          <p class="mb-1 text-muted small">Location</p>
+          <p class="mb-3"><%= @location.city %>, <%= @location.prefecture %></p>
+          <p class="mb-1 text-muted small">Adventure Types</p>
+          <p class="mb-3"><%= @location.adventures.map(&:name).join(", ") %></p>
+          <p class="mb-1 text-muted small">About</p>
+          <p class="mb-3"><%= @location.details %></p>
+          <% if @location.tips.present? %>
+            <p class="mb-1 text-muted small">Visitor Tips</p>
+            <p class="mb-3"><%= @location.tips %></p>
+          <% end %>
+          <% if @location.warnings.present? %>
+            <div class="alert alert-danger">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              <%= @location.warnings %>
+            </div>
+          <% end %>
+          <%# details end %>
+          <div class="geocoder-map" style="width: 50%; height: 300px;"
         data-controller="map"
         data-map-markers-value="<%= @markers.to_json %>"
         data-map-api-key-value="<%= ENV['MAPBOX_API_KEY'] %>">
-      </div>
+          </div>
           <%= link_to "Plan a Trip Here", new_travel_plan_path(location_id: @location.id),
           class: "btn btn-primary btn-sm flex-fill",
           data: { turbo_frame: "_top" } %>
