@@ -313,6 +313,22 @@ end
     end
   end
 
+  def print
+    @travel_plan = current_user.travel_plans
+                               .includes(:locations, :adventures, :skills, travel_plan_equipments: :equipment)
+                               .find(params[:id])
+
+    # Which equipment does the user already own?
+    user_equipment_ids = current_user.equipment_ids
+
+    # Separate into pack list vs. buy list
+    @equipment_to_pack = @travel_plan.travel_plan_equipments.where(equipment_id: user_equipment_ids)
+    @equipment_to_buy  = @travel_plan.travel_plan_equipments.where.not(equipment_id: user_equipment_ids)
+
+    render layout: "print"
+  end
+
+
 
 
   private
