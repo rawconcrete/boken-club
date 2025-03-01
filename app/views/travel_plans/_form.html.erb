@@ -105,8 +105,10 @@
         <div data-skills-recommendation-target="skillsList">
           <div class="alert alert-info">
             <p>Select locations and adventures to see recommended skills.</p>
+            <% word = travel_plan.skills.count == 1 ? "skill" : "skills" %>
+            <% string = "You have #{travel_plan.skills.count} #{word} already selected." %>
             <% if travel_plan.skills.any? %>
-              <p>You have <%= travel_plan.skills.count %> skills already selected.</p>
+              <p><%= word %></p>
             <% end %>
           </div>
         </div>

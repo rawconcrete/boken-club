@@ -32,10 +32,13 @@ export default class extends Controller {
     this.updateHiddenInputs();
 
     // Set initial state
+    let word = this.selectedSkillIdsValue.length === 1 ? "skill" : "skills"
+    let string = `<p>You have ${this.selectedSkillIdsValue.length} ${word} already selected.</p>`
+
     this.skillsListTarget.innerHTML = `
       <div class="alert alert-info">
         <p>Select locations and adventures to see recommended skills.</p>
-        ${this.selectedSkillIdsValue.length > 0 ? '<p>You have ' + this.selectedSkillIdsValue.length + ' skills already selected.</p>' : ''}
+        ${string}
       </div>
     `;
   }
@@ -50,12 +53,15 @@ export default class extends Controller {
     const { locationIds, adventureIds } = event.detail;
 
     // Don't make the request if there are no locations or adventures
+    let word = this.selectedSkillIdsValue.length === 1 ? "skill" : "skills"
+    let string = `<p>You have ${this.selectedSkillIdsValue.length} ${word} already selected.</p>`
+
     if (!locationIds.length && !adventureIds.length) {
       console.log("No locations or adventures selected, showing default message");
       this.skillsListTarget.innerHTML = `
         <div class="alert alert-info">
           <p>Select locations and adventures to see recommended skills.</p>
-          ${this.selectedSkillIdsValue.length > 0 ? '<p>You have ' + this.selectedSkillIdsValue.length + ' skills already selected.</p>' : ''}
+          ${string}
         </div>
       `;
       return;
@@ -108,11 +114,14 @@ export default class extends Controller {
 
   renderSkills(skills) {
     // Handle empty or null skills
+    let word = this.selectedSkillIdsValue.length === 1 ? "skill" : "skills"
+    let string = `<p>You have ${this.selectedSkillIdsValue.length} ${word} already selected.</p>`
+
     if (!skills || !skills.length) {
       this.skillsListTarget.innerHTML = `
         <div class="alert alert-info">
           <p>No specific skills recommended for this trip.</p>
-          ${this.selectedSkillIdsValue.length > 0 ? '<p>You have ' + this.selectedSkillIdsValue.length + ' skills already selected.</p>' : ''}
+          ${string}
         </div>
       `;
       return;
