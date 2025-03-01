@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_02_28_235447) do
+ActiveRecord::Schema[7.1].define(version: 2025_03_01_000609) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -71,6 +71,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_28_235447) do
     t.datetime "updated_at", null: false
     t.integer "location_id"
     t.index ["location_id"], name: "index_adventures_on_location_id"
+  end
+
+  create_table "answers", force: :cascade do |t|
+    t.bigint "question_id", null: false
+    t.text "content", null: false
+    t.boolean "is_correct", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["question_id"], name: "index_answers_on_question_id"
   end
 
   create_table "equipment", force: :cascade do |t|
@@ -139,6 +148,53 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_28_235447) do
     t.datetime "updated_at", null: false
     t.index ["adventure_id"], name: "index_locations_adventures_on_adventure_id"
     t.index ["location_id"], name: "index_locations_adventures_on_location_id"
+  end
+
+  create_table "questions", force: :cascade do |t|
+    t.bigint "quiz_id", null: false
+    t.text "content", null: false
+    t.string "difficulty", default: "medium"
+    t.string "explanation"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["quiz_id"], name: "index_questions_on_quiz_id"
+  end
+
+  create_table "quiz_answers", force: :cascade do |t|
+    t.bigint "quiz_attempt_id", null: false
+    t.bigint "question_id", null: false
+    t.bigint "answer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["answer_id"], name: "index_quiz_answers_on_answer_id"
+    t.index ["question_id"], name: "index_quiz_answers_on_question_id"
+    t.index ["quiz_attempt_id"], name: "index_quiz_answers_on_quiz_attempt_id"
+  end
+
+  create_table "quiz_attempts", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "quiz_id", null: false
+    t.integer "score"
+    t.boolean "completed", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["quiz_id"], name: "index_quiz_attempts_on_quiz_id"
+    t.index ["user_id"], name: "index_quiz_attempts_on_user_id"
+  end
+
+  create_table "quizzes", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "description"
+    t.bigint "skill_id"
+    t.bigint "adventure_id"
+    t.bigint "equipment_id"
+    t.string "category"
+    t.string "difficulty"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["adventure_id"], name: "index_quizzes_on_adventure_id"
+    t.index ["equipment_id"], name: "index_quizzes_on_equipment_id"
+    t.index ["skill_id"], name: "index_quizzes_on_skill_id"
   end
 
   create_table "skills", force: :cascade do |t|
@@ -244,6 +300,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_28_235447) do
   add_foreign_key "adventure_equipments", "equipment"
   add_foreign_key "adventure_skills", "adventures"
   add_foreign_key "adventure_skills", "skills"
+  add_foreign_key "answers", "questions"
   add_foreign_key "equipment_skills", "equipment"
   add_foreign_key "equipment_skills", "skills"
   add_foreign_key "location_equipments", "equipment"
@@ -252,6 +309,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_28_235447) do
   add_foreign_key "location_skills", "skills"
   add_foreign_key "locations_adventures", "adventures"
   add_foreign_key "locations_adventures", "locations"
+  add_foreign_key "questions", "quizzes"
+  add_foreign_key "quiz_answers", "answers"
+  add_foreign_key "quiz_answers", "questions"
+  add_foreign_key "quiz_answers", "quiz_attempts"
+  add_foreign_key "quiz_attempts", "quizzes"
+  add_foreign_key "quiz_attempts", "users"
+  add_foreign_key "quizzes", "adventures"
+  add_foreign_key "quizzes", "equipment"
+  add_foreign_key "quizzes", "skills"
   add_foreign_key "travel_plan_equipments", "equipment"
   add_foreign_key "travel_plan_equipments", "travel_plans"
   add_foreign_key "travel_plan_skills", "skills"

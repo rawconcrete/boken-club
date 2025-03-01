@@ -89,20 +89,21 @@ export default class extends Controller {
       .map(item => {
         if (item.type === "location") {
           return `<div class="suggestion" data-action="click->search#goToLocation" data-id="${item.id}">
-            <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-between align-items-start">
               <div>
                 <strong>${item.name}</strong>
                 ${item.prefecture ? `<div class="text-muted small">${item.city || ''}, ${item.prefecture}</div>` : ''}
+                ${item.description ? `<div class="text-muted small">${item.description}</div>` : ''}
               </div>
               <span class="badge bg-info">Location</span>
             </div>
           </div>`;
         } else if (item.type === "adventure") {
           return `<div class="suggestion" data-action="click->search#goToAdventure" data-id="${item.id}">
-            <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-between align-items-start">
               <div>
                 <strong>${item.name}</strong>
-                <div class="text-muted small">${item.details ? item.details.substring(0, 60) + (item.details.length > 60 ? '...' : '') : ''}</div>
+                <div class="text-muted small">${item.details ? item.details.substring(0, 100) + (item.details.length > 100 ? '...' : '') : ''}</div>
               </div>
               <span class="badge bg-success">Adventure</span>
             </div>

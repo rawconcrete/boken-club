@@ -61,4 +61,15 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :quizzes, only: [:index, :show] do
+    member do
+      get :take
+      post :submit
+    end
+  end
+
+  get 'quiz_result/:id', to: 'quizzes#result', as: :quiz_result
+
+  get '/search', to: 'search#index'
+
 end

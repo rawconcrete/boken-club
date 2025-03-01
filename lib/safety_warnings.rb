@@ -1,4 +1,4 @@
-# app/lib/safety_warnings.rb
+# lib/safety_warnings.rb
 module SafetyWarnings
   class Generator
     def self.for_travel_plan(travel_plan)

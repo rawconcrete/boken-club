@@ -1,5 +1,5 @@
 # app/models/travel_plan.rb
-require_relative '../lib/safety_warnings'
+require_relative '../../lib/safety_warnings'
 
 class TravelPlan < ApplicationRecord
   belongs_to :user
