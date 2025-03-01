@@ -54,9 +54,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_01_000609) do
   create_table "adventure_skills", force: :cascade do |t|
     t.bigint "adventure_id", null: false
     t.bigint "skill_id", null: false
+    t.boolean "is_required", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "is_required", default: false
+    t.index ["adventure_id", "skill_id"], name: "index_adventure_skills_on_adventure_id_and_skill_id", unique: true
     t.index ["adventure_id"], name: "index_adventure_skills_on_adventure_id"
     t.index ["skill_id"], name: "index_adventure_skills_on_skill_id"
   end
@@ -107,8 +108,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_01_000609) do
   end
 
   create_table "location_equipments", force: :cascade do |t|
-    t.bigint "location_id", null: false
     t.bigint "equipment_id", null: false
+    t.bigint "location_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["equipment_id"], name: "index_location_equipments_on_equipment_id"
@@ -118,9 +119,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_01_000609) do
   create_table "location_skills", force: :cascade do |t|
     t.bigint "location_id", null: false
     t.bigint "skill_id", null: false
+    t.boolean "is_required", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "is_required", default: false
+    t.index ["location_id", "skill_id"], name: "index_location_skills_on_location_id_and_skill_id", unique: true
     t.index ["location_id"], name: "index_location_skills_on_location_id"
     t.index ["skill_id"], name: "index_location_skills_on_skill_id"
   end
