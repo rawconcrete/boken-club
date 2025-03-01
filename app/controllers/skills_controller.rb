@@ -20,8 +20,8 @@ class SkillsController < ApplicationController
     end
 
     # filter by safety_critical if provided
-    if params[:safety_critical].present?
-      @skills = @skills.where(safety_critical: params[:safety_critical] == 'true')
+    if params[:safety_critical] == "true"
+      @skills = @skills.where(safety_critical: true)
     end
 
     respond_to do |format|

@@ -3,52 +3,48 @@
   <h1 class="mb-4">Outdoor Skills</h1>
   <div class="row mb-4">
     <div class="col-md-8">
-      <%= form_with url: skills_path, method: :get,
-          data: { controller: "search-skills" },
-          class: "row g-2" do |f| %>
+      <form action="/skills" method="get" class="row g-2" data-controller="safety-critical">
         <div class="col-md-4">
-          <%= f.text_field :query, class: "form-control", placeholder: "Search skills...", value: params[:query] %>
+          <input type="text" name="query" class="form-control" placeholder="Search skills..." value="<%= params[:query] %>">
         </div>
         <div class="col-md-2">
-          <%= f.select :difficulty,
-              options_for_select([
-                ['All Difficulties', ''],
-                ['Beginner', 'beginner'],
-                ['Intermediate', 'intermediate'],
-                ['Advanced', 'advanced']
-              ], params[:difficulty]),
-              {}, { class: "form-select", onchange: "this.form.requestSubmit()" } %>
+          <select name="difficulty" class="form-select">
+            <option value="" <%= params[:difficulty].blank? ? 'selected' : '' %>>All Difficulties</option>
+            <option value="beginner" <%= params[:difficulty] == 'beginner' ? 'selected' : '' %>>Beginner</option>
+            <option value="intermediate" <%= params[:difficulty] == 'intermediate' ? 'selected' : '' %>>Intermediate</option>
+            <option value="advanced" <%= params[:difficulty] == 'advanced' ? 'selected' : '' %>>Advanced</option>
+          </select>
         </div>
         <div class="col-md-3">
-          <%= f.select :category,
-              options_for_select([
-                ['All Categories', ''],
-                ['Navigation', 'navigation'],
-                ['Survival', 'survival'],
-                ['Camping', 'camping'],
-                ['Safety', 'safety'],
-                ['First Aid', 'first_aid'],
-                ['Climbing', 'climbing'],
-                ['Water', 'water'],
-                ['Environmental', 'environmental'],
-                ['Equipment', 'equipment']
-              ], params[:category]),
-              {}, { class: "form-select", onchange: "this.form.requestSubmit()" } %>
+          <select name="category" class="form-select">
+            <option value="" <%= params[:category].blank? ? 'selected' : '' %>>All Categories</option>
+            <option value="navigation" <%= params[:category] == 'navigation' ? 'selected' : '' %>>Navigation</option>
+            <option value="survival" <%= params[:category] == 'survival' ? 'selected' : '' %>>Survival</option>
+            <option value="camping" <%= params[:category] == 'camping' ? 'selected' : '' %>>Camping</option>
+            <option value="safety" <%= params[:category] == 'safety' ? 'selected' : '' %>>Safety</option>
+            <option value="first_aid" <%= params[:category] == 'first_aid' ? 'selected' : '' %>>First Aid</option>
+            <option value="climbing" <%= params[:category] == 'climbing' ? 'selected' : '' %>>Climbing</option>
+            <option value="water" <%= params[:category] == 'water' ? 'selected' : '' %>>Water</option>
+            <option value="environmental" <%= params[:category] == 'environmental' ? 'selected' : '' %>>Environmental</option>
+            <option value="equipment" <%= params[:category] == 'equipment' ? 'selected' : '' %>>Equipment</option>
+          </select>
         </div>
         <div class="col-md-3">
           <div class="form-check form-switch mt-2">
-            <%= f.check_box :safety_critical,
-                class: "form-check-input",
-                id: "safety_critical",
-                checked: params[:safety_critical] == 'true',
-                onchange: "this.form.requestSubmit()" %>
-            <%= f.label :safety_critical, "Safety Critical", class: "form-check-label text-white", for: "safety_critical" %>
+            <input type="checkbox"
+                  id="safety_critical_toggle"
+                  class="form-check-input"
+                  data-safety-critical-target="checkbox"
+                  data-action="change->safety-critical#toggle"
+                  <%= params[:safety_critical] == "true" ? "checked" : "" %>>
+            <label for="safety_critical_toggle" class="form-check-label text-white">Safety Critical</label>
           </div>
         </div>
-      <% end %>
+        <button type="submit" class="btn btn-primary d-none">Search</button>
+      </form>
     </div>
   </div>
   <div id="skills-list">
     <%= render "skills/list", skills: @skills %>
   </div>
-</div>
+            </div>
