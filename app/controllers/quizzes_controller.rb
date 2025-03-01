@@ -31,7 +31,17 @@ class QuizzesController < ApplicationController
 
   def show
     @questions_count = @quiz.questions.count
-    @previous_attempts = current_user.quiz_attempts.where(quiz: @quiz).order(created_at: :desc) if user_signed_in?
+
+    # Make sure we handle the case where user is not logged in
+    if user_signed_in?
+      # Handle the case where the relationship might not exist yet
+      begin
+        @previous_attempts = current_user.quiz_attempts.where(quiz: @quiz).order(created_at: :desc)
+      rescue NoMethodError
+        # If the method doesn't exist yet (migration might not have run)
+        @previous_attempts = []
+      end
+    end
   end
 
   def take

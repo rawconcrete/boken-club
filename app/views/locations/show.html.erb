@@ -1,65 +1,33 @@
-<%# app/views/locations/show.html.erb %>
-<div class="container">
-  <h1 class="mb-4 text-white"><%= @location.name %></h1>
-  <div class="row">
-    <!-- location details section -->
-    <div class="col-md-8">
-      <div class="card">
-        <div class="card-body">
-          <%# make details more subtle here %>
-          <p class="mb-1 text-muted small">Location</p>
-          <p class="mb-3"><%= @location.city %>, <%= @location.prefecture %></p>
-          <p class="mb-1 text-muted small">Adventure Types</p>
-          <p class="mb-3"><%= @location.adventures.map(&:name).join(", ") %></p>
-          <p class="mb-1 text-muted small">About</p>
-          <p class="mb-3"><%= @location.details %></p>
-          <% if @location.tips.present? %>
-            <p class="mb-1 text-muted small">Visitor Tips</p>
-            <p class="mb-3"><%= @location.tips %></p>
-          <% end %>
-          <% if @location.warnings.present? %>
-            <div class="alert alert-danger">
-              <i class="fas fa-exclamation-triangle me-2"></i>
-              <%= @location.warnings %>
-            </div>
-          <% end %>
-          <%# details end %>
-          <div class="geocoder-map" style="width: 50%; height: 300px;"
+<div class="row">
+  <!-- location details section -->
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-body">
+        <p class="mb-3"><%= @location.city %>, <%= @location.prefecture %></p>
+        <p class="mb-3"><%= @location.adventures.map(&:name).join(", ") %></p>
+        <p class="mb-3"><%= @location.details %></p>
+        <% if @location.tips.present? %>
+          <p class="mb-3"><%= @location.tips %></p>
+        <% end %>
+        <% if @location.warnings.present? %>
+          <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <%= @location.warnings %>
+          </div>
+        <% end %>
+        <div class="geocoder-map" style="width: 100%; height: 600px;"
         data-controller="map"
         data-map-markers-value="<%= @markers.to_json %>"
         data-map-api-key-value="<%= ENV['MAPBOX_API_KEY'] %>">
-          </div>
-          <%= link_to "Plan a Trip Here", new_travel_plan_path(location_id: @location.id),
+        </div>
+        <%= link_to "Plan a Trip Here", new_travel_plan_path(location_id: @location.id),
           class: "btn btn-primary btn-sm flex-fill",
           data: { turbo_frame: "_top" } %>
-          <%= link_to "Back", :back,
+        <%= link_to "Back", :back,
           class: "btn btn-primary btn-sm flex-fill",
           data: { turbo_frame: "_top" } %>
-        </div>
       </div>
     </div>
-    <!-- available adventures section -->
-    <div class="col-md-4">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="mb-3">Available Adventures</h5>
-          <% @location.adventures.each do |adventure| %>
-            <div class="mb-3 p-3 border rounded">
-              <h6 class="mb-2"><%= adventure.name %></h6>
-              <p class="small mb-3"><%= adventure.details %></p>
-              <!-- button alignment fix: flexbox -->
-              <div class="d-flex gap-2">
-                <%= link_to "View Adventure", adventure_path(adventure),
-                    class: "btn btn-primary btn-sm flex-fill",
-                    data: { turbo_frame: "_top" } %>
-              </div>
-            </div>
-          <% end %>
-          <% if @location.adventures.empty? %>
-            <p class="text-muted">No adventures available for this location.</p>
-          <% end %>
-        </div>
-      </div>
-    </div>
+    <!-- Add safety warnings below the main card -->
+    <%= render 'shared/location_warnings', location: @location %>
   </div>
-</div>

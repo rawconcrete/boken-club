@@ -1,0 +1,46 @@
+<%# app/views/shared/_improved_alerts.html.erb %>
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 5">
+  <% if notice %>
+    <div class="toast show bg-success text-white" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header bg-success text-white">
+        <i class="fas fa-check-circle me-2"></i>
+        <strong class="me-auto">Success</strong>
+        <small>Just now</small>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        <%= notice %>
+      </div>
+    </div>
+  <% end %>
+  <% if alert %>
+    <div class="toast show bg-danger text-white" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header bg-danger text-white">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        <strong class="me-auto">Alert</strong>
+        <small>Just now</small>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        <%= alert %>
+      </div>
+    </div>
+  <% end %>
+</div>
+<script>
+  // Initialize all toasts
+  document.addEventListener('turbo:load', function() {
+    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+    var toastList = toastElList.map(function(toastEl) {
+      return new bootstrap.Toast(toastEl, {
+        autohide: true,
+        delay: 5000
+      })
+    })
+
+    // Auto-dismiss alerts after 5 seconds
+    setTimeout(function() {
+      toastList.forEach(toast => toast.hide());
+    }, 5000);
+  });
+</script>

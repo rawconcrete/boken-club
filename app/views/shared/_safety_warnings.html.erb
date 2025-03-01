@@ -1,22 +1,64 @@
 <%# app/views/shared/_safety_warnings.html.erb %>
 <% if warnings.any? %>
   <div class="card mb-4 border-danger">
-    <div class="card-header bg-danger text-white d-flex align-items-center">
-      <i class="fas fa-exclamation-triangle me-2"></i>
-      <h3 class="mb-0">Safety Warnings</h3>
-    </div>
-    <div class="card-body">
-      <div class="alert alert-danger">
-        <p><strong>Important:</strong> These safety warnings are generated based on your trip details. Always check current conditions and local advisories before departure.</p>
+    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+      <div>
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <h3 class="mb-0">Safety Warnings</h3>
       </div>
-      <ul class="list-group">
-        <% warnings.each do |warning| %>
-          <li class="list-group-item list-group-item-danger">
-            <i class="fas fa-exclamation-circle me-2"></i>
-            <%= warning %>
-          </li>
-        <% end %>
-      </ul>
+      <div>
+        <button type="button" class="btn btn-sm btn-light"
+                data-bs-toggle="collapse"
+                data-bs-target="#safetyWarningsCollapse"
+                aria-expanded="true"
+                aria-controls="safetyWarningsCollapse">
+          <i class="fas fa-chevron-down"></i>
+        </button>
+      </div>
+    </div>
+    <div class="collapse show" id="safetyWarningsCollapse">
+      <div class="card-body">
+        <div class="alert alert-danger">
+          <p><strong>Important:</strong> These safety warnings are generated based on your trip details. Always check current conditions and local advisories before departure.</p>
+        </div>
+        <div class="accordion" id="warningsAccordion">
+          <% warnings.each_with_index do |warning, index| %>
+            <div class="accordion-item border-danger mb-2" id="warning-item-<%= index %>">
+              <h2 class="accordion-header">
+                <button class="accordion-button <%= index > 0 ? 'collapsed' : '' %>"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#warningCollapse<%= index %>"
+                        aria-expanded="<%= index == 0 ? 'true' : 'false' %>"
+                        aria-controls="warningCollapse<%= index %>">
+                  <i class="fas fa-exclamation-circle me-2 text-danger"></i>
+                  <%= warning.truncate(70) %>
+                </button>
+              </h2>
+              <div id="warningCollapse<%= index %>"
+                   class="accordion-collapse collapse <%= index == 0 ? 'show' : '' %>"
+                   data-bs-parent="#warningsAccordion">
+                <div class="accordion-body">
+                  <p><%= warning %></p>
+                  <div class="d-flex justify-content-end">
+                    <button type="button"
+                            class="btn btn-sm btn-outline-danger me-2"
+                            onclick="document.getElementById('warning-item-<%= index %>').style.display='none';">
+                      <i class="fas fa-trash-alt me-1"></i> Delete Warning
+                    </button>
+                    <button type="button"
+                            class="btn btn-sm btn-outline-success"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#warningCollapse<%= index %>">
+                      <i class="fas fa-check me-1"></i> Keep
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
     </div>
   </div>
 <% end %>
