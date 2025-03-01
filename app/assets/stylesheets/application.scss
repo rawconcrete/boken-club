@@ -142,3 +142,104 @@ body:not(.home) {
     background-position: left center;
   }
 }
+
+/* Compact card styling */
+.compact-card {
+  border-radius: 10px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+  padding: 10px;
+}
+
+.compact-card .card-header {
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.compact-card .card-body {
+  padding: 10px;
+  font-size: 13px;
+}
+
+/* Sticky sidebar */
+.sticky-sidebar {
+  position: sticky;
+  top: 10px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+/* Equipment Grid Layout */
+.equipment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Increased min size for items */
+  gap: 12px; /* Increased gap between items */
+  padding: 10px; /* Add padding for spacing */
+}
+
+/* Equipment Item */
+.equipment-item {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  padding: 12px; /* Increased padding for more space around the items */
+  border-radius: 6px;
+  font-size: 14px; /* Slightly larger font size */
+  gap: 12px; /* Increased gap between image and text */
+  box-sizing: border-box;
+  width: 100%; /* Ensure each item takes full available width in the grid cell */
+  height: auto; /* Allow the height to adjust as needed */
+}
+
+/* Equipment Image */
+.equipment-item img {
+  width: 50px; /* Increased image size */
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+/* Equipment Name */
+.equipment-item span {
+  font-size: 14px; /* Increased font size */
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Specific card style for travel plan layout */
+.specific-card {
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 20px; /* Adjusted padding */
+  display: flex;
+  flex-direction: column;
+  height: auto; /* Allow height to adjust based on content */
+  background-color: rgba(255, 255, 255, 0.90);
+  transition: background-color 0.3s ease;
+  max-width: 100%; /* Change this to 100% for flexibility */
+  margin: 15px 0; /* Adjust margin for spacing */
+}
+
+/* Adjust the card body */
+.specific-card .card-body {
+  flex-grow: 1;
+  min-height: 120px; /* Increased min-height */
+  padding: 15px; /* Adjusted padding */
+  overflow: hidden;
+}
+
+/* Adjust the card image (if applicable) */
+.specific-card .card-img-top {
+  object-fit: cover;
+  height: 180px; /* Adjusted image height */
+  margin-bottom: 15px; /* Spacing below the image */
+}
+
+/* For main content (center column) cards */
+.col-md-6 .specific-card {
+  max-width: 600px; /* Increased max-width */
+  margin: 15px auto; /* Center the cards and space them out */
+}
