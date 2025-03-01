@@ -1,7 +1,7 @@
 <%# app/views/admin/skills/_form.html.erb %>
 <%= form_with(model: [:admin, @skill], local: true) do |f| %>
   <% if @skill.errors.any? %>
-    <div class="alert alert-danger">
+    <div class="alert alert-yellow alert-danger">
       <h4><%= pluralize(@skill.errors.count, "error") %> prohibited this skill from being saved:</h4>
       <ul>
         <% @skill.errors.full_messages.each do |message| %>

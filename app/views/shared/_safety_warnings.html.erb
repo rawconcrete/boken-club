@@ -18,8 +18,9 @@
     </div>
     <div class="collapse show" id="safetyWarningsCollapse">
       <div class="card-body">
-        <div class="alert alert-danger">
-          <p><strong>Important:</strong> These safety warnings are generated based on your trip details. Always check current conditions and local advisories before departure.</p>
+        <div class="alert alert-yellow alert-danger alert-dismissible fade show" role="alert">
+          <strong>Important:</strong> These safety warnings are generated based on your trip details. Always check current conditions and local advisories before departure.
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         <div class="accordion" id="warningsAccordion">
           <% warnings.each_with_index do |warning, index| %>
