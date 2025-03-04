@@ -51,6 +51,7 @@ export default class extends Controller {
     }, this.isDeleting ? 50 : 100);
   }
 
+
   stopTypingAnimation() {
     clearInterval(this.typingInterval);
   }
@@ -71,7 +72,6 @@ export default class extends Controller {
       this.fetchResults(query);
     }, 300);
   }
-
 
   fetchResults(query) {
     fetch(`/search.json?q=${encodeURIComponent(query)}`)
@@ -122,19 +122,40 @@ export default class extends Controller {
     this.suggestionsTarget.style.display = "block";
   }
 
+  // modified event handlers to handle event bubbling correctly
   goToLocation(event) {
-    const locationId = event.target.dataset.id;
-    window.location.href = `/locations/${locationId}`;
+    // find the closest element with data-id
+    const suggestionElement = event.target.closest('.suggestion');
+    if (!suggestionElement) return;
+
+    const locationId = suggestionElement.dataset.id;
+    if (locationId) {
+      window.location.href = `/locations/${locationId}`;
+    } else {
+      console.error("Location ID not found");
+    }
   }
 
   goToAdventure(event) {
-    const adventureId = event.target.dataset.id;
-    window.location.href = `/adventures/${adventureId}`;
+    // find the closest element with data-id
+    const suggestionElement = event.target.closest('.suggestion');
+    if (!suggestionElement) return;
+
+    const adventureId = suggestionElement.dataset.id;
+    if (adventureId) {
+      window.location.href = `/adventures/${adventureId}`;
+    } else {
+      console.error("Adventure ID not found");
+    }
   }
 
   searchIndex(event) {
-    const category = event.target.dataset.category;
-    const query = event.target.dataset.query;
+    // find the closest element with data attributes
+    const suggestionElement = event.target.closest('.suggestion');
+    if (!suggestionElement) return;
+
+    const category = suggestionElement.dataset.category;
+    const query = suggestionElement.dataset.query;
 
     console.log("Clicked search result:", { category, query });
 
