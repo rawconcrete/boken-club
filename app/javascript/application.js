@@ -6,7 +6,6 @@ import "@popperjs/core"
 import "bootstrap"
 
 // start travel plan form partial, to populate adventures
-// Add this content to your application.js file, replacing the existing adventure filter code
 document.addEventListener('turbo:load', function() {
   // Adventure filter functionality
   const adventureFilter = document.getElementById('adventure-filter');

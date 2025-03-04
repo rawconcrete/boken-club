@@ -407,55 +407,55 @@ body:not(.home) {
 // end map styles
 
 // start travel plan form partial styles
-/* Three-column layout with centered alignment */
+/* three-column layout with centered alignment */
 .travel-plan-layout {
   display: flex;
-  gap: 15px; /* Consistent spacing between columns */
+  gap: 15px; /* consistent spacing between columns */
   width: 100%;
   height: 100%;
-  justify-content: center; /* Center the entire layout */
+  justify-content: center; /* center the entire layout */
   margin: 0 auto;
-  max-width: 1400px; /* Prevent excessive width on large screens */
+  max-width: 1400px; /* prevent excessive width on large screens */
 }
 
-/* Sidebar styling (for both left and right) - made sticky */
+/* sidebar styling (for both left and right) - made sticky */
 .travel-plan-sidebar {
   width: 30%;
   min-width: 280px;
   max-width: 380px;
   position: sticky;
   top: 20px;
-  align-self: flex-start; /* Prevent stretching */
-  max-height: calc(100vh - 120px); /* Limit max height */
+  align-self: flex-start; /* prevent stretching */
+  max-height: calc(100vh - 120px); /* limit max height */
 }
 
-/* Sidebar card with scrollable content */
+/* sidebar card with scrollable content */
 .sidebar-card {
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  height: 100%; /* Fill the parent container */
-  max-height: calc(100vh - 120px); /* Match parent max height */
+  height: 100%; /* fill the parent container */
+  max-height: calc(100vh - 120px); /* match parent max height */
 }
 
-/* Sidebar header (non-scrollable) */
+/* sidebar header (non-scrollable) */
 .sidebar-header {
   background-color: rgba(0, 0, 0, 0.03);
   padding: 12px 15px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  flex-shrink: 0; /* Prevent header from shrinking */
+  flex-shrink: 0; /* prevent header from shrinking */
 }
 
-/* Sidebar body (scrollable) */
+/* sidebar body (scrollable) */
 .sidebar-body {
   padding: 15px;
-  overflow-y: auto; /* Make this section scrollable */
-  flex-grow: 1; /* Allow this section to grow */
+  overflow-y: auto; /* make this section scrollable */
+  flex-grow: 1; /* allow this section to grow */
 }
 
-/* Main column styling (center) - full height, not sticky */
+/* main column styling (center) - full height, not sticky */
 .travel-plan-main {
   flex: 0 1 40%;
   min-width: 300px;
@@ -465,7 +465,7 @@ body:not(.home) {
   flex-direction: column;
 }
 
-/* Main content container */
+/* main content container */
 .main-content-scrollable {
   display: flex;
   flex-direction: column;
@@ -474,7 +474,7 @@ body:not(.home) {
   margin: 0;
 }
 
-/* Plan section (center column cards) */
+/* plan section (center column cards) */
 .plan-section {
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 12px;
@@ -483,14 +483,14 @@ body:not(.home) {
   overflow: hidden;
 }
 
-/* Plan section header */
+/* plan section header */
 .plan-section-header {
   background-color: rgba(0, 0, 0, 0.03);
   padding: 12px 15px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-/* Consistent header text */
+/* consistent header text */
 .sidebar-header h5,
 .plan-section-header h5 {
   margin: 0;
@@ -498,23 +498,23 @@ body:not(.home) {
   font-size: 16px;
 }
 
-/* Plan section body */
+/* plan section body */
 .plan-section-body {
   padding: 15px;
 }
 
-/* Make sure list areas in sidebars are scrollable */
+/* make sure list areas in sidebars are scrollable */
 .equipment-list,
 [data-skills-recommendation-target="skillsList"] {
   max-height: none; /* Remove max height constraint */
 }
 
-/* Handle list items in the equipment list */
+/* handle list items in the equipment list */
 .equipment-list .card {
   margin-bottom: 10px;
 }
 
-/* Responsive styles - adjust for mobile */
+/* responsive styles - adjust for mobile */
 @media (max-width: 1200px) {
   .travel-plan-layout {
     flex-direction: column;
