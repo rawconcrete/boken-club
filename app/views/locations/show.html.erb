@@ -1,9 +1,9 @@
 <%# app/views/locations/show.html.erb %>
 <div class="container">
   <h1 class="mb-4 text-white"><%= @location.name %></h1>
-  <div class="row">
+  <div class="row align-items-start">
     <!-- location details section -->
-    <div class="col-md-8">
+    <div class="col-md-8 col-lg-9">
       <div class="card">
         <div class="card-body">
           <%# make details more subtle here %>
@@ -36,7 +36,8 @@
       </div>
     </div>
     <!-- available adventures section -->
-    <div class="col-md-4">
+  </div>
+      <div class="col-md-4 col-lg-3">
       <div class="card">
         <div class="card-body">
           <h5 class="mb-3">Available Adventures</h5>
@@ -58,7 +59,6 @@
         </div>
       </div>
     </div>
-  </div>
 </div>
 <% if @location.warnings.present? %>
   <div class="alert alert-yellow alert-danger alert-dismissible fade show" role="alert">
