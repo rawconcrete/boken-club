@@ -91,6 +91,7 @@ body:not(.home) {
   height: 97%;
   background-color: rgba(255, 255, 255, 0.90);
   transition: background-color 0.3s ease;
+  transition: all 0.3s ease-in-out;
 }
 
 .card-body {
@@ -124,6 +125,7 @@ body:not(.home) {
 .adventure-card:hover .card-img-top {
   transform: scale(1.05); /* Scale the image when hovering over the adventure card */
 }
+
 // Keyframes for the bounce effect
 @keyframes moveBackgroundBounce {
   0% {
@@ -141,6 +143,195 @@ body:not(.home) {
   100% {
     background-position: left center;
   }
+}
+
+/* Compact card styling */
+.compact-card {
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
+  margin-bottom: 12px;
+  padding: 4px;
+}
+
+.compact-card .card-header {
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.compact-card .card-body {
+  padding: 4px;
+  font-size: 12px;
+  height: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* Sticky sidebar */
+.sticky-sidebar {
+  position: sticky;
+  top: 10px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Equipment Grid Layout */
+.equipment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 6px;
+  padding: 4px;
+}
+
+/* Equipment Item */
+.equipment-item {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  padding: 4px;
+  border-radius: 5px;
+  font-size: 12px;
+  gap: 6px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Equipment Image */
+.equipment-item img {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+/* Equipment Name */
+.equipment-item span {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.specific-card {
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  background-color: rgba(255, 255, 255, 0.90);
+  transition: background-color 0.3s ease;
+  max-width: 100%;
+  margin: 15px 0;
+  font-size: 16px;
+}
+
+/* Hover effect for specific card */
+.specific-card:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Adjust the card body */
+.specific-card .card-body {
+  flex-grow: 1;
+  min-height: 120px;
+  padding: 15px;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  font-size: 14px;
+}
+
+.col-md-6 .specific-card .card-body {
+  padding: 10px;
+  margin-bottom: 10px;
+  flex-grow: 0;
+  min-height: 100px;
+}
+
+.card-body {
+  padding-bottom: 5px;
+  font-size: 16px;
+}
+
+.specific-card .card-img-top {
+  object-fit: cover;
+  height: 180px;
+  margin-bottom: 15px;
+}
+
+.notes-section {
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-top: 12px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 0;
+}
+
+/* For plan detail cards */
+.card.mb-4 {
+  border-radius: 8px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.15);
+  margin-bottom: 12px;
+  background-color: rgba(255, 255, 255, 0.9);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card.mb-4:hover {
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+  transform: translateY(-3px);
+}
+
+/* For main content (center column) cards */
+.col-md-6 .specific-card {
+  max-width: 600px;
+  margin: 15px auto;
+}
+
+/* Adjust plan details padding */
+.card-header {
+  background-color: #f8f9fa;
+  border-radius: 8px 8px 0 0;
+  padding: 8px;
+  font-size: 14px;
+}
+
+/* Ensure the layout has sufficient space and doesn't overlap */
+.card-body .plan-details {
+  padding: 12px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Form and label styling */
+.form-label {
+  font-size: 13px;
+  font-weight: normal;
+}
+
+.form-control {
+  font-size: 13px;
+  padding: 6px;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+/* Skills Card Styling */
+.card-body .skills-recommendation {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-body .skills-recommendation .skill-item {
+  padding: 6px 10px;
+  font-size: 12px;
 }
 
 // map styles

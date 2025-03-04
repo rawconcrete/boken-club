@@ -163,7 +163,7 @@ export default class extends Controller {
           : '<i class="fas fa-plus"></i> Add to Plan';
 
         html += `
-          <div class="col-md-6 mb-2">
+          <div class="col-md-12 mb-2">
             <div class="card ${skill.safety_critical ? 'border-warning' : ''}">
               <div class="card-body p-3">
                 <h6 class="mb-1">${skill.name} ${safetyCriticalBadge}</h6>

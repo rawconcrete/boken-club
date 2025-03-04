@@ -11,11 +11,10 @@ def create_users
 
   # Admin accounts
   [
-    { email: 'admin@admin.com', password: '123456', admin: true },
-    { email: 'sarah@admin.com', password: '123456', admin: true },
-    { email: 'nico@admin.com', password: '123456', admin: true },
-    { email: 'lio@admin.com', password: '123456', admin: true },
-    { email: 'lio', password: '123', admin: true }
+    { email: 'admin@admin.com', password: '123456', admin: true, role: 1 },
+    { email: 'sarah', password: '123', admin: true, role: 1 },
+    { email: 'nico', password: '123', admin: true, role: 1 },
+    { email: 'lio', password: '123', admin: true, role: 1 }
   ].each do |admin_data|
     user = User.new(admin_data)
     user.save(validate: false)
