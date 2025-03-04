@@ -84,8 +84,8 @@
                 <% end %>
               </div>
             <% else %>
-              <div class="alert alert-info">
-                <p>You don't own any of the recommended equipment for this trip yet.</p>
+              <div class="alert alert-yellow alert-info alert-top alert-dismissible fade show" role="alert">
+                You don't own any of the recommended equipment for this trip yet.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
             <% end %>
           </div>
@@ -117,7 +117,7 @@
                 <% end %>
               </div>
             <% else %>
-              <div class="alert alert-success">
+              <div class="alert alert-yellow alert-success">
                 <p>You already own all the equipment needed for this trip!</p>
               </div>
             <% end %>
@@ -161,7 +161,7 @@
                 <% end %>
               </div>
             <% else %>
-              <div class="alert alert-info">
+              <div class="alert alert-yellow alert-info">
                 <p>No specific skills have been added to this travel plan.</p>
                 <p>Edit the plan to add recommended skills based on your locations and adventures.</p>
               </div>

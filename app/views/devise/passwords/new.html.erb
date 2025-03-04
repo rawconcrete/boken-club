@@ -1,18 +1,400 @@
-<h2>Forgot your password?</h2>
+<%# app/views/devise/passwords/new.html.erb - Wilderness Theme %>
+<% content_for :head do %>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-<%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
-  <%= f.error_notification %>
+    .login-body {
+      font-family: 'Press Start 2P', cursive;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      position: relative;
+      background-size: cover;
+      background-position: center;
+      margin: 0;
+      padding: 0;
+    }
 
-  <div class="form-inputs">
-    <%= f.input :email,
-                required: true,
-                autofocus: true,
-                input_html: { autocomplete: "email" } %>
-  </div>
+    /* Forest-themed dark overlay */
+    .login-body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(21, 32, 15, 0.7);
+      z-index: 1;
+    }
 
-  <div class="form-actions">
-    <%= f.button :submit, "Send me reset password instructions" %>
-  </div>
+    .login-container {
+      position: relative;
+      z-index: 2;
+      width: 90%;
+      max-width: 500px;
+      padding: 20px;
+    }
+
+    /* Wooden log-inspired box */
+    .pixel-box {
+      background-color: #3b2614; /* Dark wood color */
+      border: 8px solid #5d4037; /* Medium wood color */
+      box-shadow: 0 0 0 4px #2c1e0f, 0 0 20px rgba(0, 0, 0, 0.5); /* Dark wood shadow */
+      padding: 30px;
+      position: relative;
+      /* Texture pattern for wood */
+      background-image: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.1) 0px,
+        rgba(0, 0, 0, 0.1) 2px,
+        transparent 2px,
+        transparent 6px
+      );
+    }
+
+    /* Wood grain details */
+    .pixel-box::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border: 2px solid #2c1e0f;
+      z-index: -1;
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #8bc34a; /* Forest green */
+      text-shadow: 3px 3px 0 #1b5e20; /* Dark forest green */
+      font-size: 22px;
+      letter-spacing: 2px;
+    }
+
+    .login-subheader {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #dcedc8; /* Light green */
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .game-logo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .game-logo img {
+      width: 180px;
+      height: auto;
+      image-rendering: pixelated;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      color: #dcedc8; /* Light green */
+      font-size: 14px;
+      text-shadow: 2px 2px 0 #1b5e20;
+    }
+
+    /* Input fields with leaf pattern border */
+    .form-input {
+      width: 100%;
+      padding: 12px;
+      background-color: #2c3e50; /* Deep blue-green */
+      border: 4px solid #4CAF50; /* Medium green */
+      border-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="%234CAF50"/><path d="M0,0 L16,16 M0,16 L16,0" stroke="%238BC34A" stroke-width="2"/></svg>') 4;
+      color: #ffffff;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 16px;
+      margin-top: 5px;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #8bc34a;
+      box-shadow: 0 0 10px #4CAF50;
+    }
+
+    /* Tree trunk button */
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      background-color: #795548; /* Brown */
+      border: none;
+      color: #ffffff;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+      text-transform: uppercase;
+      box-shadow: 0 6px 0 #4e342e; /* Darker brown */
+      position: relative;
+      top: 0;
+      transition: all 0.1s;
+      /* Wood texture pattern */
+      background-image: repeating-linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.1) 0px,
+        rgba(0, 0, 0, 0.1) 2px,
+        transparent 2px,
+        transparent 6px
+      );
+    }
+
+    .submit-btn:hover {
+      background-color: #8d6e63; /* Lighter brown */
+    }
+
+    .submit-btn:active {
+      box-shadow: 0 2px 0 #4e342e;
+      top: 4px;
+    }
+
+    .options {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      font-size: 10px;
+    }
+
+    .options a {
+      color: #CDDC39; /* Lime */
+      text-decoration: none;
+      text-shadow: 1px 1px 0 #1b5e20;
+    }
+
+    .options a:hover {
+      color: #8BC34A; /* Light green */
+      text-decoration: underline;
+    }
+
+    /* Firefly-like particles */
+    @keyframes firefly {
+      0% { opacity: 0; transform: translateY(0px) scale(0.5); }
+      50% { opacity: 0.8; transform: translateY(-10px) scale(1); }
+      100% { opacity: 0; transform: translateY(-20px) scale(0.5); }
+    }
+
+    .fireflies {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 998;
+      pointer-events: none;
+    }
+
+    .firefly {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background-color: #FFEB3B; /* Yellow */
+      border-radius: 50%;
+      box-shadow: 0 0 6px 2px #FFEB3B;
+      animation: firefly 4s infinite;
+    }
+
+    .firefly:nth-child(1) {
+      top: 20%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    .firefly:nth-child(2) {
+      top: 50%;
+      left: 80%;
+      animation-delay: 1s;
+    }
+
+    .firefly:nth-child(3) {
+      top: 30%;
+      left: 85%;
+      animation-delay: 2s;
+    }
+
+    .firefly:nth-child(4) {
+      top: 70%;
+      left: 20%;
+      animation-delay: 3s;
+    }
+
+    .firefly:nth-child(5) {
+      top: 10%;
+      left: 60%;
+      animation-delay: 0.5s;
+    }
+
+    .firefly:nth-child(6) {
+      top: 80%;
+      left: 40%;
+      animation-delay: 1.5s;
+    }
+
+    .firefly:nth-child(7) {
+      top: 40%;
+      left: 30%;
+      animation-delay: 2.5s;
+    }
+
+    /* Blinking cursor with green color */
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 12px;
+      height: 24px;
+      background-color: #8bc34a;
+      margin-left: 5px;
+      animation: blink 1s infinite;
+    }
+
+    /* Pixel foliage decorations */
+    .pixel-tree {
+      position: absolute;
+      width: 30px;
+      height: 40px;
+      background-color: #4CAF50;
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      z-index: 3;
+    }
+
+    .pixel-tree::before {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 10px;
+      width: 10px;
+      height: 15px;
+      background-color: #5D4037;
+    }
+
+    .pixel-tree-left {
+      top: -30px;
+      left: -20px;
+      transform: rotate(-5deg);
+    }
+
+    .pixel-tree-right {
+      top: -25px;
+      right: -15px;
+      transform: rotate(5deg);
+    }
+
+    .flash {
+      animation: flash-animation 0.2s;
+    }
+
+    @keyframes flash-animation {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    /* Media queries */
+    @media (max-width: 600px) {
+      .login-header {
+        font-size: 18px;
+      }
+
+      .form-label {
+        font-size: 12px;
+      }
+
+      .form-input, .submit-btn {
+        font-size: 14px;
+        padding: 10px;
+      }
+
+      .options {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+    }
+
+    .field_with_errors .form-input {
+      border-color: #ff5722; /* Orange error color */
+    }
+
+    .alert {
+      background-color: #e53935; /* Red */
+      color: white;
+      padding: 10px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      border: 2px solid #ffcdd2;
+    }
+
+    .notice {
+      background-color: #43a047; /* Green */
+      color: white;
+      padding: 10px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      border: 2px solid #c8e6c9;
+    }
+  </style>
 <% end %>
-
-<%= render "devise/shared/links" %>
+<div class="login-body">
+  <!-- Animated fireflies background effect -->
+  <div class="fireflies">
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+    <div class="firefly"></div>
+  </div>
+  <div class="login-container">
+    <div class="pixel-box">
+      <!-- Decorative trees -->
+      <div class="pixel-tree pixel-tree-left"></div>
+      <div class="pixel-tree pixel-tree-right"></div>
+      <div class="game-logo">
+        <%= image_tag asset_path("logo00.png"), alt: "Boken Club Logo", style: "width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #5d4037; box-shadow: 0 0 10px rgba(0,0,0,0.5);" %>
+      </div>
+      <h1 class="login-header">LOST YOUR MAP?<span class="cursor"></span></h1>
+      <p class="login-subheader">ENTER YOUR EMAIL TO RECEIVE PASSWORD RESET INSTRUCTIONS</p>
+      <% if notice %>
+        <div class="notice"><%= notice %></div>
+      <% end %>
+      <% if alert %>
+        <div class="alert"><%= alert %></div>
+      <% end %>
+      <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+        <div class="field">
+          <%= f.label :email, class: "form-label" %>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "ENTER EMAIL", class: "form-input" %>
+        </div>
+        <div class="actions">
+          <%= f.submit "SEND RESCUE SIGNAL", class: "submit-btn" %>
+        </div>
+      <% end %>
+      <div class="options">
+        <%= link_to "BACK TO LOGIN", new_session_path(resource_name) %>
+        <% if devise_mapping.registerable? %>
+          <%= link_to "CREATE NEW ACCOUNT", new_registration_path(resource_name) %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

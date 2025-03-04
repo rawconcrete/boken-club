@@ -4,7 +4,7 @@
      data-travel-plan-adventures-value="<%= travel_plan.adventures.reject(&:nil?).to_json %>">
   <%= form_with(model: travel_plan, local: true, data: { action: "submit->travel-plan#formSubmit" }) do |f| %>
 
-<!-- Layout Grid -->
+    <!-- Layout Grid -->
     <div class="row">
       <!-- Left Sidebar - Skills -->
       <div class="col-md-3">
@@ -24,7 +24,7 @@
                   <% word = travel_plan.skills.count == 1 ? "skill" : "skills" %>
                   <% string = "You have #{travel_plan.skills.count} #{word} already selected." %>
                   <% if travel_plan.skills.any? %>
-                    <p><%= word %></p>
+                    <p><%= string %></p>
                   <% end %>
                 </div>
               </div>
@@ -43,7 +43,7 @@
         <!-- Trip Dates -->
         <div class="card compact-card specific-card">
           <div class="card-header">
-          <h5 class="mb-0 p-2">Trip Dates</h5>
+            <h5 class="mb-0 p-2">Trip Dates</h5>
           </div>
           <div class="card-body p-3">
             <div class="row g-2">
@@ -64,41 +64,39 @@
         <!-- Plan Details -->
         <div class="card compact-card specific-card">
           <div class="card-header">
-          <h5 class="mb-0 p-2">Plan Details</h5>
+            <h5 class="mb-0 p-2">Plan Details</h5>
           </div>
           <div class="card-body p-2">
             <%= f.label :title, class: "form-label small" %>
             <%= f.text_field :title, class: "form-control form-control-sm" %>
-
             <%= f.label :content, class: "form-label small mt-2" %>
             <%= f.text_area :content, class: "form-control form-control-sm", rows: 3 %>
           </div>
         </div>
 
-        <%# adventures card %>
-    <div class="card compact-card mb-4 specific-card">
-      <div class="card-header">
-        <h5 class="mb-0 p-2">Available Adventures</h5>
-      </div>
-      <div class="card-body">
-        <div data-travel-plan-target="selectedAdventures" class="mb-3"></div>
-        <input type="text"
-               class="form-control"
-               placeholder="Search adventures..."
-               data-travel-plan-target="adventureSearch"
-               data-action="input->travel-plan#searchAdventures">
-        <div data-travel-plan-target="adventureResults" class="list-group mt-2"></div>
-      </div>
-    </div>
+        <!-- Adventures -->
+        <div class="card compact-card mb-4 specific-card">
+          <div class="card-header">
+            <h5 class="mb-0 p-2">Available Adventures</h5>
+          </div>
+          <div class="card-body">
+            <div data-travel-plan-target="selectedAdventures" class="mb-3"></div>
+            <input type="text"
+                   class="form-control"
+                   placeholder="Search adventures..."
+                   data-travel-plan-target="adventureSearch"
+                   data-action="input->travel-plan#searchAdventures">
+            <div data-travel-plan-target="adventureResults" class="list-group mt-2"></div>
+          </div>
+        </div>
 
         <!-- Locations -->
         <div class="card compact-card specific-card">
           <div class="card-header">
-          <h5 class="mb-0 p-2">Locations</h5>
+            <h5 class="mb-0 p-2">Locations</h5>
           </div>
           <div class="card-body p-2">
-          <div data-travel-plan-target="selectedLocations" class="mb-3">
-          </div>
+            <div data-travel-plan-target="selectedLocations" class="mb-3"></div>
             <input type="text"
                    class="form-control form-control-sm"
                    placeholder="Search locations..."
@@ -114,7 +112,7 @@
         <div class="sticky-sidebar">
           <div class="card compact-card specific-card">
             <div class="card-header">
-            <h5 class="mb-0">Recommended Equipment</h5>
+              <h5 class="mb-0">Recommended Equipment</h5>
             </div>
             <div class="card-body p-2">
               <div class="equipment-list" data-travel-plan-target="equipmentList">

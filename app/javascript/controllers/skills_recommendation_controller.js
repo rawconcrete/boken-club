@@ -104,7 +104,7 @@ export default class extends Controller {
       .catch(error => {
         console.error('Error fetching skills:', error);
         this.skillsListTarget.innerHTML = `
-          <div class="alert alert-danger">
+          <div class="alert alert-yellow alert-danger">
             <p>Error loading skill recommendations: ${error.message}</p>
             <p class="small mb-0">Try refreshing the page or selecting different locations/adventures.</p>
           </div>
@@ -373,6 +373,7 @@ export default class extends Controller {
 
     // Remove toast after timeout
     setTimeout(() => {
+      console.log("timer");
       toast.classList.remove('show');
       setTimeout(() => toast.remove(), 500);
     }, 3000);

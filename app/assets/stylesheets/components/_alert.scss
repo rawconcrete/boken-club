@@ -1,6 +1,6 @@
-.alert {
+.alert-yellow {
   position: fixed;
-  bottom: 16px;
+  bottom: 0;
   right: 16px;
   z-index: 1000;
   background: rgba(0, 0, 0, 0.7);
@@ -8,3 +8,15 @@
   border-radius: 10px;
   padding: 15px;
 }
+
+.alert-dismissible .btn-close {
+  position: static;
+  padding: 6px;
+  --bs-btn-close-color: #FFCC00;
+  --bs-btn-close-white-filter: none;
+  --bs-btn-close-bg: url(https://icones.pro/wp-content/uploads/2021/08/icone-x-jaune.png);
+  opacity: 1;
+}
+.alert-top {
+  bottom: 97px;
+};
