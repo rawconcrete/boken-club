@@ -11,22 +11,22 @@ export default class extends Controller {
   connect() {
     console.log("Map controller connected!");
 
-    // Set the Mapbox access token
+    // set the Mapbox access token
     mapboxgl.accessToken = this.apiKeyValue;
 
-    // Log the markers to help with debugging
+    // log the markers to help with debugging
     console.log("Map markers data:", this.markersValue);
 
-    // Initialize the map
+    // initialize the map
     this.map = new mapboxgl.Map({
       container: this.element,
       style: "mapbox://styles/mapbox/streets-v10"
     });
 
-    // Add navigation controls
+    // add navigation controls
     this.map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
-    // Wait for map to load before adding markers
+    // wait for map to load before adding markers
     this.map.on('load', () => {
       console.log("Map loaded, adding markers...");
       if (this.markersValue && this.markersValue.length > 0) {
@@ -34,7 +34,7 @@ export default class extends Controller {
         this.#fitMapToMarkers();
       } else {
         console.warn("No markers provided to map");
-        // Default to Japan if no markers
+        // default to Japan if no markers
         this.map.setCenter([138.2529, 36.2048]);
         this.map.setZoom(5);
       }
@@ -43,7 +43,7 @@ export default class extends Controller {
 
   #addMarkersToMap() {
     this.markersValue.forEach((marker) => {
-      // Validate coordinates
+      // validate coordinates
       if (!this.#isValidCoordinate(marker.lng, marker.lat)) {
         console.error(`Invalid coordinates for marker: ${JSON.stringify(marker)}`);
         return;
@@ -51,13 +51,13 @@ export default class extends Controller {
 
       console.log(`Adding marker at coordinates: ${marker.lng}, ${marker.lat}`);
 
-      // Create an ultra-minimalist popup with just essential info
+      // create an ultra-minimalist popup with just essential info
       let popupContent = '';
       if (marker.name) {
-        // Don't truncate names, show full name
+        // don't truncate names, show full name
         const displayName = marker.name;
 
-        // Only show city OR prefecture to save space (prefer prefecture)
+        // only show city OR prefecture to save space (prefer prefecture)
         const locationDetail = marker.prefecture || marker.city || '';
 
         popupContent = `<div class="info-window">
@@ -66,7 +66,7 @@ export default class extends Controller {
         </div>`;
       }
 
-      // Create a minimal popup with smaller offset and no width constraint
+      // create a minimal popup with smaller offset and no width constraint
       const popup = new mapboxgl.Popup({
         offset: 10,
         closeButton: false,
@@ -74,7 +74,7 @@ export default class extends Controller {
         className: 'minimal-popup'
       }).setHTML(popupContent || '<div class="info-window"><p>Location</p></div>');
 
-      // Create a custom HTML element for the marker - using a wilderness-themed marker
+      // create a custom HTML element for the marker - using a wilderness-themed marker
       const el = document.createElement('div');
       el.className = 'map-marker';
       el.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -84,13 +84,13 @@ export default class extends Controller {
       </svg>`;
       el.style.cursor = 'pointer';
 
-      // Add marker to map with the popup
+      // add marker to map with the popup
       const mapMarker = new mapboxgl.Marker(el)
         .setLngLat([marker.lng, marker.lat])
         .setPopup(popup)
         .addTo(this.map);
 
-      // Let users click to see the popup rather than showing it automatically
+      // let users click to see the popup rather than showing it automatically
     });
   }
 
@@ -106,32 +106,33 @@ export default class extends Controller {
     });
 
     if (validMarkers > 0) {
-      // Handle single marker differently (closer zoom)
+      // handle single marker differently (less zoomed in)
       if (validMarkers === 1) {
         const marker = this.markersValue.find(m => this.#isValidCoordinate(m.lng, m.lat));
         this.map.setCenter([marker.lng, marker.lat]);
-        this.map.setZoom(14); // Closer zoom for single marker
+        // use a significantly lower zoom level to show more context
+        this.map.setZoom(4.9); // lower zoom level (was 14)
       } else {
-        // Fit to bounds for multiple markers
+        // fit to bounds for multiple markers but with more padding
         this.map.fitBounds(bounds, {
-          padding: 70,
-          maxZoom: 12,
+          padding: 100, // increased padding (was 70)
+          maxZoom: 10,  // lower max zoom (was 12)
           duration: 500
         });
       }
     } else {
-      // Default to Japan view if no valid markers
+      // default to Japan view if no valid markers
       this.map.setCenter([138.2529, 36.2048]);
       this.map.setZoom(5);
     }
   }
 
   #isValidCoordinate(lng, lat) {
-    // Check if coordinates are valid numbers within reasonable ranges
+    // check if coordinates are valid numbers within reasonable ranges
     const validLng = lng !== null && lng !== undefined && !isNaN(parseFloat(lng)) && parseFloat(lng) >= -180 && parseFloat(lng) <= 180;
     const validLat = lat !== null && lat !== undefined && !isNaN(parseFloat(lat)) && parseFloat(lat) >= -90 && parseFloat(lat) <= 90;
 
-    // Filter out coordinates that are exactly 0,0 (middle of ocean)
+    // filter out coordinates that are exactly 0,0 (middle of ocean)
     const isZeroZero = parseFloat(lng) === 0 && parseFloat(lat) === 0;
 
     const isValid = validLng && validLat && !isZeroZero;
