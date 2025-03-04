@@ -405,3 +405,135 @@ body:not(.home) {
   min-width: 150px;
 }
 // end map styles
+
+// start travel plan form partial styles
+/* Add this to your application.scss or create a new _travel_plan.scss partial */
+
+/* Sticky sidebar improvements */
+.sticky-sidebar {
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 40px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scrollable containers for equipment and skills */
+.equipment-scroll-container,
+.skills-scroll-container {
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* Improve scrollbar appearance */
+.equipment-scroll-container::-webkit-scrollbar,
+.skills-scroll-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.equipment-scroll-container::-webkit-scrollbar-thumb,
+.skills-scroll-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.equipment-scroll-container::-webkit-scrollbar-track,
+.skills-scroll-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Ensure cards stretch to full height */
+.card.compact-card.specific-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card.compact-card.specific-card .card-body {
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Responsive adjustments */
+@media (min-width: 1400px) {
+  /* For extra large screens, you can make the middle column a bit smaller */
+  .col-xxl-3 {
+    flex: 0 0 auto;
+    width: 25%;
+  }
+
+  .col-xxl-6 {
+    flex: 0 0 auto;
+    width: 50%;
+  }
+}
+
+/* For smaller screens, ensure scrollable areas are still accessible */
+@media (max-height: 800px) {
+  .equipment-scroll-container,
+  .skills-scroll-container {
+    max-height: 400px;
+  }
+}
+
+/* Improve equipment item styling */
+.equipment-list .card {
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+}
+
+.equipment-list .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Better skill item styling */
+.skill-item {
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.skill-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Make badges more prominent */
+.badge {
+  font-weight: 500;
+  padding: 0.35em 0.65em;
+}
+
+/* Improve form input spacing and appearance */
+.form-control-sm {
+  padding: 0.35rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.form-label.small {
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+/* Better card headers */
+.card-header {
+  background-color: rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  padding: 0.75rem 1rem;
+}
+
+/* Improve compact cards */
+.compact-card {
+  margin-bottom: 1rem;
+}
+
+.compact-card .card-header {
+  padding: 0.5rem 0.75rem;
+}
+
+.compact-card .card-body {
+  padding: 0.75rem;
+}
+// end travel plan form partial styles
