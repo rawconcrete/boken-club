@@ -20,7 +20,7 @@ def create_skills
       category: "camping",
       instructions: "1. Look for flat ground with good drainage\n2. Avoid areas under dead trees or branches\n3. Consider proximity to water sources\n4. Check for signs of wildlife activity\n5. Stay away from avalanche paths in winter",
       resources: "- 'NOLS Wilderness Guide' by Mark Harvey\n- Leave No Trace Center for Outdoor Ethics website",
-      video_url: "https://www.youtube.com/embed/nXMM8sQMHik",
+      video_url: "https://youtu.be/dfpE0x6xTPU?si=Q4lvDdfRafUjKw0W",
       safety_critical: false
     },
     {
@@ -30,7 +30,7 @@ def create_skills
       category: "survival",
       instructions: "1. Check if fires are allowed in your area\n2. Clear an area of flammable materials\n3. Gather tinder, kindling, and fuel wood\n4. Build a fire structure (teepee, log cabin, etc.)\n5. Light the tinder at the base\n6. Maintain and fully extinguish when done",
       resources: "- 'Bushcraft 101' by Dave Canterbury\n- 'Essential Wilderness Navigation' by Craig Caudill",
-      video_url: "https://www.youtube.com/embed/aDr6h6PrN8k",
+      video_url: "https://youtu.be/0O3Bj8JFcTc?si=3oRbhurmmbDdVmGb",
       safety_critical: true
     },
     {
@@ -40,7 +40,7 @@ def create_skills
       category: "camping",
       instructions: "1. Find level ground free of rocks and roots\n2. Lay out the footprint if you have one\n3. Assemble poles according to instructions\n4. Attach tent body to poles\n5. Stake down corners with slight tension\n6. Apply rainfly and guy lines\n7. Adjust for proper ventilation",
       resources: "- REI's tent setup guides\n- Specific tent manufacturer instructions",
-      video_url: "https://www.youtube.com/embed/SPIq72pkF4A",
+      video_url: "https://youtu.be/ha43JNTtus4?si=O5QBToSvV_aWSzuh",
       safety_critical: false
     },
     {
@@ -70,7 +70,7 @@ def create_skills
       category: "first_aid",
       instructions: "1. Complete a wilderness first aid course\n2. Learn to assess and stabilize patients\n3. Practice wound cleaning and bandaging\n4. Understand treatment for common injuries like sprains\n5. Know how to recognize and respond to hypothermia and heat exhaustion\n6. Practice improvising with limited resources",
       resources: "- NOLS Wilderness First Aid curriculum\n- 'Wilderness First Aid' by Alton Thygerson\n- Red Cross Wilderness First Aid classes",
-      video_url: "https://www.youtube.com/embed/WnxVJjpQ9Xw",
+      video_url: "https://youtu.be/nnUQHKZqnkw?si=PwcLGB0Ct8JGnn6a",
       safety_critical: true
     },
     {
@@ -80,7 +80,7 @@ def create_skills
       category: "camping",
       instructions: "1. Start with basic knots: bowline, square knot, clove hitch, taut-line hitch\n2. Practice until you can tie them quickly and correctly\n3. Learn when each knot is appropriate to use\n4. Test knots under tension before relying on them\n5. Progress to more specialized knots for specific activities",
       resources: "- 'The Ashley Book of Knots' by Clifford Ashley\n- Animated Knots website and app",
-      video_url: "https://www.youtube.com/embed/1FaypwbCPbs",
+      video_url: "https://youtu.be/Bn6UcgvVzJY?si=kZOUYj5jyXsaFVd2",
       safety_critical: false
     },
     {
@@ -90,7 +90,7 @@ def create_skills
       category: "safety",
       instructions: "1. Learn to identify cloud types and what they indicate\n2. Understand how pressure changes affect weather\n3. Recognize signs of approaching storms\n4. Monitor trends in temperature, wind, and clouds\n5. Know local weather patterns for the region you're exploring",
       resources: "- 'Reading Weather' by Jim Woodmencey\n- National Weather Service educational resources",
-      video_url: "https://www.youtube.com/embed/58Zcbt707Pk",
+      video_url: "https://youtu.be/I00vcHLJXCc?si=F8eh5OMoNvYbyrPe",
       safety_critical: true
     },
     {
@@ -100,7 +100,7 @@ def create_skills
       category: "environmental",
       instructions: "1. Plan ahead and prepare\n2. Travel and camp on durable surfaces\n3. Dispose of waste properly\n4. Leave what you find\n5. Minimize campfire impacts\n6. Respect wildlife\n7. Be considerate of other visitors",
       resources: "- Leave No Trace Center for Outdoor Ethics website\n- 'Soft Paths' by Bruce Hampton and David Cole",
-      video_url: "https://www.youtube.com/embed/jXvFrjnUi2k",
+      video_url: "https://youtu.be/Rpq01rO9ZR0?si=KtEBx_aIrCQEtdlA",
       safety_critical: false
     },
     {
@@ -120,7 +120,7 @@ def create_skills
       category: "water",
       instructions: "1. Assess if crossing is necessary and safe\n2. Scout for the best crossing location\n3. Unbuckle backpack waist and chest straps\n4. Use a walking stick or trekking poles for stability\n5. Cross with multiple people in a triangle formation if possible\n6. Face upstream and move diagonally with the current\n7. Know when conditions are too dangerous to cross",
       resources: "- 'Freedom of the Hills' by The Mountaineers\n- 'NOLS Wilderness Guide' chapter on river crossings",
-      video_url: "https://www.youtube.com/embed/5gGdoFQYkdE",
+      video_url: "https://youtu.be/nlmWxsaG_Ns?si=dKpbVZKde4Ai3o-l",
       safety_critical: true
     },
     {
@@ -130,7 +130,7 @@ def create_skills
       category: "camping",
       instructions: "1. Use proper insulated gear and layering systems\n2. Create a solid tent platform in snow\n3. Learn to manage moisture to prevent hypothermia\n4. Melt snow efficiently for water\n5. Properly store food and water to prevent freezing\n6. Recognize and prevent frostbite and hypothermia",
       resources: "- 'Winter in the Wilderness' by Dave Hall\n- 'NOLS Winter Camping' by Buck Tilton",
-      video_url: "https://www.youtube.com/embed/0stTHC80w2s",
+      video_url: "https://youtu.be/Ftc3t93thDw?si=1v417JDXgnfb3_-s",
       safety_critical: true
     },
     {
@@ -143,6 +143,7 @@ def create_skills
       video_url: "https://www.youtube.com/embed/9qOFAMavGg4",
       safety_critical: true
     },
+    # avalanche safety not yet youtube changed
     {
       name: "Backcountry Cooking",
       details: "Preparing nutritious meals efficiently with minimal equipment in wilderness settings.",
