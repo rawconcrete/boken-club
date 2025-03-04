@@ -386,8 +386,7 @@
       <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
         <div class="field">
           <%= f.label :email, class: "form-label" %>
-          <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "ENTER EMAIL", class: "form-input" %>
-        </div>
+          <%= f.text_field :email, autofocus: true, autocomplete: "email", placeholder: "ENTER EMAIL", class: "form-input" %>        </div>
         <div class="field">
           <%= f.label :password, class: "form-label" %>
           <%= f.password_field :password, autocomplete: "current-password", placeholder: "ENTER PASSWORD", class: "form-input" %>

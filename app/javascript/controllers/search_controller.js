@@ -57,21 +57,21 @@ export default class extends Controller {
 
   handleTyping() {
     clearTimeout(this.typingTimer);
-    this.isUserTyping = true; // stop animation when user is typing
+    this.isUserTyping = true;
 
     const query = this.inputTarget.value.trim();
-
-    if (query.length === 0) {
+    if (!query) {
       this.suggestionsTarget.innerHTML = "";
-      this.isUserTyping = false; // resume animation if input is cleared
+      this.isUserTyping = false;
       this.startTypingAnimation();
       return;
     }
 
     this.typingTimer = setTimeout(() => {
       this.fetchResults(query);
-    }, 300); // debounce search
+    }, 300);
   }
+
 
   fetchResults(query) {
     fetch(`/search.json?q=${encodeURIComponent(query)}`)
@@ -135,6 +135,16 @@ export default class extends Controller {
   searchIndex(event) {
     const category = event.target.dataset.category;
     const query = event.target.dataset.query;
+
+    console.log("Clicked search result:", { category, query });
+
+    if (!category || category === "undefined" || !query || query === "undefined") {
+      console.warn("Invalid search result. Debugging...");
+      return;
+    }
+
     window.location.href = `/${category}?q=${encodeURIComponent(query)}`;
   }
+
+
 }
