@@ -3,11 +3,10 @@
      data-travel-plan-locations-value="<%= travel_plan.locations.to_json %>"
      data-travel-plan-adventures-value="<%= travel_plan.adventures.reject(&:nil?).to_json %>">
   <%= form_with(model: travel_plan, local: true, data: { action: "submit->travel-plan#formSubmit" }) do |f| %>
-
     <!-- Layout Grid -->
     <div class="row">
       <!-- Left Sidebar - Skills -->
-      <div class="col-md-3">
+      <div class="col-md-3 col-lg-3">
         <div class="sticky-sidebar">
           <div class="card compact-card specific-card"
                data-controller="skills-recommendation"
@@ -17,7 +16,7 @@
               <h5 class="mb-0">Recommended Skills</h5>
               <p class="text-muted small mb-0">Click "Add to Plan" to include skills you want to learn or reference for this trip.</p>
             </div>
-            <div class="card-body p-2">
+            <div class="card-body p-2 skills-scroll-container">
               <div data-skills-recommendation-target="skillsList">
                 <div class="alert alert-info">
                   <p>Select locations and adventures to see recommended skills.</p>
@@ -37,9 +36,8 @@
           </div>
         </div>
       </div>
-
       <!-- Main Content -->
-      <div class="col-md-7">
+      <div class="col-md-6 col-lg-6">
         <!-- Trip Dates -->
         <div class="card compact-card specific-card">
           <div class="card-header">
@@ -60,7 +58,6 @@
             </div>
           </div>
         </div>
-
         <!-- Plan Details -->
         <div class="card compact-card specific-card">
           <div class="card-header">
@@ -73,7 +70,6 @@
             <%= f.text_area :content, class: "form-control form-control-sm", rows: 3 %>
           </div>
         </div>
-
         <!-- Adventures -->
         <div class="card compact-card mb-4 specific-card">
           <div class="card-header">
@@ -89,7 +85,6 @@
             <div data-travel-plan-target="adventureResults" class="list-group mt-2"></div>
           </div>
         </div>
-
         <!-- Locations -->
         <div class="card compact-card specific-card">
           <div class="card-header">
@@ -106,15 +101,14 @@
           </div>
         </div>
       </div>
-
       <!-- Right Sidebar - Equipment -->
-      <div class="col-md-2">
+      <div class="col-md-3 col-lg-3">
         <div class="sticky-sidebar">
           <div class="card compact-card specific-card">
             <div class="card-header">
               <h5 class="mb-0">Recommended Equipment</h5>
             </div>
-            <div class="card-body p-2">
+            <div class="card-body p-2 equipment-scroll-container">
               <div class="equipment-list" data-travel-plan-target="equipmentList">
                 <%# Equipment will be dynamically inserted here %>
               </div>
@@ -123,12 +117,10 @@
         </div>
       </div>
     </div>
-
     <!-- Save Button -->
     <div class="d-flex justify-content-end gap-2 mt-3 mb-4">
       <%= link_to 'Cancel', :back, class: "btn btn-sm btn-secondary" %>
       <%= f.submit 'Save', class: "btn btn-sm btn-primary" %>
     </div>
-
   <% end %>
 </div>
