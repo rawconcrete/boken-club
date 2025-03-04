@@ -407,191 +407,114 @@ body:not(.home) {
 // end map styles
 
 // start travel plan form partial styles
-
-/* Main container */
-.travel-plan-container {
-  width: 100%;
-  min-height: calc(100vh - 100px); /* Adjust based on your navbar height */
-  padding: 20px;
-  position: relative;
-}
-
-/* Three-column layout */
+/* Three-column layout with centered alignment */
 .travel-plan-layout {
   display: flex;
-  gap: 20px;
+  gap: 15px; /* Consistent spacing between columns */
   width: 100%;
   height: 100%;
+  justify-content: center; /* Center the entire layout */
+  margin: 0 auto;
+  max-width: 1400px; /* Prevent excessive width on large screens */
 }
 
-/* Sidebar styling (for both left and right) */
+/* Sidebar styling (for both left and right) - made sticky */
 .travel-plan-sidebar {
-  width: 25%;
+  width: 30%;
   min-width: 280px;
-  max-width: 350px;
-  height: calc(100vh - 140px);
+  max-width: 380px;
   position: sticky;
   top: 20px;
+  align-self: flex-start; /* Prevent stretching */
+  max-height: calc(100vh - 120px); /* Limit max height */
 }
 
-/* Main column styling (center) */
-.travel-plan-main {
-  flex: 1;
-  min-width: 400px;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Scrollable area for main content */
-.main-content-scrollable {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-/* Card styling for sidebars */
+/* Sidebar card with scrollable content */
 .sidebar-card {
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Fill the parent container */
+  max-height: calc(100vh - 120px); /* Match parent max height */
+}
+
+/* Sidebar header (non-scrollable) */
+.sidebar-header {
+  background-color: rgba(0, 0, 0, 0.03);
+  padding: 12px 15px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+/* Sidebar body (scrollable) */
+.sidebar-body {
+  padding: 15px;
+  overflow-y: auto; /* Make this section scrollable */
+  flex-grow: 1; /* Allow this section to grow */
+}
+
+/* Main column styling (center) - full height, not sticky */
+.travel-plan-main {
+  flex: 0 1 40%;
+  min-width: 300px;
+  max-width: 500px;
+  position: relative; /* Normal positioning */
   display: flex;
   flex-direction: column;
 }
 
-.sidebar-header {
-  background-color: rgba(0, 0, 0, 0.03);
-  padding: 15px;
-  border-radius: 12px 12px 0 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.sidebar-header h5 {
+/* Main content container */
+.main-content-scrollable {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
   margin: 0;
-  font-weight: 600;
-  font-size: 18px;
 }
 
-.sidebar-body {
-  padding: 15px;
-  overflow-y: auto;
-  flex: 1;
-  /* Custom scrollbar */
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.05);
-}
-
-/* Webkit scrollbar styling */
-.sidebar-body::-webkit-scrollbar {
-  width: 6px;
-}
-
-.sidebar-body::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.sidebar-body::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
-
-/* Section styling for main column */
+/* Plan section (center column cards) */
 .plan-section {
   background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin-bottom: 15px;
   overflow: hidden;
 }
 
+/* Plan section header */
 .plan-section-header {
   background-color: rgba(0, 0, 0, 0.03);
   padding: 12px 15px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+/* Consistent header text */
+.sidebar-header h5,
 .plan-section-header h5 {
   margin: 0;
   font-weight: 600;
   font-size: 16px;
 }
 
+/* Plan section body */
 .plan-section-body {
   padding: 15px;
 }
 
-/* Date inputs container */
-.plan-date-inputs {
-  display: flex;
-  gap: 15px;
+/* Make sure list areas in sidebars are scrollable */
+.equipment-list,
+[data-skills-recommendation-target="skillsList"] {
+  max-height: none; /* Remove max height constraint */
 }
 
-.plan-date-field {
-  flex: 1;
-}
-
-/* Styling for selected items (locations, adventures) */
-.selected-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+/* Handle list items in the equipment list */
+.equipment-list .card {
   margin-bottom: 10px;
 }
 
-.results-list {
-  margin-top: 10px;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-/* Buttons container */
-.plan-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 5px;
-  padding: 10px;
-}
-
-/* Equipment list specific styling */
-.equipment-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* Improve form controls */
-.form-control-sm {
-  padding: 6px 10px;
-  font-size: 14px;
-  border-radius: 6px;
-}
-
-.form-label.small {
-  margin-bottom: 5px;
-  font-weight: 500;
-  color: #495057;
-}
-
-/* Badge styling for selected items */
-.badge {
-  font-weight: 500;
-  padding: 6px 10px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border-radius: 20px;
-}
-
-/* Alert styling */
-.alert {
-  padding: 12px;
-  border-radius: 8px;
-}
-
-/* Responsive adaptations */
+/* Responsive styles - adjust for mobile */
 @media (max-width: 1200px) {
   .travel-plan-layout {
     flex-direction: column;
@@ -600,56 +523,18 @@ body:not(.home) {
   .travel-plan-sidebar {
     width: 100%;
     max-width: 100%;
-    height: auto;
-    min-height: 300px;
     position: relative;
     top: 0;
+    max-height: 500px;
   }
 
-  .travel-plan-main {
-    width: 100%;
+  .sidebar-card {
+    max-height: 500px;
   }
 
-  .sidebar-body {
-    max-height: 300px;
-  }
-}
-
-/* When in responsive mode, reorder columns */
-@media (max-width: 1200px) {
-  .travel-plan-layout {
-    display: grid;
-    grid-template-areas:
-      "main"
-      "skills"
-      "equipment";
-  }
-
-  .travel-plan-main {
-    grid-area: main;
-  }
-
-  .travel-plan-skills {
-    grid-area: skills;
-  }
-
-  .travel-plan-equipment {
-    grid-area: equipment;
-  }
-}
-
-/* Print styles */
-@media print {
-  .travel-plan-layout {
-    display: block;
-  }
-
-  .travel-plan-sidebar,
   .travel-plan-main {
     width: 100%;
     max-width: 100%;
-    height: auto;
-    position: relative;
   }
 }
 // end travel plan form partial styles

@@ -15,6 +15,7 @@ export default class extends Controller {
     console.log("Travel plan controller connected");
     this.selectedLocations = new Set();
     this.selectedAdventures = new Set();
+    this.loadAllAdventures();
 
     // Initialize from passed-in values
     if (this.hasLocationsValue && this.locationsValue.length > 0) {
@@ -109,12 +110,16 @@ export default class extends Controller {
     const locationIds = Array.from(this.selectedLocations).join(',');
 
     try {
-      const queryParams = new URLSearchParams();
-      if (locationIds) {
-        queryParams.append('location_ids', locationIds);
+      // If no locations are selected, load all adventures
+      if (!locationIds) {
+        console.log('No locations selected, loading all adventures');
+        return this.loadAllAdventures();
       }
 
-      console.log(`Fetching adventures for locations: ${locationIds || 'none'}`);
+      const queryParams = new URLSearchParams();
+      queryParams.append('location_ids', locationIds);
+
+      console.log(`Fetching adventures for locations: ${locationIds}`);
       const response = await fetch(`/adventures.json?${queryParams}`);
 
       if (!response.ok) {
@@ -527,6 +532,28 @@ export default class extends Controller {
 
     // Dispatch the event
     document.dispatchEvent(event);
+  }
+
+  loadAllAdventures() {
+    console.log("Loading all adventures");
+    fetch('/adventures.json')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch adventures');
+        }
+        return response.json();
+      })
+      .then(adventures => {
+        console.log(`Loaded ${adventures.length} adventures`);
+        this.renderAdventureResults(adventures);
+      })
+      .catch(error => {
+        console.error('Error loading adventures:', error);
+        if (this.hasAdventureResultsTarget) {
+          this.adventureResultsTarget.innerHTML =
+            `<div class="alert alert-danger">Error loading adventures: ${error.message}</div>`;
+        }
+      });
   }
 
   formSubmit(event) {
