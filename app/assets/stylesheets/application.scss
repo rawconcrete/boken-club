@@ -407,55 +407,55 @@ body:not(.home) {
 // end map styles
 
 // start travel plan form partial styles
-/* three-column layout with centered alignment */
+/* Three-column layout with centered alignment */
 .travel-plan-layout {
   display: flex;
-  gap: 15px; /* consistent spacing between columns */
+  gap: 15px; /* Consistent spacing between columns */
   width: 100%;
   height: 100%;
-  justify-content: center; /* center the entire layout */
+  justify-content: center; /* Center the entire layout */
   margin: 0 auto;
-  max-width: 1400px; /* prevent excessive width on large screens */
+  max-width: 1400px; /* Prevent excessive width on large screens */
 }
 
-/* sidebar styling (for both left and right) - made sticky */
+/* Sidebar styling (for both left and right) - made sticky */
 .travel-plan-sidebar {
   width: 30%;
   min-width: 280px;
   max-width: 380px;
   position: sticky;
   top: 20px;
-  align-self: flex-start; /* prevent stretching */
-  max-height: calc(100vh - 120px); /* limit max height */
+  align-self: flex-start; /* Prevent stretching */
+  max-height: calc(100vh - 120px); /* Limit max height */
 }
 
-/* sidebar card with scrollable content */
+/* Sidebar card with scrollable content */
 .sidebar-card {
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  height: 100%; /* fill the parent container */
-  max-height: calc(100vh - 120px); /* match parent max height */
+  height: 100%; /* Fill the parent container */
+  max-height: calc(100vh - 120px); /* Match parent max height */
 }
 
-/* sidebar header (non-scrollable) */
+/* Sidebar header (non-scrollable) */
 .sidebar-header {
   background-color: rgba(0, 0, 0, 0.03);
   padding: 12px 15px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  flex-shrink: 0; /* prevent header from shrinking */
+  flex-shrink: 0; /* Prevent header from shrinking */
 }
 
-/* sidebar body (scrollable) */
+/* Sidebar body (scrollable) */
 .sidebar-body {
   padding: 15px;
-  overflow-y: auto; /* make this section scrollable */
-  flex-grow: 1; /* allow this section to grow */
+  overflow-y: auto; /* Make this section scrollable */
+  flex-grow: 1; /* Allow this section to grow */
 }
 
-/* main column styling (center) - full height, not sticky */
+/* Main column styling (center) - full height, not sticky */
 .travel-plan-main {
   flex: 0 1 40%;
   min-width: 300px;
@@ -465,7 +465,7 @@ body:not(.home) {
   flex-direction: column;
 }
 
-/* main content container */
+/* Main content container */
 .main-content-scrollable {
   display: flex;
   flex-direction: column;
@@ -474,7 +474,7 @@ body:not(.home) {
   margin: 0;
 }
 
-/* plan section (center column cards) */
+/* Plan section (center column cards) */
 .plan-section {
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 12px;
@@ -483,14 +483,14 @@ body:not(.home) {
   overflow: hidden;
 }
 
-/* plan section header */
+/* Plan section header */
 .plan-section-header {
   background-color: rgba(0, 0, 0, 0.03);
   padding: 12px 15px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-/* consistent header text */
+/* Consistent header text */
 .sidebar-header h5,
 .plan-section-header h5 {
   margin: 0;
@@ -498,23 +498,143 @@ body:not(.home) {
   font-size: 16px;
 }
 
-/* plan section body */
+/* Plan section body */
 .plan-section-body {
   padding: 15px;
 }
 
-/* make sure list areas in sidebars are scrollable */
-.equipment-list,
-[data-skills-recommendation-target="skillsList"] {
-  max-height: none; /* Remove max height constraint */
+/* Date input section styling */
+.plan-date-inputs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-/* handle list items in the equipment list */
-.equipment-list .card {
+.plan-date-field {
+  flex: 1;
+  min-width: 120px;
+}
+
+/* Selected items styling (locations & adventures) */
+.selected-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
   margin-bottom: 10px;
+  min-height: 32px;
 }
 
-/* responsive styles - adjust for mobile */
+/* Loading indicator styling */
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Results list styling */
+.results-list {
+  max-height: 250px;
+  overflow-y: auto;
+  margin-top: 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Action buttons container */
+.plan-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Highlight effect for new items */
+.new-item {
+  animation: highlight-pulse 2s ease-in-out;
+  position: relative;
+}
+
+/* Pulse highlight animation */
+@keyframes highlight-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+}
+
+/* Notification badges */
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #ffc107;
+  color: #212529;
+  font-size: 10px;
+  padding: 3px 6px;
+  border-radius: 10px;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transform: scale(0);
+  animation: badge-pop 0.3s forwards;
+}
+
+/* Badge pop animation */
+@keyframes badge-pop {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* Remove animation styling */
+.removing {
+  transition: all 0.5s ease-out;
+  opacity: 0.5;
+}
+
+/* Initial guidance styling */
+.initial-guidance {
+  border-left: 4px solid #0d6efd;
+  border-radius: 6px;
+}
+
+.initial-guidance h6 {
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+/* Badge specific styling for new items */
+.new-badge {
+  position: relative;
+  animation: badge-pulse 2s infinite;
+}
+
+@keyframes badge-pulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+/* Loading overlay for form submission */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loading-overlay-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+/* Responsive styles - adjust for mobile */
 @media (max-width: 1200px) {
   .travel-plan-layout {
     flex-direction: column;
@@ -538,3 +658,95 @@ body:not(.home) {
   }
 }
 // end travel plan form partial styles
+// notifications for equipment/skills updates
+/* Highlight effect for new items */
+.new-item {
+  position: relative;
+  animation: highlight-pulse 2s ease-in-out;
+}
+
+/* Pulse highlight animation */
+@keyframes highlight-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+}
+
+/* Notification badges */
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #ffc107;
+  color: #212529;
+  font-size: 10px;
+  padding: 3px 6px;
+  border-radius: 10px;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transform: scale(0);
+  animation: badge-pop 0.3s forwards;
+}
+
+/* Badge pop animation */
+@keyframes badge-pop {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* Specific styling for loading indicators and notifications in travel plan form */
+.sidebar-body .loading-indicator,
+.sidebar-body .notification-alert {
+  margin-bottom: 15px;
+}
+
+/* Skills and equipment list items transition */
+.equipment-list .card,
+[data-skills-recommendation-target="skillsList"] .card {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Specific styling for the new badge */
+.new-badge {
+  animation: badge-pulse 2s infinite;
+}
+
+@keyframes badge-pulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+// end new notifications for equipment/skills updates
+
+// for adventure button on travel plan create and edit
+// Adventure button styling
+.add-adventure-btn {
+  padding: 3px 8px;
+  font-size: 0.75rem;
+  height: 28px;
+  width: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+
+  i {
+    font-size: 0.7rem;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Make sure the list items are properly aligned
+.list-group-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+}
+// end adventure button ont ravel plan create and edit
