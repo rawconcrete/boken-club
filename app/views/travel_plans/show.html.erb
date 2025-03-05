@@ -1,5 +1,5 @@
 <%# app/views/travel_plans/show.html.erb %>
-<div class="container mx-auto px-4" data-controller="equipment-status">
+<div class="container mx-auto px-4 travel-plan-show" data-controller="equipment-status">
   <!-- Title and Buttons Row -->
   <div class="flex justify-between items-center mb-6 no-print">
     <h1 class="text-2xl font-bold text-white"><%= @travel_plan.title %></h1>
@@ -172,3 +172,4 @@
     </div>
   </div>
 </div>
+<%= javascript_import_module_tag "travel_plans_show" %>

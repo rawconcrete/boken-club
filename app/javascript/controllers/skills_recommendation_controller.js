@@ -59,6 +59,18 @@ export default class extends Controller {
     this.skillsListTarget.innerHTML = initialGuidance;
   }
 
+  // Helper method for showing toast notifications
+  showToast(message, type = 'success', options = {}) {
+    if (window.toastManager) {
+      return window.toastManager.show(message, { type, ...options });
+    } else if (window.showToast) {
+      return window.showToast(message, type, options);
+    } else {
+      console.warn('Toast manager not available, showing alert instead');
+      alert(message);
+    }
+  }
+
   updateSkills(event) {
     console.log("Skills update event received:", event.detail);
 
@@ -196,6 +208,7 @@ export default class extends Controller {
             <p class="small mb-0">Try refreshing the page or selecting different locations/adventures.</p>
           </div>
         `;
+        this.showToast(`Error loading skill recommendations: ${error.message}`, 'danger');
       });
   }
 
@@ -246,26 +259,17 @@ export default class extends Controller {
       return acc;
     }, {});
 
-    // generate notification for new skills
-    let notificationHtml = '';
+    // Show toast notification for new skills instead of embedding in HTML
     if (hasNewSkills && this.showSkillNotification) {
-      notificationHtml = `
-        <div class="notification-alert alert alert-success alert-dismissible fade show mb-3">
-          <div class="d-flex align-items-center">
-            <div class="me-2">
-              <i class="fas fa-info-circle"></i>
-            </div>
-            <div>
-              <strong>New skills found!</strong> ${newSkillIds.size} new skills recommended based on your selection.
-            </div>
-          </div>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      `;
+      this.showToast(
+        `${newSkillIds.size} new skills recommended based on your selection.`,
+        'success',
+        { title: 'New Skills Found!' }
+      );
     }
 
-    // build HTML
-    let html = notificationHtml;
+    // Start HTML without notification block
+    let html = '';
 
     Object.entries(skillsByCategory).forEach(([category, categorySkills]) => {
       html += `
@@ -356,15 +360,6 @@ export default class extends Controller {
 
       this.skillsListTarget.addEventListener('mouseover', clearHighlight);
       this.skillsListTarget.addEventListener('scroll', clearHighlight);
-
-      // auto-dismiss notification after a few seconds
-      setTimeout(() => {
-        const notification = this.skillsListTarget.querySelector('.notification-alert');
-        if (notification) {
-          notification.classList.remove('show');
-          setTimeout(() => notification.remove(), 300);
-        }
-      }, 5000);
     }
 
     // reset notification flag after rendering
@@ -417,8 +412,8 @@ export default class extends Controller {
         .then(data => {
           if (data.success) {
             this.toggleSkillSelection(skillId);
-            // show success message
-            this.showToast('Skill removed from travel plan.');
+            // show success message using toast manager
+            this.showToast('Skill removed from travel plan.', 'info');
           } else {
             console.error('Error removing skill:', data.error);
             this.showToast('Error removing skill.', 'danger');
@@ -446,8 +441,8 @@ export default class extends Controller {
         .then(data => {
           if (data.success) {
             this.toggleSkillSelection(skillId);
-            // show success message
-            this.showToast('Skill added to travel plan!');
+            // show success message using toast manager
+            this.showToast('Skill added to travel plan!', 'success');
           } else {
             console.error('Error adding skill:', data.errors);
             this.showToast('Error adding skill.', 'danger');
@@ -475,9 +470,13 @@ export default class extends Controller {
       if (this.selectedSkillIdsValue.includes(skillId)) {
         // removing skill - flash red
         card.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
+        // Show toast notification
+        this.showToast('Skill removed from plan', 'info');
       } else {
         // adding skill - flash green
         card.style.backgroundColor = 'rgba(40, 167, 69, 0.1)';
+        // Show toast notification
+        this.showToast('Skill added to plan', 'success');
       }
 
       // revert after the flash effect
@@ -552,46 +551,5 @@ export default class extends Controller {
 
   getCSRFToken() {
     return document.querySelector('meta[name="csrf-token"]')?.content;
-  }
-
-  showToast(message, type = 'success') {
-    // create toast container if it doesn't exist
-    let toastContainer = document.getElementById('toast-container');
-    if (!toastContainer) {
-      toastContainer = document.createElement('div');
-      toastContainer.id = 'toast-container';
-      toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
-      toastContainer.style.zIndex = '11';
-      document.body.appendChild(toastContainer);
-    }
-
-    // create toast
-    const toastId = `toast-${Date.now()}`;
-    const toast = document.createElement('div');
-    toast.className = `toast align-items-center text-white bg-${type}`;
-    toast.role = 'alert';
-    toast.ariaLive = 'assertive';
-    toast.ariaAtomic = 'true';
-    toast.id = toastId;
-
-    toast.innerHTML = `
-      <div class="d-flex">
-        <div class="toast-body">
-          ${message}
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-    `;
-
-    toastContainer.appendChild(toast);
-
-    // initialize and show toast using DOM API
-    toast.classList.add('show');
-
-    // remove toast after timeout
-    setTimeout(() => {
-      toast.classList.remove('show');
-      setTimeout(() => toast.remove(), 500);
-    }, 3000);
   }
 }

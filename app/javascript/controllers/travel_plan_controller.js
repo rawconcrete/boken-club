@@ -1,4 +1,22 @@
 // app/javascript/controllers/travel_plan_controller.js
+// toast timing
+// if you want to add delays
+// code like this
+// this.showToast(
+//   "Message here",
+//   'success',
+//   { delay: 10000 } // 10 seconds
+// );
+// or for example
+// For errors
+// window.toastManager.error('Error message', {
+//   delay: 12000 // 12 seconds
+// });
+
+// // For success messages
+// window.toastManager.success('Success message', {
+//   delay: 8000 // 8 seconds
+// });
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
@@ -64,6 +82,18 @@ export default class extends Controller {
     this.notifyLocationAdventureChange();
   }
 
+  // Helper method for showing toast notifications
+  showToast(message, type = 'success', options = {}) {
+    if (window.toastManager) {
+      return window.toastManager.show(message, { type, ...options });
+    } else if (window.showToast) {
+      return window.showToast(message, type, options);
+    } else {
+      console.warn('Toast manager not available, showing alert instead');
+      alert(message);
+    }
+  }
+
   // helper method to show default message when no selections are made
   showDefaultEquipmentMessage() {
     if (this.hasEquipmentListTarget) {
@@ -110,6 +140,7 @@ export default class extends Controller {
       this.addLocationTag(location);
     } catch (error) {
       console.error('Error fetching location:', error);
+      this.showToast(`Error fetching location: ${error.message}`, 'danger');
     }
   }
 
@@ -127,6 +158,7 @@ export default class extends Controller {
       this.addAdventureTag(adventure);
     } catch (error) {
       console.error('Error fetching adventure:', error);
+      this.showToast(`Error fetching adventure: ${error.message}`, 'danger');
     }
   }
 
@@ -158,6 +190,7 @@ export default class extends Controller {
       if (this.hasAdventureResultsTarget) {
         this.adventureResultsTarget.innerHTML = `<div class="alert alert-danger">Error loading adventures: ${error.message}</div>`;
       }
+      this.showToast(`Error loading adventures: ${error.message}`, 'danger');
     }
   }
 
@@ -187,6 +220,7 @@ export default class extends Controller {
     } catch (error) {
       console.error('Error searching locations:', error);
       this.locationResultsTarget.innerHTML = `<div class="alert alert-danger">Error searching locations: ${error.message}</div>`;
+      this.showToast(`Error searching locations: ${error.message}`, 'danger');
     }
   }
 
@@ -266,6 +300,7 @@ export default class extends Controller {
       this.updateAvailableAdventures();
     } catch (error) {
       console.error('Error in selectLocation:', error);
+      this.showToast(`Error selecting location: ${error.message}`, 'danger');
     }
   }
 
@@ -286,6 +321,7 @@ export default class extends Controller {
     } catch (error) {
       console.error('Error in selectAdventure:', error);
       console.log('Raw adventure data:', event.currentTarget.dataset.adventure);
+      this.showToast(`Error selecting adventure: ${error.message}`, 'danger');
     }
   }
 
@@ -430,6 +466,7 @@ export default class extends Controller {
         this.equipmentListTarget.innerHTML =
           `<div class="alert alert-danger">Error loading equipment: ${error.message}</div>`;
       }
+      this.showToast(`Error loading equipment: ${error.message}`, 'danger');
     }
   }
 
@@ -463,26 +500,17 @@ export default class extends Controller {
       return acc;
     }, {});
 
-    // generate notification for new equipment
-    let notificationHtml = '';
+    // Show toast notification for new equipment instead of embedding in HTML
     if (hasNewEquipment && this.showEquipmentNotification) {
-      notificationHtml = `
-        <div class="notification-alert alert alert-success alert-dismissible fade show mb-3">
-          <div class="d-flex align-items-center">
-            <div class="me-2">
-              <i class="fas fa-info-circle"></i>
-            </div>
-            <div>
-              <strong>New equipment added!</strong> ${newEquipmentIds.size} new items recommended based on your selection.
-            </div>
-          </div>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      `;
+      this.showToast(
+        `${newEquipmentIds.size} new items recommended based on your selection.`,
+        'success',
+        { title: 'New Equipment Added!' }
+      );
     }
 
-    // generate HTML
-    let html = notificationHtml;
+    // Start HTML without the notification block
+    let html = '';
 
     Object.entries(equipmentByCategory).forEach(([category, items]) => {
       html += `
@@ -590,15 +618,6 @@ export default class extends Controller {
 
       this.equipmentListTarget.addEventListener('mouseover', clearHighlight);
       this.equipmentListTarget.addEventListener('scroll', clearHighlight);
-
-      // auto-dismiss notification after a few seconds
-      setTimeout(() => {
-        const notification = this.equipmentListTarget.querySelector('.notification-alert');
-        if (notification) {
-          notification.classList.remove('show');
-          setTimeout(() => notification.remove(), 300);
-        }
-      }, 5000);
     }
 
     // reset notification flag after rendering
@@ -774,6 +793,7 @@ export default class extends Controller {
           this.adventureResultsTarget.innerHTML =
             `<div class="alert alert-danger">Error loading adventures: ${error.message}</div>`;
         }
+        this.showToast(`Error loading adventures: ${error.message}`, 'danger');
       });
   }
 

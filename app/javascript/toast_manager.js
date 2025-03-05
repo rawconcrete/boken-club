@@ -34,10 +34,11 @@ class ToastManager {
 
   show(message, options = {}) {
     const defaults = {
-      type: 'success', // success, info, warning, danger
+      type: 'success',
       title: '',
       autoHide: true,
-      delay: 5000,
+      delay: 8000, // Increased from 5000 to 8000 (8 seconds)
+      // toast timing
       icon: true,
       animation: true
     };
