@@ -37,7 +37,7 @@ class ToastManager {
       type: 'success',
       title: '',
       autoHide: true,
-      delay: 8000, // Increased from 5000 to 8000 (8 seconds)
+      delay: 10000, // Increased from 5000 to 8000 (8 seconds)
       // toast timing
       icon: true,
       animation: true
