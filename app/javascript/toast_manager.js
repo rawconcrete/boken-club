@@ -3,36 +3,32 @@ class ToastManager {
   constructor() {
     this.containerId = 'toast-container';
     this.zIndex = 1050;
-    this.setupContainer();
+    // Wait until DOM is loaded to set up container
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => this.setupContainer());
+    } else {
+      this.setupContainer();
+    }
     this.toasts = [];
   }
 
-  setupContainer() {
-    // Check if container already exists
-    let container = document.getElementById(this.containerId);
-    if (!container) {
-      container = document.createElement('div');
-      container.id = this.containerId;
-      container.className = 'toast-container position-fixed end-0 p-3';
-      container.style.zIndex = this.zIndex;
-      container.style.display = 'flex';
-      container.style.flexDirection = 'column';
-      container.style.gap = '8px';
-      container.style.maxWidth = '350px';
-      container.style.maxHeight = '80vh';
-      container.style.overflowY = 'auto';
-
-      // Position at the bottom-right by default
-      container.style.bottom = '20px';
-      container.style.right = '20px';
-
-      document.body.appendChild(container);
-    }
-
-    this.container = container;
+  // Make sure bootstrap is available
+  ensureBootstrap() {
+    return new Promise((resolve) => {
+      const checkBootstrap = () => {
+        if (window.bootstrap) {
+          resolve(window.bootstrap);
+        } else {
+          setTimeout(checkBootstrap, 50);
+        }
+      };
+      checkBootstrap();
+    });
   }
 
-  show(message, options = {}) {
+  async show(message, options = {}) {
+    // Make sure bootstrap is loaded before showing toast
+    await this.ensureBootstrap();
     const defaults = {
       type: 'success',
       title: '',
