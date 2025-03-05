@@ -1,10 +1,80 @@
 // app/javascript/application.js
-// Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
 import "@hotwired/turbo-rails"
 import "controllers"
 import "@popperjs/core"
 import "bootstrap"
-import toastManager from "../javascript/toast_manager"
+
+// Create toast manager directly in application.js instead of importing
+window.toastManager = {
+  show(message, options = {}) {
+    const { type = 'info', title = '', delay = 5000, autoHide = true } = options;
+
+    // Create toast container if it doesn't exist
+    let toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+      toastContainer = document.createElement('div');
+      toastContainer.id = 'toast-container';
+      toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
+      toastContainer.style.zIndex = '1080';
+      document.body.appendChild(toastContainer);
+    }
+
+    // Create toast element
+    const toastId = `toast-${Date.now()}`;
+    const toast = document.createElement('div');
+    toast.id = toastId;
+    toast.className = `toast show bg-${type} text-white`;
+    toast.role = 'alert';
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+
+    // Toast content
+    toast.innerHTML = `
+      <div class="toast-header bg-${type} text-white">
+        ${title ? `<strong class="me-auto">${title}</strong>` : '<strong class="me-auto">Notification</strong>'}
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        ${message}
+      </div>
+    `;
+
+    // Add toast to container
+    toastContainer.appendChild(toast);
+
+    // Auto-hide after delay
+    if (autoHide) {
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 500);
+      }, delay);
+    }
+
+    return {
+      instance: toast,
+      hide() {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 500);
+      }
+    };
+  },
+
+  success(message, options = {}) {
+    return this.show(message, { ...options, type: 'success' });
+  },
+
+  error(message, options = {}) {
+    return this.show(message, { ...options, type: 'danger' });
+  },
+
+  warning(message, options = {}) {
+    return this.show(message, { ...options, type: 'warning' });
+  },
+
+  info(message, options = {}) {
+    return this.show(message, { ...options, type: 'info' });
+  }
+};
 
 // Make toast manager available globally for direct access from controllers
 window.showToast = function(message, type = 'info', options = {}) {
