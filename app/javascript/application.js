@@ -7,24 +7,24 @@ import "bootstrap"
 
 // start travel plan form partial, to populate adventures
 document.addEventListener('turbo:load', function() {
-  // Adventure filter functionality
+  // adventure filter functionality
   const adventureFilter = document.getElementById('adventure-filter');
   if (adventureFilter) {
     console.log("Adventure filter found");
 
-    // Check if adventures are already loaded
+    // check if adventures are already loaded
     const checkAndLoadAdventures = function() {
       const adventureResults = document.querySelector('[data-travel-plan-target="adventureResults"]');
       if (adventureResults && adventureResults.children.length === 0) {
         console.log("No adventures found, attempting to load them");
 
-        // Make direct fetch request for adventures
+        // make direct fetch request for adventures
         fetch('/adventures.json')
           .then(response => response.json())
           .then(adventures => {
             console.log(`Loaded ${adventures.length} adventures directly`);
 
-            // Manually render adventures
+            // manually render adventures
             if (adventures.length > 0) {
               const adventureHtml = adventures.map(adventure => {
                 const adventureData = JSON.stringify(adventure).replace(/"/g, '&quot;');
@@ -52,10 +52,10 @@ document.addEventListener('turbo:load', function() {
       }
     };
 
-    // Run the check immediately
+    // run the check immediately
     setTimeout(checkAndLoadAdventures, 500);
 
-    // Set up the filter functionality
+    // set up the filter functionality
     adventureFilter.addEventListener('input', function() {
       const filterValue = this.value.toLowerCase();
       const adventureItems = document.querySelectorAll('[data-travel-plan-target="adventureResults"] .list-group-item');

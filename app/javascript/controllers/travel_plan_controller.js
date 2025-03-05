@@ -17,11 +17,11 @@ export default class extends Controller {
     this.selectedAdventures = new Set();
     this.loadAllAdventures();
 
-    // Initialize tracking for previously seen equipment
+    // initialize tracking for previously seen equipment
     this.previousEquipmentIds = new Set();
     this.showEquipmentNotification = false;
 
-    // Initialize from passed-in values
+    // initialize from passed-in values
     if (this.hasLocationsValue && this.locationsValue.length > 0) {
       console.log("Initializing with locations:", this.locationsValue);
       this.locationsValue.forEach(location => {
@@ -40,31 +40,31 @@ export default class extends Controller {
       });
     }
 
-    // Add event listener for equipment updates
+    // add event listener for equipment updates
     document.addEventListener('equipment-update', () => {
       console.log("Manual equipment update triggered");
       this.updateEquipment();
     });
 
-    // Also check for URL parameters for location_id and adventure_id
+    // also check for URL parameters for location_id and adventure_id
     this.loadInitialSelections();
 
-    // Initialize available adventures
+    // initialize available adventures
     this.updateAvailableAdventures();
 
-    // Only show a message if no locations/adventures are selected
+    // only show a message if no locations/adventures are selected
     if (this.selectedLocations.size === 0 && this.selectedAdventures.size === 0) {
       this.showDefaultEquipmentMessage();
     } else {
-      // Update equipment if we have selections
+      // update equipment if we have selections
       this.updateEquipment();
     }
 
-    // Notify skills controller about current selections
+    // notify skills controller about current selections
     this.notifyLocationAdventureChange();
   }
 
-  // Helper method to show default message when no selections are made
+  // helper method to show default message when no selections are made
   showDefaultEquipmentMessage() {
     if (this.hasEquipmentListTarget) {
       this.equipmentListTarget.innerHTML = `
@@ -75,7 +75,7 @@ export default class extends Controller {
     }
   }
 
-  // Helper method to properly handle ID conversions
+  // helper method to properly handle ID conversions
   convertToId(id) {
     return typeof id === 'string' ? parseInt(id, 10) : id;
   }
@@ -134,7 +134,7 @@ export default class extends Controller {
     const locationIds = Array.from(this.selectedLocations).join(',');
 
     try {
-      // If no locations are selected, load all adventures
+      // if no locations are selected, load all adventures
       if (!locationIds) {
         console.log('No locations selected, loading all adventures');
         return this.loadAllAdventures();
@@ -202,7 +202,7 @@ export default class extends Controller {
     }
 
     this.locationResultsTarget.innerHTML = locations.map(location => {
-      // Safely encode the location data
+      // safely encode the location data
       const locationData = JSON.stringify(location).replace(/"/g, '&quot;');
 
       return `
@@ -226,7 +226,7 @@ export default class extends Controller {
     }
 
     this.adventureResultsTarget.innerHTML = adventures.map(adventure => {
-      // Safely encode the adventure data
+      // safely encode the adventure data
       const adventureData = JSON.stringify(adventure).replace(/"/g, '&quot;');
 
       return `
@@ -294,7 +294,15 @@ export default class extends Controller {
     const adventureIds = Array.from(this.selectedAdventures).join(',');
     const startDate = this.hasStartDateTarget ? this.startDateTarget.value : null;
 
-    // Log variables to help with debugging
+    // flag to show notification about new items
+    this.showEquipmentNotification = true;
+
+    // if no locations or adventures selected, show default message
+    if (!locationIds && !adventureIds) {
+      this.showDefaultEquipmentMessage();
+      return;
+    }
+
     console.log('Updating equipment with:', {
       locationIds,
       adventureIds,
@@ -303,17 +311,8 @@ export default class extends Controller {
       adventureCount: this.selectedAdventures.size
     });
 
-    // Flag to show notification about new items
-    this.showEquipmentNotification = true;
-
-    // If no locations or adventures selected, show default message
-    if (!locationIds && !adventureIds) {
-      this.showDefaultEquipmentMessage();
-      return;
-    }
-
     try {
-      // Show loading spinner
+      // show loading spinner
       if (this.hasEquipmentListTarget) {
         this.equipmentListTarget.innerHTML = `
           <div class="loading-indicator alert alert-info">
@@ -339,17 +338,89 @@ export default class extends Controller {
       console.log('Fetching equipment from:', url);
 
       const response = await fetch(url);
-
-      // Log response status to help with debugging
-      console.log('Response status:', response.status, response.statusText);
-
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.error('Error response:', response.status, response.statusText);
+        throw new Error('Failed to fetch equipment');
       }
 
-      const equipment = await response.json();
+      // get the selected locations and adventures to add their names to equipment items
+      const selectedLocationsArray = [];
+      const selectedAdventuresArray = [];
 
-      // Add a small delay to show the loading state for better UX
+      // get location names
+      if (locationIds) {
+        try {
+          const locResponse = await fetch(`/locations.json?ids=${locationIds}`);
+          if (locResponse.ok) {
+            const locations = await locResponse.json();
+            locations.forEach(loc => {
+              selectedLocationsArray.push({
+                id: loc.id,
+                name: loc.name
+              });
+            });
+          }
+        } catch (e) {
+          console.error('Error fetching location names:', e);
+        }
+      }
+
+      // get adventure names
+      if (adventureIds) {
+        try {
+          const advResponse = await fetch(`/adventures.json?ids=${adventureIds}`);
+          if (advResponse.ok) {
+            const adventures = await advResponse.json();
+            adventures.forEach(adv => {
+              selectedAdventuresArray.push({
+                id: adv.id,
+                name: adv.name
+              });
+            });
+          }
+        } catch (e) {
+          console.error('Error fetching adventure names:', e);
+        }
+      }
+
+      // get the raw equipment
+      let equipment = await response.json();
+
+      // enhance equipment with location and adventure names
+      equipment = equipment.map(item => {
+        const enhancedItem = {...item};
+
+        // attach names for each source type
+        if (item.sources) {
+          if (item.sources.includes('Location')) {
+            // find the location that recommends this equipment
+            const location = selectedLocationsArray.find(loc => {
+              // this is a simplification - ideally the API would tell us which location
+              return true; // for now, we'll just use the first selected location
+            });
+            if (location) {
+              enhancedItem.location_name = location.name;
+            }
+          }
+
+          if (item.sources.includes('Adventure')) {
+            // find the adventure that recommends this equipment
+            const adventure = selectedAdventuresArray.find(adv => {
+              // this is a simplification - ideally the API would tell us which adventure
+              return true; // for now, we'll just use the first selected adventure
+            });
+            if (adventure) {
+              enhancedItem.adventure_name = adventure.name;
+            }
+          }
+        }
+
+        return enhancedItem;
+      });
+
+      console.log('Enhanced equipment:', equipment);
+
+      // add a small delay to show the loading state for better UX
       setTimeout(() => {
         this.renderEquipmentList(equipment);
       }, 1200);
@@ -375,15 +446,15 @@ export default class extends Controller {
       return;
     }
 
-    // Check for new equipment items
+    // check for new equipment items
     const currentEquipmentIds = new Set(equipment.map(item => item.id));
     const newEquipmentIds = new Set([...currentEquipmentIds].filter(id => !this.previousEquipmentIds.has(id)));
     const hasNewEquipment = newEquipmentIds.size > 0 && this.previousEquipmentIds.size > 0;
 
-    // Update the tracking set
+    // update the tracking set
     this.previousEquipmentIds = currentEquipmentIds;
 
-    // Group equipment by category
+    // group equipment by category
     const equipmentByCategory = equipment.reduce((acc, item) => {
       if (!acc[item.category]) {
         acc[item.category] = [];
@@ -392,7 +463,7 @@ export default class extends Controller {
       return acc;
     }, {});
 
-    // Generate notification for new equipment
+    // generate notification for new equipment
     let notificationHtml = '';
     if (hasNewEquipment && this.showEquipmentNotification) {
       notificationHtml = `
@@ -410,7 +481,7 @@ export default class extends Controller {
       `;
     }
 
-    // Generate HTML
+    // generate HTML
     let html = notificationHtml;
 
     Object.entries(equipmentByCategory).forEach(([category, items]) => {
@@ -425,12 +496,12 @@ export default class extends Controller {
         const isEssential = item.is_essential === true;
         const isNew = newEquipmentIds.has(item.id) && this.showEquipmentNotification;
 
-        // Different styling based on whether user already owns the item
+        // different styling based on whether user already owns the item
         const cardClasses = item.user_owned
           ? 'border-success bg-success bg-opacity-10'
           : 'border-primary';
 
-        // Add highlight class for new items
+        // add highlight class for new items
         const highlightClass = isNew ? 'new-item border-warning' : '';
 
         const ownedBadge = item.user_owned
@@ -445,14 +516,14 @@ export default class extends Controller {
           ? '<span class="badge bg-warning text-dark ms-2 new-badge">New</span>'
           : '';
 
-        // Get the source details for display
+        // get the source details for display
         let sourceBadges = '';
         if (item.sources && item.sources.length > 0) {
           sourceBadges = item.sources.map(source => {
             let badgeClass = 'bg-secondary';
             let sourceText = source;
 
-            // If it's from a specific adventure or location
+            // if it's from a specific adventure or location
             if (source === 'Adventure' && item.adventure_name) {
               sourceText = this.getShortName(item.adventure_name);
               badgeClass = 'bg-primary';
@@ -503,7 +574,7 @@ export default class extends Controller {
 
     this.equipmentListTarget.innerHTML = html;
 
-    // Add event listener to clear highlight on scroll or hover
+    // add event listener to clear highlight on scroll or hover
     if (hasNewEquipment) {
       const newItems = this.equipmentListTarget.querySelectorAll('.new-item');
       const clearHighlight = () => {
@@ -512,7 +583,7 @@ export default class extends Controller {
           const badge = item.querySelector('.notification-badge');
           if (badge) badge.remove();
         });
-        // Remove the event listeners after first trigger
+        // remove the event listeners after first trigger
         this.equipmentListTarget.removeEventListener('mouseover', clearHighlight);
         this.equipmentListTarget.removeEventListener('scroll', clearHighlight);
       };
@@ -520,7 +591,7 @@ export default class extends Controller {
       this.equipmentListTarget.addEventListener('mouseover', clearHighlight);
       this.equipmentListTarget.addEventListener('scroll', clearHighlight);
 
-      // Auto-dismiss notification after a few seconds
+      // auto-dismiss notification after a few seconds
       setTimeout(() => {
         const notification = this.equipmentListTarget.querySelector('.notification-alert');
         if (notification) {
@@ -530,11 +601,11 @@ export default class extends Controller {
       }, 5000);
     }
 
-    // Reset notification flag after rendering
+    // reset notification flag after rendering
     this.showEquipmentNotification = false;
   }
 
-  // Helper to convert a full name to a short version (first 1-2 words)
+  // helper to convert a full name to a short version (first 1-2 words)
   getShortName(fullName) {
     if (!fullName) return '';
 
@@ -542,7 +613,7 @@ export default class extends Controller {
     if (words.length === 1) return words[0];
     if (words.length === 2) return `${words[0]} ${words[1]}`;
 
-    // For longer names, check if first word is very short (like "Mt.")
+    // for longer names, check if first word is very short (like "Mt.")
     if (words[0].length <= 2 && words.length >= 3) {
       return `${words[0]} ${words[1]} ${words[2]}`;
     }
@@ -585,15 +656,15 @@ export default class extends Controller {
       </div>
     `);
 
-    // Call updateEquipment after DOM is updated
+    // call updateEquipment after DOM is updated
     setTimeout(() => this.updateEquipment(), 50);
 
-    // Updated for skills recommendation
+    // updated for skills recommendation
     this.notifyLocationAdventureChange();
   }
 
   addAdventureTag(adventure) {
-    // Skip if adventure is null, undefined, or doesn't have an id
+    // skip if adventure is null, undefined, or doesn't have an id
     if (!adventure || !adventure.id || !adventure.name) {
       console.log('Skipping invalid adventure:', adventure);
       return;
@@ -624,10 +695,10 @@ export default class extends Controller {
       </div>
     `);
 
-    // Call updateEquipment after DOM is updated
+    // call updateEquipment after DOM is updated
     setTimeout(() => this.updateEquipment(), 50);
 
-    // Update for skills recs
+    // update for skills recs
     this.notifyLocationAdventureChange();
   }
 
@@ -637,20 +708,20 @@ export default class extends Controller {
     console.log('ℹ️ REMOVING LOCATION:', locationId);
     console.log('📋 Current locations BEFORE:', Array.from(this.selectedLocations));
 
-    // Delete as the same type as was added
+    // delete as the same type as was added
     this.selectedLocations.delete(locationId);
 
-    // Log after removal to verify
+    // log after removal to verify
     console.log('📋 Current locations AFTER:', Array.from(this.selectedLocations));
 
     event.currentTarget.closest('.badge').remove();
 
-    // Force refresh of both adventures and equipment
+    // force refresh of both adventures and equipment
     console.log('🔄 Forcing full refresh...');
     this.updateAvailableAdventures();
     setTimeout(() => this.updateEquipment(), 100);
 
-    // Update for skills recs
+    // update for skills recs
     this.notifyLocationAdventureChange();
   }
 
@@ -660,10 +731,10 @@ export default class extends Controller {
     this.selectedAdventures.delete(adventureId);
     event.currentTarget.closest('.badge').remove();
 
-    // Call updateEquipment after DOM is updated
+    // call updateEquipment after DOM is updated
     setTimeout(() => this.updateEquipment(), 50);
 
-    // Update for skills recs
+    // update for skills recs
     this.notifyLocationAdventureChange();
   }
 
@@ -672,7 +743,7 @@ export default class extends Controller {
     console.log("Location IDs:", Array.from(this.selectedLocations));
     console.log("Adventure IDs:", Array.from(this.selectedAdventures));
 
-    // Create an event to notify other controllers about the change
+    // create an event to notify other controllers about the change
     const event = new CustomEvent('locations-adventures-changed', {
       detail: {
         locationIds: Array.from(this.selectedLocations),
@@ -680,7 +751,7 @@ export default class extends Controller {
       }
     });
 
-    // Dispatch the event
+    // dispatch the event
     document.dispatchEvent(event);
   }
 
@@ -709,46 +780,51 @@ export default class extends Controller {
   formSubmit(event) {
     console.log("Form submit detected");
 
-    // Don't prevent default event behavior unless there's a specific reason
-    // event.preventDefault(); // Remove this if it exists
-
-    // Get all skill inputs
+    // get all skill inputs
     const skillInputs = document.querySelectorAll('input[name="travel_plan[skill_ids][]"]');
     console.log(`Found ${skillInputs.length} skill ID inputs`);
 
-    // Log their values for debugging
+    // log their values
     if (skillInputs.length > 0) {
       const skillIds = Array.from(skillInputs).map(input => input.value);
       console.log("Skill IDs being submitted:", skillIds);
     } else {
       console.warn("No skill IDs found in the form submission");
 
-      // Get selected skill IDs from skills recommendation controller
+      // emergency check - see if we can find skill IDs from the skills recommendation controller
       const skillsController = this.application.getControllerForElementAndIdentifier(
         document.querySelector('[data-controller="skills-recommendation"]'),
         'skills-recommendation'
       );
 
-      if (skillsController && skillsController.selectedSkillIdsValue && skillsController.selectedSkillIdsValue.length > 0) {
+      if (skillsController) {
         console.log("Found skills recommendation controller");
         console.log("Selected skill IDs:", skillsController.selectedSkillIdsValue);
 
-        // Add hidden inputs for the selected skills
-        const formElement = this.element.querySelector('form');
-        if (formElement) {
+        // emergency fix - manually add the hidden inputs if they're missing
+        if (skillsController.selectedSkillIdsValue && skillsController.selectedSkillIdsValue.length > 0) {
+          console.log("Adding missing skill IDs to the form");
+
+          // get or create container
+          let container = document.getElementById('selected-skills-container');
+          if (!container) {
+            container = document.createElement('div');
+            container.id = 'selected-skills-container';
+            document.querySelector('form').appendChild(container);
+          }
+
+          // add inputs
           skillsController.selectedSkillIdsValue.forEach(skillId => {
             const input = document.createElement('input');
             input.type = 'hidden';
             input.name = 'travel_plan[skill_ids][]';
             input.value = skillId;
-            formElement.appendChild(input);
+            container.appendChild(input);
           });
-          console.log("Added missing skill IDs to the form");
+
+          console.log("Added skill inputs. Now have:", document.querySelectorAll('input[name="travel_plan[skill_ids][]"]').length);
         }
       }
     }
-
-    // Continue with form submission (the default behavior)
-    return true;
   }
 }

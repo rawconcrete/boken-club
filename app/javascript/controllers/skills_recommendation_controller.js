@@ -11,32 +11,32 @@ export default class extends Controller {
   connect() {
     console.log("Skills recommendation controller connected");
 
-    // Initialize selectedSkillIds if not set
+    // initialize selectedSkillIds if not set
     if (!this.hasSelectedSkillIdsValue) {
       this.selectedSkillIdsValue = [];
     } else {
-      // Convert string IDs to numbers for consistency
+      // convert string IDs to numbers for consistency
       this.selectedSkillIdsValue = this.selectedSkillIdsValue.map(id => Number(id));
     }
 
-    // Track previously seen skills to detect new additions
+    // track previously seen skills to detect new additions
     this.previousSkillIds = new Set(this.selectedSkillIdsValue);
     this.showSkillNotification = false;
-    this.helpTipShown = false; // Track if help tip has been shown yet
+    this.helpTipShown = false; // track if help tip has been shown yet
 
     console.log("Travel plan ID:", this.travelPlanIdValue);
     console.log("Initially selected skills:", this.selectedSkillIdsValue);
 
-    // Store for later reference
+    // store for later reference
     this.lastReceivedSkills = [];
 
-    // Listen for location or adventure changes from the travel plan controller
+    // listen for location or adventure changes from the travel plan controller
     document.addEventListener('locations-adventures-changed', this.updateSkills.bind(this));
 
-    // Render initial input fields for selected skills
+    // render initial input fields for selected skills
     this.updateHiddenInputs();
 
-    // Set initial state
+    // set initial state
     let initialGuidance = '';
 
     if (this.selectedSkillIdsValue.length > 0) {
@@ -51,8 +51,7 @@ export default class extends Controller {
       initialGuidance = `
         <div class="alert alert-info">
           <h6><i class="fas fa-lightbulb me-2"></i>Skills Recommendations</h6>
-          <p>Select locations and adventures to see what skills you might want to learn for your trip.</p>
-          <p class="mb-0"><small>We'll suggest skills based on your selected activities and destinations.</small></p>
+          <p class="mb-0">Select locations and adventures to see what skills you might want to learn for your trip.</p>
         </div>
       `;
     }
@@ -63,13 +62,13 @@ export default class extends Controller {
   updateSkills(event) {
     console.log("Skills update event received:", event.detail);
 
-    // Store the event detail for potential re-renders
+    // store the event detail for potential re-renders
     this.lastDetail = event.detail;
 
-    // Get location and adventure IDs from the event
+    // get location and adventure IDs from the event
     const { locationIds, adventureIds } = event.detail;
 
-    // Don't make the request if there are no locations or adventures
+    // don't make the request if there are no locations or adventures
     if (!locationIds.length && !adventureIds.length) {
       console.log("No locations or adventures selected, showing default message");
 
@@ -86,8 +85,7 @@ export default class extends Controller {
         initialGuidance = `
           <div class="alert alert-info">
             <h6><i class="fas fa-lightbulb me-2"></i>Skills Recommendations</h6>
-            <p>Select locations and adventures to see what skills you might want to learn for your trip.</p>
-            <p class="mb-0"><small>We'll suggest skills based on your selected activities and destinations.</small></p>
+            <p class="mb-0">Select locations and adventures to see what skills you might want to learn for your trip.</p>
           </div>
         `;
       }
@@ -96,7 +94,7 @@ export default class extends Controller {
       return;
     }
 
-    // Create params for the API request
+    // create params for the API request
     const params = new URLSearchParams();
     if (locationIds.length) params.append('location_ids', locationIds.join(','));
     if (adventureIds.length) params.append('adventure_ids', adventureIds.join(','));
@@ -104,11 +102,11 @@ export default class extends Controller {
     const url = `/travel_plans/get_recommended_skills?${params}`;
     console.log("Fetching skills from:", url);
 
-    // Set this flag to indicate we want to show notifications for new skills
+    // set this flag to indicate we want to show notifications for new skills
     this.showSkillNotification = true;
-    this.helpTipShown = false; // Reset help tip flag when fetching new skills
+    this.helpTipShown = false; // reset help tip flag when fetching new skills
 
-    // Display loading state
+    // display loading state
     this.skillsListTarget.innerHTML = `
       <div class="loading-indicator alert alert-info">
         <div class="d-flex align-items-center">
@@ -120,7 +118,7 @@ export default class extends Controller {
       </div>
     `;
 
-    // Make the API request
+    // make the API request
     fetch(url)
       .then(response => {
         if (!response.ok) {
@@ -131,17 +129,69 @@ export default class extends Controller {
       })
       .then(skills => {
         console.log("Received skills data:", skills);
-        this.lastReceivedSkills = skills; // Store for later re-renders
+        this.lastReceivedSkills = skills; // store for later re-renders
 
-        // Add a small delay to show the loading state for better UX
-        setTimeout(() => {
-          this.renderSkills(skills);
-        }, 1200);
+        // get the source details for skills
+        const locationIds = this.lastDetail?.locationIds || [];
+        const adventureIds = this.lastDetail?.adventureIds || [];
+
+        // fetch location and adventure names
+        let locationNames = {};
+        let adventureNames = {};
+
+        Promise.all([
+          // fetch location names
+          locationIds.length > 0 ?
+            fetch(`/locations.json?ids=${locationIds.join(',')}`)
+              .then(response => response.ok ? response.json() : [])
+              .then(locations => {
+                locations.forEach(loc => {
+                  locationNames[loc.id] = loc.name;
+                });
+              })
+              .catch(error => console.error('Error fetching location names:', error))
+            : Promise.resolve(),
+
+          // fetch adventure names
+          adventureIds.length > 0 ?
+            fetch(`/adventures.json?ids=${adventureIds.join(',')}`)
+              .then(response => response.ok ? response.json() : [])
+              .then(adventures => {
+                adventures.forEach(adv => {
+                  adventureNames[adv.id] = adv.name;
+                });
+              })
+              .catch(error => console.error('Error fetching adventure names:', error))
+            : Promise.resolve()
+        ]).then(() => {
+          // enhance skills with source information
+          const enhancedSkills = skills.map(skill => {
+            const enhancedSkill = {...skill};
+
+            // for simplicity, assign the first location and adventure if available
+            if (locationIds.length > 0) {
+              const locId = locationIds[0];
+              enhancedSkill.location_name = locationNames[locId];
+            }
+
+            if (adventureIds.length > 0) {
+              const advId = adventureIds[0];
+              enhancedSkill.adventure_name = adventureNames[advId];
+            }
+
+            return enhancedSkill;
+          });
+
+          // add a small delay to show the loading state for better UX
+          setTimeout(() => {
+            this.renderSkills(enhancedSkills);
+          }, 1200);
+        });
       })
       .catch(error => {
         console.error('Error fetching skills:', error);
         this.skillsListTarget.innerHTML = `
-          <div class="alert alert-yellow alert-danger">
+          <div class="alert alert-danger">
             <p>Error loading skill recommendations: ${error.message}</p>
             <p class="small mb-0">Try refreshing the page or selecting different locations/adventures.</p>
           </div>
@@ -150,7 +200,7 @@ export default class extends Controller {
   }
 
   renderSkills(skills) {
-    // Handle empty or null skills
+    // handle empty or null skills
     if (!skills || !skills.length) {
       let message = '';
 
@@ -180,15 +230,15 @@ export default class extends Controller {
       return;
     }
 
-    // Check for new skills
+    // check for new skills
     const currentSkillIds = new Set(skills.map(skill => skill.id));
     const newSkillIds = new Set([...currentSkillIds].filter(id => !this.previousSkillIds.has(id)));
     const hasNewSkills = newSkillIds.size > 0 && this.previousSkillIds.size > 0;
 
-    // Update the tracking set for next time
+    // update the tracking set for next time
     this.previousSkillIds = currentSkillIds;
 
-    // Group skills by category
+    // group skills by category
     const skillsByCategory = skills.reduce((acc, skill) => {
       const category = skill.category || 'Other';
       if (!acc[category]) acc[category] = [];
@@ -196,7 +246,7 @@ export default class extends Controller {
       return acc;
     }, {});
 
-    // Generate notification for new skills
+    // generate notification for new skills
     let notificationHtml = '';
     if (hasNewSkills && this.showSkillNotification) {
       notificationHtml = `
@@ -214,7 +264,7 @@ export default class extends Controller {
       `;
     }
 
-    // Build HTML
+    // build HTML
     let html = notificationHtml;
 
     Object.entries(skillsByCategory).forEach(([category, categorySkills]) => {
@@ -245,7 +295,7 @@ export default class extends Controller {
         const highlightClass = isNew ? 'new-item border-warning' : '';
         const newBadge = isNew ? '<span class="badge bg-warning text-dark ms-2 new-badge">New</span>' : '';
 
-        // Get source badges (if we have location/adventure info)
+        // get source badges (if we have location/adventure info)
         let sourceBadges = '';
         if (skill.adventure_name || skill.location_name) {
           if (skill.adventure_name) {
@@ -290,7 +340,7 @@ export default class extends Controller {
 
     this.skillsListTarget.innerHTML = html;
 
-    // Add event listener to clear highlight on scroll or hover
+    // add event listener to clear highlight on scroll or hover
     if (hasNewSkills) {
       const newItems = this.skillsListTarget.querySelectorAll('.new-item');
       const clearHighlight = () => {
@@ -299,7 +349,7 @@ export default class extends Controller {
           const badge = item.querySelector('.notification-badge');
           if (badge) badge.remove();
         });
-        // Remove the event listeners after first trigger
+        // remove the event listeners after first trigger
         this.skillsListTarget.removeEventListener('mouseover', clearHighlight);
         this.skillsListTarget.removeEventListener('scroll', clearHighlight);
       };
@@ -307,7 +357,7 @@ export default class extends Controller {
       this.skillsListTarget.addEventListener('mouseover', clearHighlight);
       this.skillsListTarget.addEventListener('scroll', clearHighlight);
 
-      // Auto-dismiss notification after a few seconds
+      // auto-dismiss notification after a few seconds
       setTimeout(() => {
         const notification = this.skillsListTarget.querySelector('.notification-alert');
         if (notification) {
@@ -317,11 +367,11 @@ export default class extends Controller {
       }, 5000);
     }
 
-    // Reset notification flag after rendering
+    // reset notification flag after rendering
     this.showSkillNotification = false;
   }
 
-  // Helper to convert a full name to a short version (first 1-2 words)
+  // helper to convert a full name to a short version (first 1-2 words)
   getShortName(fullName) {
     if (!fullName) return '';
 
@@ -329,7 +379,7 @@ export default class extends Controller {
     if (words.length === 1) return words[0];
     if (words.length === 2) return `${words[0]} ${words[1]}`;
 
-    // For longer names, check if first word is very short (like "Mt.")
+    // for longer names, check if first word is very short (like "Mt.")
     if (words[0].length <= 2 && words.length >= 3) {
       return `${words[0]} ${words[1]} ${words[2]}`;
     }
@@ -338,23 +388,23 @@ export default class extends Controller {
   }
 
   toggleSkill(event) {
-    event.preventDefault(); // Prevent form submission
+    event.preventDefault(); // prevent form submission
 
     const button = event.currentTarget;
     const skillId = parseInt(button.dataset.skillId, 10);
 
     console.log(`Toggling skill ${skillId}`);
 
-    // For existing travel plans, make API call to add/remove
+    // for existing travel plans, make API call to add/remove
     if (this.hasTravelPlanIdValue && this.travelPlanIdValue > 0) {
       const isSelected = this.selectedSkillIdsValue.includes(skillId);
 
-      // Set UI loading state
+      // set UI loading state
       button.disabled = true;
       button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
 
       if (isSelected) {
-        // Remove skill
+        // remove skill
         fetch(`/travel_plans/${this.travelPlanIdValue}/remove_skill`, {
           method: 'DELETE',
           headers: {
@@ -367,13 +417,13 @@ export default class extends Controller {
         .then(data => {
           if (data.success) {
             this.toggleSkillSelection(skillId);
-            // Show success message
+            // show success message
             this.showToast('Skill removed from travel plan.');
           } else {
             console.error('Error removing skill:', data.error);
             this.showToast('Error removing skill.', 'danger');
           }
-          // Re-render UI
+          // re-render UI
           this.renderSkills(this.lastReceivedSkills);
         })
         .catch(error => {
@@ -383,7 +433,7 @@ export default class extends Controller {
           button.innerHTML = '<i class="fas fa-check"></i> Selected';
         });
       } else {
-        // Add skill
+        // add skill
         fetch(`/travel_plans/${this.travelPlanIdValue}/add_skill`, {
           method: 'POST',
           headers: {
@@ -396,13 +446,13 @@ export default class extends Controller {
         .then(data => {
           if (data.success) {
             this.toggleSkillSelection(skillId);
-            // Show success message
+            // show success message
             this.showToast('Skill added to travel plan!');
           } else {
             console.error('Error adding skill:', data.errors);
             this.showToast('Error adding skill.', 'danger');
           }
-          // Re-render UI
+          // re-render UI
           this.renderSkills(this.lastReceivedSkills);
         })
         .catch(error => {
@@ -413,31 +463,31 @@ export default class extends Controller {
         });
       }
     } else {
-      // For new travel plans - just toggle the selection locally
+      // for new travel plans - just toggle the selection locally
 
-      // Add a visual feedback for the action
+      // add a visual feedback for the action
       const card = button.closest('.card');
 
-      // Show a quick flash effect
+      // show a quick flash effect
       card.style.transition = 'background-color 0.3s';
       const originalBackground = card.style.backgroundColor;
 
       if (this.selectedSkillIdsValue.includes(skillId)) {
-        // Removing skill - flash red
+        // removing skill - flash red
         card.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
       } else {
-        // Adding skill - flash green
+        // adding skill - flash green
         card.style.backgroundColor = 'rgba(40, 167, 69, 0.1)';
       }
 
-      // Revert after the flash effect
+      // revert after the flash effect
       setTimeout(() => {
         card.style.backgroundColor = originalBackground;
 
-        // Toggle the selection and update UI
+        // toggle the selection and update UI
         this.toggleSkillSelection(skillId);
 
-        // Refresh the UI
+        // refresh the UI
         this.renderSkills(this.lastReceivedSkills);
       }, 300);
     }
@@ -445,29 +495,29 @@ export default class extends Controller {
 
   toggleSkillSelection(skillId) {
     console.log("Before toggle:", this.selectedSkillIdsValue);
-    skillId = Number(skillId); // Ensure it's a number for consistent comparison
+    skillId = Number(skillId); // ensure it's a number for consistent comparison
 
     const currentIds = [...this.selectedSkillIdsValue];
     const index = currentIds.indexOf(skillId);
 
     if (index > -1) {
-      // Remove skill
+      // remove skill
       currentIds.splice(index, 1);
     } else {
-      // Add skill
+      // add skill
       currentIds.push(skillId);
     }
 
     this.selectedSkillIdsValue = currentIds;
 
-    // Update hidden inputs after changing selection
+    // update hidden inputs after changing selection
     this.updateHiddenInputs();
 
     console.log("After toggle:", this.selectedSkillIdsValue);
   }
 
   updateHiddenInputs() {
-    // Get or create the container for selected skills
+    // get or create the container for selected skills
     let container = document.getElementById('selected-skills-container');
     if (!container) {
       container = document.createElement('div');
@@ -476,10 +526,10 @@ export default class extends Controller {
       this.element.appendChild(container);
     }
 
-    // Clear the container
+    // clear the container
     container.innerHTML = '';
 
-    // Add hidden inputs for each selected skill
+    // add hidden inputs for each selected skill
     this.selectedSkillIdsValue.forEach(skillId => {
       const input = document.createElement('input');
       input.type = 'hidden';
@@ -505,7 +555,7 @@ export default class extends Controller {
   }
 
   showToast(message, type = 'success') {
-    // Create toast container if it doesn't exist
+    // create toast container if it doesn't exist
     let toastContainer = document.getElementById('toast-container');
     if (!toastContainer) {
       toastContainer = document.createElement('div');
@@ -515,7 +565,7 @@ export default class extends Controller {
       document.body.appendChild(toastContainer);
     }
 
-    // Create toast
+    // create toast
     const toastId = `toast-${Date.now()}`;
     const toast = document.createElement('div');
     toast.className = `toast align-items-center text-white bg-${type}`;
@@ -535,12 +585,11 @@ export default class extends Controller {
 
     toastContainer.appendChild(toast);
 
-    // Initialize and show toast using DOM API
+    // initialize and show toast using DOM API
     toast.classList.add('show');
 
-    // Remove toast after timeout
+    // remove toast after timeout
     setTimeout(() => {
-      console.log("timer");
       toast.classList.remove('show');
       setTimeout(() => toast.remove(), 500);
     }, 3000);
