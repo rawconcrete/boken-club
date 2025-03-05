@@ -4,6 +4,12 @@ import "@hotwired/turbo-rails"
 import "controllers"
 import "@popperjs/core"
 import "bootstrap"
+import toastManager from "./toast_manager"
+
+// Make toast manager available globally for direct access from controllers
+window.showToast = function(message, type = 'info', options = {}) {
+  return toastManager.show(message, { ...options, type });
+};
 
 // start travel plan form partial, to populate adventures
 document.addEventListener('turbo:load', function() {
