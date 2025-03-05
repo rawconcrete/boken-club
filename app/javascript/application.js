@@ -4,7 +4,7 @@ import "@hotwired/turbo-rails"
 import "controllers"
 import "@popperjs/core"
 import "bootstrap"
-import toastManager from "./toast_manager"
+import toastManager from "../javascript/toast_manager"
 
 // Make toast manager available globally for direct access from controllers
 window.showToast = function(message, type = 'info', options = {}) {
@@ -271,4 +271,4 @@ function setupEquipmentPurchaseHandlers() {
 }
 
 // Export the toast manager so it can be imported directly
-// export { default as toastManager } from './toast_manager';
+export { default as toastManager } from './toast_manager';
