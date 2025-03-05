@@ -85,3 +85,89 @@ document.addEventListener('turbo:load', function() {
   }
 });
 // end travel plan form partial, to populate adventures
+
+// travel plan show js
+// we could add this to a new file: app/javascript/travel_plans_show.js
+
+document.addEventListener('turbo:load', function() {
+  // check if we're on the travel plan show page
+  if (document.querySelector('.travel-plan-show')) {
+
+    // find all existing flash messages and convert them to toasts
+    const flashMessages = document.querySelectorAll('.flash-message, .alert:not(.alert-dismissible)');
+
+    if (flashMessages.length > 0) {
+      flashMessages.forEach(message => {
+        // get message type from class
+        let type = 'info';
+        if (message.classList.contains('alert-success')) type = 'success';
+        if (message.classList.contains('alert-warning')) type = 'warning';
+        if (message.classList.contains('alert-danger')) type = 'danger';
+
+        // get message content
+        const content = message.innerHTML;
+
+        // show as toast
+        if (window.toastManager) {
+          window.toastManager.show(content, { type });
+        }
+
+        // hide the original message
+        message.style.display = 'none';
+      });
+    }
+
+    // check for the "all equipment owned" condition and show a toast
+    const equipmentToBuy = document.querySelector('.equipment-to-buy');
+    if (equipmentToBuy && equipmentToBuy.querySelectorAll('.card').length === 0) {
+      const ownedEquipment = document.querySelector('.equipment-to-pack');
+
+      if (ownedEquipment && ownedEquipment.querySelectorAll('.card').length > 0) {
+        // show a success toast if the user owns all equipment
+        if (window.toastManager) {
+          window.toastManager.success(
+            "You already own all the equipment needed for this trip!",
+            {
+              title: "Great News!",
+              delay: 8000
+            }
+          );
+        }
+      }
+    }
+
+    // setup click handler for purchase buttons
+    document.querySelectorAll('.btn-purchase-equipment').forEach(button => {
+      button.addEventListener('click', function(event) {
+        // get equipment name from data attribute or nearby element
+        const equipmentName = this.getAttribute('data-equipment-name') ||
+                             this.closest('.card').querySelector('.card-title').textContent.trim();
+
+        // show a loading toast while the request is processing
+        let loadingToast;
+        if (window.toastManager) {
+          loadingToast = window.toastManager.show(
+            `Marking ${equipmentName} as purchased...`,
+            {
+              type: 'info',
+              autoHide: false
+            }
+          );
+        }
+
+        // add custom success handling to show toast
+        const originalSuccess = this.dataset.success;
+        if (originalSuccess) {
+          // store original success handler if needed
+        }
+
+        // we'll let the controller handle the actual AJAX call
+        // just make sure to add the needed toast display in the success callback
+      });
+    });
+  }
+});
+
+// also export the toast manager so it can be imported directly
+export { default as toastManager } from './toast_manager';
+// end travel plan show js
