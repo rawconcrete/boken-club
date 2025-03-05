@@ -1,134 +1,190 @@
-<div class="container-fluid px-4"
+<%# app/views/travel_plans/_form.html.erb %>
+<div class="travel-plan-container"
      data-controller="travel-plan"
      data-travel-plan-locations-value="<%= travel_plan.locations.to_json %>"
      data-travel-plan-adventures-value="<%= travel_plan.adventures.reject(&:nil?).to_json %>">
   <%= form_with(model: travel_plan, local: true, data: { action: "submit->travel-plan#formSubmit" }) do |f| %>
-
+    <% if travel_plan.errors.any? %>
+      <div class="alert alert-danger">
+        <h5><%= pluralize(travel_plan.errors.count, "error") %> prevented this travel plan from being saved:</h5>
+        <ul>
+          <% travel_plan.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <!-- Page Title - Instructions -->
+    <%# commented out just comment in if you want it %>
+    <%# <div class="alert alert-info mb-4">
+      <h5><i class="fas fa-map-marked-alt me-2"></i>Create Your Travel Plan</h5>
+      <p class="mb-0">Use this form to plan your adventure. Select locations and activities to get personalized equipment and skill recommendations.</p>
+      <p class="small mb-0 mt-2">Your selections will automatically update the recommendations in real-time.</p> %>
+    <%# </div> %>
+    <%# commented out above %>
     <!-- Layout Grid -->
-    <div class="row">
+    <div class="travel-plan-layout">
       <!-- Left Sidebar - Skills -->
-      <div class="col-md-3">
-        <div class="sticky-sidebar">
-          <div class="card compact-card specific-card"
-               data-controller="skills-recommendation"
-               data-skills-recommendation-travel-plan-id-value="<%= travel_plan.persisted? ? travel_plan.id : 0 %>"
-               data-skills-recommendation-selected-skill-ids-value="<%= travel_plan.skill_ids.to_json %>">
-            <div class="card-header">
-              <h5 class="mb-0">Recommended Skills</h5>
-              <p class="text-muted small mb-0">Click "Add to Plan" to include skills you want to learn or reference for this trip.</p>
+      <div class="travel-plan-sidebar travel-plan-skills">
+        <div class="sidebar-card"
+             data-controller="skills-recommendation"
+             data-skills-recommendation-travel-plan-id-value="<%= travel_plan.persisted? ? travel_plan.id : 0 %>"
+             data-skills-recommendation-selected-skill-ids-value="<%= travel_plan.skill_ids.to_json %>">
+          <div class="sidebar-header">
+            <h5><i class="fas fa-graduation-cap me-2"></i>Recommended Skills</h5>
+            <p class="text-muted small mb-0">Learn these skills before your trip</p>
+          </div>
+          <div class="sidebar-body">
+            <div data-skills-recommendation-target="skillsList">
+              <div class="alert alert-info">
+                <h6><i class="fas fa-lightbulb me-2"></i>Skills Recommendations</h6>
+                <p>Select locations and adventures to see what skills you might want to learn for your trip.</p>
+                <p class="mb-0"><small>We'll suggest skills based on your selected activities and destinations.</small></p>
+              </div>
             </div>
-            <div class="card-body p-2">
-              <div data-skills-recommendation-target="skillsList">
-                <div class="alert alert-info">
-                  <p>Select locations and adventures to see recommended skills.</p>
-                  <% word = travel_plan.skills.count == 1 ? "skill" : "skills" %>
-                  <% string = "You have #{travel_plan.skills.count} #{word} already selected." %>
-                  <% if travel_plan.skills.any? %>
-                    <p><%= string %></p>
-                  <% end %>
+            <div id="selected-skills-container" style="display: none;">
+              <% travel_plan.skill_ids.each do |skill_id| %>
+                <input type="hidden" name="travel_plan[skill_ids][]" value="<%= skill_id %>">
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Main Content -->
+      <div class="travel-plan-main">
+        <div class="main-content-scrollable">
+          <!-- Trip Dates -->
+          <div class="plan-section">
+            <div class="plan-section-header">
+              <h5><i class="fas fa-calendar-alt me-2"></i>Trip Dates</h5>
+            </div>
+            <div class="plan-section-body">
+              <div class="plan-date-inputs">
+                <div class="plan-date-field">
+                  <%= f.label :start_date, class: "form-label small" %>
+                  <%= f.date_field :start_date,
+                        class: "form-control form-control-sm",
+                        data: { travel_plan_target: "startDate", action: "change->travel-plan#updateEquipment" } %>
+                </div>
+                <div class="plan-date-field">
+                  <%= f.label :end_date, class: "form-label small" %>
+                  <%= f.date_field :end_date, class: "form-control form-control-sm", data: { travel_plan_target: "endDate" } %>
                 </div>
               </div>
-              <div id="selected-skills-container" style="display: none;">
-                <% travel_plan.skill_ids.each do |skill_id| %>
-                  <input type="hidden" name="travel_plan[skill_ids][]" value="<%= skill_id %>">
-                <% end %>
-              </div>
+              <p class="text-muted small mt-2">Setting dates helps us suggest seasonal equipment</p>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Main Content -->
-      <div class="col-md-7">
-        <!-- Trip Dates -->
-        <div class="card compact-card specific-card">
-          <div class="card-header">
-            <h5 class="mb-0 p-2">Trip Dates</h5>
-          </div>
-          <div class="card-body p-3">
-            <div class="row g-2">
-              <div class="col-md-6">
-                <%= f.label :start_date, class: "form-label small" %>
-                <%= f.date_field :start_date,
-                      class: "form-control form-control-sm",
-                      data: { travel_plan_target: "startDate", action: "change->travel-plan#updateEquipment" } %>
-              </div>
-              <div class="col-md-6">
-                <%= f.label :end_date, class: "form-label small" %>
-                <%= f.date_field :end_date, class: "form-control form-control-sm", data: { travel_plan_target: "endDate" } %>
-              </div>
+          <!-- Plan Details -->
+          <div class="plan-section">
+            <div class="plan-section-header">
+              <h5><i class="fas fa-edit me-2"></i>Plan Details</h5>
+            </div>
+            <div class="plan-section-body">
+              <%= f.label :title, class: "form-label small" %>
+              <%= f.text_field :title, class: "form-control form-control-sm mb-3", placeholder: "Give your trip a name" %>
+              <%= f.label :content, "Notes", class: "form-label small" %>
+              <%= f.text_area :content, class: "form-control form-control-sm", rows: 3, placeholder: "Add any notes or details about your trip..." %>
             </div>
           </div>
-        </div>
-
-        <!-- Plan Details -->
-        <div class="card compact-card specific-card">
-          <div class="card-header">
-            <h5 class="mb-0 p-2">Plan Details</h5>
+          <!-- Locations -->
+          <div class="plan-section">
+            <div class="plan-section-header">
+              <h5><i class="fas fa-map-marker-alt me-2"></i>Locations</h5>
+            </div>
+            <div class="plan-section-body">
+              <p class="small text-muted mb-2">Search and select the places you'll visit</p>
+              <div data-travel-plan-target="selectedLocations" class="selected-items"></div>
+              <input type="text"
+                     class="form-control form-control-sm"
+                     placeholder="Search locations..."
+                     data-travel-plan-target="locationSearch"
+                     data-action="input->travel-plan#searchLocations">
+              <div data-travel-plan-target="locationResults" class="results-list"></div>
+            </div>
           </div>
-          <div class="card-body p-2">
-            <%= f.label :title, class: "form-label small" %>
-            <%= f.text_field :title, class: "form-control form-control-sm" %>
-            <%= f.label :content, class: "form-label small mt-2" %>
-            <%= f.text_area :content, class: "form-control form-control-sm", rows: 3 %>
-          </div>
-        </div>
-
-        <!-- Adventures -->
-        <div class="card compact-card mb-4 specific-card">
-          <div class="card-header">
-            <h5 class="mb-0 p-2">Available Adventures</h5>
-          </div>
-          <div class="card-body">
-            <div data-travel-plan-target="selectedAdventures" class="mb-3"></div>
-            <input type="text"
-                   class="form-control"
-                   placeholder="Search adventures..."
-                   data-travel-plan-target="adventureSearch"
-                   data-action="input->travel-plan#searchAdventures">
-            <div data-travel-plan-target="adventureResults" class="list-group mt-2"></div>
-          </div>
-        </div>
-
-        <!-- Locations -->
-        <div class="card compact-card specific-card">
-          <div class="card-header">
-            <h5 class="mb-0 p-2">Locations</h5>
-          </div>
-          <div class="card-body p-2">
-            <div data-travel-plan-target="selectedLocations" class="mb-3"></div>
-            <input type="text"
+          <!-- Adventures Section -->
+          <div class="plan-section">
+            <div class="plan-section-header">
+              <h5><i class="fas fa-hiking me-2"></i>Adventures</h5>
+            </div>
+            <div class="plan-section-body">
+              <p class="small text-muted mb-2">Choose activities you'll do during your trip</p>
+              <div data-travel-plan-target="selectedAdventures" class="selected-items"></div>
+              <!-- This input is for filtering adventures already loaded -->
+              <input type="text"
                    class="form-control form-control-sm"
-                   placeholder="Search locations..."
-                   data-travel-plan-target="locationSearch"
-                   data-action="input->travel-plan#searchLocations">
-            <div data-travel-plan-target="locationResults" class="list-group mt-2"></div>
+                   placeholder="Filter adventures..."
+                   id="adventure-filter">
+              <!-- List container for all adventures -->
+              <div data-travel-plan-target="adventureResults" class="results-list mt-2" style="max-height: 250px; overflow-y: auto;"></div>
+            </div>
+          </div>
+          <!-- Save Button -->
+          <div class="plan-actions">
+            <%= link_to 'Cancel', :back, class: "btn btn-sm btn-secondary" %>
+            <%= f.submit 'Save Travel Plan', class: "btn btn-sm btn-primary" %>
           </div>
         </div>
       </div>
-
       <!-- Right Sidebar - Equipment -->
-      <div class="col-md-2">
-        <div class="sticky-sidebar">
-          <div class="card compact-card specific-card">
-            <div class="card-header">
-              <h5 class="mb-0">Recommended Equipment</h5>
-            </div>
-            <div class="card-body p-2">
-              <div class="equipment-list" data-travel-plan-target="equipmentList">
-                <%# Equipment will be dynamically inserted here %>
+      <div class="travel-plan-sidebar travel-plan-equipment">
+        <div class="sidebar-card">
+          <div class="sidebar-header">
+            <h5><i class="fas fa-toolbox me-2"></i>Recommended Equipment</h5>
+            <p class="text-muted small mb-0">Items you'll need for this trip</p>
+          </div>
+          <div class="sidebar-body">
+            <div class="equipment-list" data-travel-plan-target="equipmentList">
+              <div class="alert alert-info">
+                <h6><i class="fas fa-lightbulb me-2"></i>Equipment Recommendations</h6>
+                <p>Select locations and adventures to see customized equipment recommendations for your trip.</p>
+                <p class="mb-0"><small>We'll automatically suggest essential items based on your selections.</small></p>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Save Button -->
-    <div class="d-flex justify-content-end gap-2 mt-3 mb-4">
-      <%= link_to 'Cancel', :back, class: "btn btn-sm btn-secondary" %>
-      <%= f.submit 'Save', class: "btn btn-sm btn-primary" %>
-    </div>
-
   <% end %>
 </div>
+<%# Tutorial toast that appears when the form loads %>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Create and show a welcome tutorial toast
+    setTimeout(function() {
+      const toastContainer = document.createElement('div');
+      toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
+      toastContainer.style.zIndex = '1000';
+
+      const toast = document.createElement('div');
+      toast.className = 'toast show';
+      toast.setAttribute('role', 'alert');
+      toast.setAttribute('aria-live', 'assertive');
+      toast.setAttribute('aria-atomic', 'true');
+
+      toast.innerHTML = `
+        <div class="toast-header">
+          <strong class="me-auto"><i class="fas fa-info-circle me-2"></i>Travel Plan Tips</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          <p>👉 Select locations and adventures to get personalized equipment and skill recommendations</p>
+          <p>👉 Trip dates help us suggest seasonal items</p>
+          <p>👉 Green items are equipment you already own</p>
+          <div class="mt-2 pt-2 border-top">
+            <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="toast">Got it!</button>
+          </div>
+        </div>
+      `;
+
+      toastContainer.appendChild(toast);
+      document.body.appendChild(toastContainer);
+
+      // Auto dismiss after 10 seconds
+      setTimeout(function() {
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.hide();
+      }, 10000);
+    }, 1000);
+  });
+</script>
