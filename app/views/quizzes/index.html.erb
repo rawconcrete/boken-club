@@ -2,8 +2,8 @@
 <div class="container">
   <div class="row mb-4">
     <div class="col">
-      <h1 class="text-white" style="text-align: center;">Outdoor Knowledge Quizzes</h1>
-      <h4 class="text" style="text-align: center;">Test your outdoor and survival knowledge with our interactive quizzes.</h4>
+      <h1 class="text-white">Outdoor Knowledge Quizzes</h1>
+      <p class="text-white">Test your outdoor and survival knowledge with our interactive quizzes.</p>
     </div>
   </div>
   <div class="row mb-4">
@@ -33,6 +33,17 @@
             ], params[:difficulty]),
             {}, { class: "form-select", onchange: "this.form.submit()" } %>
         </div>
+        <% if user_signed_in? %>
+          <div class="col-md-4">
+            <%= f.select :completion,
+              options_for_select([
+                ['All Quizzes', ''],
+                ['Completed', 'completed'],
+                ['Not Completed', 'not_completed']
+              ], params[:completion]),
+              {}, { class: "form-select", onchange: "this.form.submit()" } %>
+          </div>
+        <% end %>
       <% end %>
     </div>
   </div>
@@ -54,24 +65,81 @@
       <% @quizzes.each do |quiz| %>
         <div class="col-md-4 mb-4">
           <div class="card h-100">
-            <div class="card-header">
-              <h5 class="card-title mb-0"><%= quiz.title %></h5>
-            </div>
-            <div class="card-body">
-              <p class="card-text"><%= quiz.description %></p>
-              <div class="mb-3">
-                <% if quiz.difficulty.present? %>
-                  <span class="badge bg-<%= quiz.difficulty == 'advanced' ? 'danger' : (quiz.difficulty == 'intermediate' ? 'warning' : 'success') %>">
-                    <%= quiz.difficulty.capitalize %>
-                  </span>
-                <% end %>
-                <% if quiz.category.present? %>
-                  <span class="badge bg-info"><%= quiz.category.capitalize %></span>
-                <% end %>
-                <span class="badge bg-secondary"><%= quiz.questions.count %> Questions</span>
+            <% if user_signed_in? && @quiz_attempts && (attempt = @quiz_attempts[quiz.id]) %>
+              <% if attempt[:completed] %>
+                <div class="card-header d-flex justify-content-between align-items-center bg-success bg-opacity-25">
+                  <h5 class="card-title mb-0"><%= quiz.title %></h5>
+                  <span class="badge bg-success">Completed</span>
+                </div>
+                <div class="card-body">
+                  <p class="card-text"><%= quiz.description %></p>
+                  <div class="mb-3 d-flex justify-content-between align-items-center">
+                    <div>
+                      <% if quiz.difficulty.present? %>
+                        <span class="badge bg-<%= quiz.difficulty == 'advanced' ? 'danger' : (quiz.difficulty == 'intermediate' ? 'warning' : 'success') %>">
+                          <%= quiz.difficulty.capitalize %>
+                        </span>
+                      <% end %>
+                      <% if quiz.category.present? %>
+                        <span class="badge bg-info"><%= quiz.category.capitalize %></span>
+                      <% end %>
+                      <span class="badge bg-secondary"><%= quiz.questions.count %> Questions</span>
+                    </div>
+                    <div class="text-end">
+                      <% if attempt[:score].present? %>
+                        <h4 class="mb-0 <%= attempt[:score] >= 70 ? 'text-success' : 'text-danger' %>"><%= attempt[:score] %>%</h4>
+                      <% else %>
+                        <h4 class="mb-0 text-warning">--</h4>
+                      <% end %>
+                      <small class="text-muted"><%= attempt[:date].strftime("%b %d, %Y") %></small>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <%= link_to "View Quiz", quiz_path(quiz), class: "btn btn-outline-primary" %>
+                    <%= link_to "Try Again", take_quiz_path(quiz), class: "btn btn-primary" %>
+                  </div>
+                </div>
+              <% else %>
+                <div class="card-header d-flex justify-content-between align-items-center bg-warning bg-opacity-25">
+                  <h5 class="card-title mb-0"><%= quiz.title %></h5>
+                  <span class="badge bg-warning text-dark">In Progress</span>
+                </div>
+                <div class="card-body">
+                  <p class="card-text"><%= quiz.description %></p>
+                  <div class="mb-3">
+                    <% if quiz.difficulty.present? %>
+                      <span class="badge bg-<%= quiz.difficulty == 'advanced' ? 'danger' : (quiz.difficulty == 'intermediate' ? 'warning' : 'success') %>">
+                        <%= quiz.difficulty.capitalize %>
+                      </span>
+                    <% end %>
+                    <% if quiz.category.present? %>
+                      <span class="badge bg-info"><%= quiz.category.capitalize %></span>
+                    <% end %>
+                    <span class="badge bg-secondary"><%= quiz.questions.count %> Questions</span>
+                  </div>
+                  <%= link_to "Continue Quiz", take_quiz_path(quiz), class: "btn btn-warning" %>
+                </div>
+              <% end %>
+            <% else %>
+              <div class="card-header">
+                <h5 class="card-title mb-0"><%= quiz.title %></h5>
               </div>
-              <%= link_to "View Quiz", quiz_path(quiz), class: "btn btn-primary" %>
-            </div>
+              <div class="card-body">
+                <p class="card-text"><%= quiz.description %></p>
+                <div class="mb-3">
+                  <% if quiz.difficulty.present? %>
+                    <span class="badge bg-<%= quiz.difficulty == 'advanced' ? 'danger' : (quiz.difficulty == 'intermediate' ? 'warning' : 'success') %>">
+                      <%= quiz.difficulty.capitalize %>
+                    </span>
+                  <% end %>
+                  <% if quiz.category.present? %>
+                    <span class="badge bg-info"><%= quiz.category.capitalize %></span>
+                  <% end %>
+                  <span class="badge bg-secondary"><%= quiz.questions.count %> Questions</span>
+                </div>
+                <%= link_to "View Quiz", quiz_path(quiz), class: "btn btn-primary" %>
+              </div>
+            <% end %>
           </div>
         </div>
       <% end %>
@@ -79,7 +147,7 @@
       <div class="col-12">
         <div class="alert alert-warning">
           <p>No quizzes found matching your criteria.</p>
-          <% if params[:category].present? || params[:difficulty].present? %>
+          <% if params[:category].present? || params[:difficulty].present? || params[:completion].present? %>
             <%= link_to "Clear filters", quizzes_path, class: "btn btn-sm btn-outline-dark mt-2" %>
           <% end %>
         </div>
