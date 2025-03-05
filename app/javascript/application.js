@@ -271,4 +271,4 @@ function setupEquipmentPurchaseHandlers() {
 }
 
 // Export the toast manager so it can be imported directly
-export { default as toastManager } from './toast_manager';
+// export { default as toastManager } from './toast_manager';
