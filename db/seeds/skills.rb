@@ -20,7 +20,7 @@ def create_skills
       category: "camping",
       instructions: "1. Look for flat ground with good drainage\n2. Avoid areas under dead trees or branches\n3. Consider proximity to water sources\n4. Check for signs of wildlife activity\n5. Stay away from avalanche paths in winter",
       resources: "- 'NOLS Wilderness Guide' by Mark Harvey\n- Leave No Trace Center for Outdoor Ethics website",
-      video_url: "https://youtu.be/dfpE0x6xTPU?si=Q4lvDdfRafUjKw0W",
+      video_url: "https://www.youtube.com/embed/dfpE0x6xTPU?si=dTaO58Wos3RhUYBf",
       safety_critical: false
     },
     {
