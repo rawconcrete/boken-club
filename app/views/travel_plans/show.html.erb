@@ -1,174 +1,268 @@
 <%# app/views/travel_plans/show.html.erb %>
-<div class="container mx-auto px-4 travel-plan-show" data-controller="equipment-status">
-  <!-- Title and Buttons Row -->
-  <div class="flex justify-between items-center mb-6 no-print">
-    <h1 class="text-2xl font-bold text-white"><%= @travel_plan.title %></h1>
-    <div class="flex justify-end items-center">
-      <%= link_to "Printer Friendly Version", print_travel_plan_path(@travel_plan),
-          class: "btn btn-secondary mr-3" %>
-      <%= link_to "Edit", edit_travel_plan_path(@travel_plan),
-          class: "btn btn-success text-white px-3 py-1 rounded-md shadow-md hover:shadow-lg transition-all mr-3" %>
-      <%= button_to "Delete", travel_plan_path(@travel_plan),
-          method: :delete,
-          class: "btn btn-danger text-white px-3 py-1 rounded-md shadow-md hover:shadow-lg transition-all",
-          form: { style: "margin: 0; display: inline-block;" },
-          data: { turbo_confirm: "Are you sure?" } %>
-    </div>
-  </div>
-  <%# Display safety warnings %>
-  <%= render 'shared/safety_warnings', warnings: @travel_plan.safety_warnings %>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="card">
-      <h2 class="text-xl font-semibold mb-3">Locations</h2>
-      <% @travel_plan.locations.each do |location| %>
-        <div class="mb-4">
-          <p><strong>Name:</strong> <%= location.name %></p>
-          <p><strong>City:</strong> <%= location.city %></p>
-          <p><strong>Prefecture:</strong> <%= location.prefecture %></p>
-          <p><strong>Details:</strong> <%= location.details %></p>
-        </div>
-      <% end %>
-    </div>
-    <div class="card">
-      <h2 class="text-xl font-semibold mb-3">Adventures</h2>
-      <% @travel_plan.adventures.each do |adventure| %>
-        <div class="mb-4">
-          <p><strong>Type:</strong> <%= adventure.name %></p>
-          <p><strong>Details:</strong> <%= adventure.details %></p>
-        </div>
-      <% end %>
-    </div>
-  </div>
-  <div class="mt-6 card">
-    <h2 class="text-xl font-semibold mb-3">Trip Details</h2>
-    <p><strong>Dates:</strong>
+<div class="container travel-plan-show" data-controller="equipment-status">
+  <!-- Header Section -->
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h1 class="text-white"><%= @travel_plan.title %></h1>
       <% if @travel_plan.start_date.present? %>
-        <%= @travel_plan.start_date.strftime("%B %d, %Y") %>
-        <% if @travel_plan.end_date.present? && @travel_plan.end_date != @travel_plan.start_date %>
-          to <%= @travel_plan.end_date.strftime("%B %d, %Y") %>
-        <% end %>
-      <% else %>
-        Not set
+        <div class="d-flex align-items-center mb-2">
+          <span class="badge bg-light text-dark">
+            <i class="fas fa-calendar-alt me-2"></i>
+            <%= @travel_plan.start_date.strftime("%B %d, %Y") %>
+            <% if @travel_plan.end_date.present? && @travel_plan.end_date != @travel_plan.start_date %>
+              <span class="mx-2">-</span>
+              <%= @travel_plan.end_date.strftime("%B %d, %Y") %>
+            <% end %>
+          </span>
+        </div>
       <% end %>
-    </p>
-    <p><strong>Notes:</strong> <%= @travel_plan.content %></p>
+    </div>
+    <div class="col-md-4 text-md-end">
+      <div class="mb-2">
+        <%= link_to print_travel_plan_path(@travel_plan), class: "btn btn-sm btn-secondary me-1" do %>
+          <i class="fas fa-print me-1"></i>Print
+        <% end %>
+        <%= link_to edit_travel_plan_path(@travel_plan), class: "btn btn-sm btn-primary me-1" do %>
+          <i class="fas fa-edit me-1"></i>Edit
+        <% end %>
+        <%= button_to travel_plan_path(@travel_plan), method: :delete, class: "btn btn-sm btn-danger",
+            form: { data: { turbo_confirm: "Are you sure you want to delete this travel plan?" }, style: "display:inline;" } do %>
+          <i class="fas fa-trash-alt"></i>
+        <% end %>
+      </div>
+    </div>
   </div>
-  <div class="mt-6">
-    <div class="row">
-      <!-- Pack List (Equipment You Already Own) -->
-      <div class="col-md-6 mb-4">
-        <div class="card h-100">
-          <div class="card-header bg-success bg-opacity-25">
-            <h2 class="text-xl font-semibold mb-0">Pack List (Equipment You Own)</h2>
+  <!-- Notes/Memo Section -->
+  <% if @travel_plan.content.present? %>
+    <div class="row mb-3">
+      <div class="col-12">
+        <div class="card" style="background-color: #ffffd1; border-left: 4px solid #ffcc00;">
+          <div class="card-body p-2">
+            <div class="d-flex align-items-start">
+              <i class="fas fa-sticky-note me-2 mt-1" style="color: #ffcc00;"></i>
+              <div>
+                <small class="text-muted">Notes to self:</small>
+                <p class="mb-0 small"><%= @travel_plan.content %></p>
+              </div>
+            </div>
           </div>
-          <div class="card-body">
-            <% if @equipment_to_pack.any? %>
-              <div class="list-group">
-                <% @equipment_to_pack.each do |tpe| %>
-                  <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                    <div class="form-check">
-                      <input type="checkbox"
-                             id="packed_<%= tpe.equipment.id %>"
-                             class="form-check-input"
-                             data-equipment-status-target="checkbox"
-                             data-action="change->equipment-status#toggle"
-                      data-equipment-id="<%= tpe.equipment.id %>"
-                      data-travel-plan-id="<%= @travel_plan.id %>"
-                      <%= tpe.checked ? 'checked' : '' %>>
-                      <label class="form-check-label" for="packed_<%= tpe.equipment.id %>">
+        </div>
+      </div>
+    </div>
+  <% end %>
+  <!-- Locations & Adventures Section -->
+  <div class="row mb-4">
+    <!-- Locations Card -->
+    <div class="col-md-6 mb-4">
+      <div class="card adventure-card h-100">
+        <div class="card-header bg-primary bg-opacity-25">
+          <h2 class="h5 mb-0"><i class="fas fa-map-marker-alt me-2"></i>Locations</h2>
+        </div>
+        <div class="card-body">
+          <% if @travel_plan.locations.any? %>
+            <% @travel_plan.locations.each do |location| %>
+              <div class="specific-card mb-3">
+                <h5 class="card-title"><%= location.name %></h5>
+                <p class="mb-1 small"><i class="fas fa-map-pin me-1"></i> <%= location.city %>, <%= location.prefecture %></p>
+                <% if location.details.present? %>
+                  <p class="small text-muted mt-2"><%= truncate(location.details, length: 100) %></p>
+                <% end %>
+                <%= link_to location_path(location), class: "btn btn-sm btn-outline-primary mt-2", data: { turbo_frame: "_top" } do %>
+                  <i class="fas fa-info-circle me-1"></i>Details
+                <% end %>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="alert alert-info">
+              <p class="mb-0">No locations added to this travel plan.</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <!-- Adventures Card -->
+    <div class="col-md-6 mb-4">
+      <div class="card adventure-card h-100">
+        <div class="card-header bg-success bg-opacity-25">
+          <h2 class="h5 mb-0"><i class="fas fa-hiking me-2"></i>Adventures</h2>
+        </div>
+        <div class="card-body">
+          <% if @travel_plan.adventures.any? %>
+            <% @travel_plan.adventures.each do |adventure| %>
+              <div class="specific-card mb-3">
+                <h5 class="card-title"><%= adventure.name %></h5>
+                <div class="mb-2">
+                  <%= adventure_tags(adventure) %>
+                </div>
+                <% if adventure.details.present? %>
+                  <p class="small text-muted"><%= truncate(adventure.details, length: 100) %></p>
+                <% end %>
+                <%= link_to adventure_path(adventure), class: "btn btn-sm btn-outline-success mt-2", data: { turbo_frame: "_top" } do %>
+                  <i class="fas fa-info-circle me-1"></i>Details
+                <% end %>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="alert alert-info">
+              <p class="mb-0">No adventures added to this travel plan.</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Equipment Section -->
+  <div class="row mb-4">
+    <!-- Pack List (Equipment You Already Own) -->
+    <div class="col-md-6 mb-4">
+      <div class="card adventure-card h-100">
+        <div class="card-header bg-success bg-opacity-25">
+          <h2 class="h5 mb-0"><i class="fas fa-check-circle me-2"></i>Pack List (You Own)</h2>
+        </div>
+        <div class="card-body">
+          <% if @equipment_to_pack.any? %>
+            <div class="list-group">
+              <% @equipment_to_pack.each do |tpe| %>
+                <div class="list-group-item <%= tpe.checked ? 'list-group-item-success' : '' %>">
+                  <div class="d-flex align-items-start">
+                    <input type="checkbox"
+                           id="packed_<%= tpe.equipment.id %>"
+                           class="form-check-input me-2 mt-1"
+                           data-equipment-status-target="checkbox"
+                           data-action="change->equipment-status#toggle"
+                    data-equipment-id="<%= tpe.equipment.id %>"
+                    data-travel-plan-id="<%= @travel_plan.id %>"
+                    <%= tpe.checked ? 'checked' : '' %>>
+                    <div>
+                      <label class="form-check-label fw-bold" for="packed_<%= tpe.equipment.id %>">
                         <%= tpe.equipment.name %>
                       </label>
-                      <div class="text-muted small"><%= tpe.equipment.description %></div>
+                      <div class="small text-muted"><%= tpe.equipment.description %></div>
                     </div>
                   </div>
-                <% end %>
-              </div>
-            <% else %>
-              <div class="alert alert-yellow alert-info alert-top alert-dismissible fade show" role="alert">
-                You don't own any of the recommended equipment for this trip yet.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-            <% end %>
-          </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle me-2"></i>
+              <span>You don't own any of the recommended equipment for this trip yet.</span>
+            </div>
+          <% end %>
         </div>
       </div>
-      <!-- Buy List (Equipment You Need to Purchase) -->
-      <div class="col-md-6 mb-4">
-        <div class="card h-100">
-          <div class="card-header bg-primary bg-opacity-25">
-            <h2 class="text-xl font-semibold mb-0">Buy List (Equipment You Need)</h2>
-          </div>
-          <div class="card-body">
-            <% if @equipment_to_buy.any? %>
-              <div class="list-group">
-                <% @equipment_to_buy.each do |tpe| %>
-                  <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+    </div>
+    <!-- Buy List (Equipment You Need to Purchase) -->
+    <div class="col-md-6 mb-4">
+      <div class="card adventure-card h-100">
+        <div class="card-header bg-primary bg-opacity-25">
+          <h2 class="h5 mb-0"><i class="fas fa-shopping-cart me-2"></i>Buy List (Need to Purchase)</h2>
+        </div>
+        <div class="card-body">
+          <% if @equipment_to_buy.any? %>
+            <div class="list-group">
+              <% @equipment_to_buy.each do |tpe| %>
+                <div class="list-group-item">
+                  <div class="d-flex justify-content-between align-items-start">
                     <div>
-                      <h6><%= tpe.equipment.name %></h6>
-                      <div class="text-muted small"><%= tpe.equipment.description %></div>
+                      <strong><%= tpe.equipment.name %></strong>
+                      <div class="small text-muted"><%= tpe.equipment.description %></div>
                     </div>
                     <button type="button"
-                           class="btn btn-sm btn-success no-print"
-                           data-action="equipment-status#markPurchased"
-                           data-equipment-id="<%= tpe.equipment.id %>"
-                           data-travel-plan-id="<%= @travel_plan.id %>">
-                      <i class="fa fa-check"></i> Mark as Purchased
+                          class="btn btn-sm btn-success ms-2 no-print"
+                          data-action="equipment-status#markPurchased"
+                          data-equipment-id="<%= tpe.equipment.id %>"
+                          data-travel-plan-id="<%= @travel_plan.id %>">
+                      <i class="fas fa-check me-1"></i> Purchased
                     </button>
                   </div>
-                <% end %>
-              </div>
-            <% else %>
-              <div class="alert alert-yellow alert-success">
-                <p>You already own all the equipment needed for this trip!</p>
-              </div>
-            <% end %>
-          </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="alert alert-success">
+              <i class="fas fa-check-circle me-2"></i>
+              <span>You already own all the equipment needed for this trip!</span>
+            </div>
+          <% end %>
         </div>
       </div>
-      <!-- Skills for This Adventure -->
-      <div class="mt-6">
-        <div class="card mb-4">
-          <div class="card-header bg-primary bg-opacity-25">
-            <h2 class="text-xl font-semibold mb-0">Skills for This Adventure</h2>
-          </div>
-          <div class="card-body">
-            <% if @travel_plan.skills.any? %>
-              <div class="row">
-                <% @travel_plan.skills.group_by(&:category).each do |category, category_skills| %>
-                  <div class="col-md-6 mb-4">
-                    <h5 class="text-capitalize"><%= category || 'Other' %></h5>
-                    <div class="list-group">
-                      <% category_skills.each do |skill| %>
-                        <div class="list-group-item">
-                          <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                              <h6 class="mb-1">
-                                <%= skill.name %>
-                                <% if skill.safety_critical %>
-                                  <span class="badge bg-warning text-dark ms-1">Safety Critical</span>
-                                <% end %>
-                              </h6>
-                              <span class="badge bg-<%= skill.difficulty == 'advanced' ? 'danger' : (skill.difficulty == 'intermediate' ? 'primary' : 'success') %>">
-                                <%= skill.difficulty&.capitalize || 'Beginner' %>
-                              </span>
-                              <p class="text-muted mt-1 mb-0"><%= truncate(skill.details, length: 100) %></p>
-                            </div>
-                            <%= link_to "Learn More", skill_path(skill), class: "btn btn-sm btn-outline-primary no-print", target: "_blank", data: { turbo_frame: "_top" } %>
-                          </div>
-                        </div>
-                      <% end %>
+    </div>
+  </div>
+  <!-- Skills and Warnings Section -->
+  <div class="row">
+    <!-- Skills Column -->
+    <div class="col-md-6 mb-4">
+      <div class="card adventure-card h-100">
+        <div class="card-header bg-info bg-opacity-25">
+          <h2 class="h5 mb-0"><i class="fas fa-graduation-cap me-2"></i>Skills for This Adventure</h2>
+        </div>
+        <div class="card-body">
+          <% if @travel_plan.skills.any? %>
+            <% @travel_plan.skills.group_by(&:category).each do |category, category_skills| %>
+              <h6 class="text-capitalize mb-2"><%= category || 'Other' %></h6>
+              <div class="list-group mb-3">
+                <% category_skills.each do |skill| %>
+                  <div class="list-group-item <%= skill.safety_critical ? 'border-warning' : '' %>">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <strong>
+                        <%= skill.name %>
+                        <% if skill.safety_critical %>
+                          <span class="badge bg-warning text-dark ms-1">Safety Critical</span>
+                        <% end %>
+                      </strong>
+                      <span class="badge bg-<%= skill.difficulty == 'advanced' ? 'danger' : (skill.difficulty == 'intermediate' ? 'primary' : 'success') %>">
+                        <%= skill.difficulty&.capitalize || 'Beginner' %>
+                      </span>
                     </div>
+                    <p class="small text-muted mb-1"><%= truncate(skill.details, length: 100) %></p>
+                    <%= link_to skill_path(skill), class: "btn btn-sm btn-outline-primary no-print", target: "_blank", data: { turbo_frame: "_top" } do %>
+                      <i class="fas fa-book-open me-1"></i>Learn More
+                    <% end %>
                   </div>
                 <% end %>
               </div>
-            <% else %>
-              <div class="alert alert-yellow alert-info">
-                <p>No specific skills have been added to this travel plan.</p>
-                <p>Edit the plan to add recommended skills based on your locations and adventures.</p>
-              </div>
             <% end %>
-          </div>
+          <% else %>
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle me-2"></i>
+              <span>No specific skills have been added to this travel plan.</span>
+              <p class="small mb-0 mt-2">Edit the plan to add recommended skills based on your locations and adventures.</p>
+            </div>
+          <% end %>
         </div>
       </div>
+    </div>
+    <!-- Safety Warnings Column -->
+    <div class="col-md-6 mb-4">
+      <% warnings = @travel_plan.safety_warnings %>
+      <% if warnings.any? %>
+        <div class="card adventure-card">
+          <div class="card-header bg-danger bg-opacity-25 d-flex align-items-center">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <h2 class="h5 mb-0">Safety Warnings</h2>
+          </div>
+          <div class="card-body">
+            <div class="list-group">
+              <% warnings.each_with_index do |warning, index| %>
+                <div class="list-group-item list-group-item-warning" id="warning-item-<%= index %>">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div class="d-flex">
+                      <i class="fas fa-exclamation-circle text-danger me-2 mt-1"></i>
+                      <div><%= warning %></div>
+                    </div>
+                    <button type="button"
+                            class="btn btn-sm btn-outline-danger me-2"
+                            onclick="document.getElementById('warning-item-<%= index %>').style.display='none';">
+                      <i class="fas fa-trash-alt me-1"></i> Delete Warning
+                    </button>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>
