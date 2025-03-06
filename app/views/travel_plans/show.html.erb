@@ -152,7 +152,7 @@
                               </span>
                               <p class="text-muted mt-1 mb-0"><%= truncate(skill.details, length: 100) %></p>
                             </div>
-                            <%= link_to "Learn More", skill_path(skill), class: "btn btn-sm btn-outline-primary no-print", data: { turbo_frame: "_top" } %>
+                            <%= link_to "Learn More", skill_path(skill), class: "btn btn-sm btn-outline-primary no-print", target: "_blank", data: { turbo_frame: "_top" } %>
                           </div>
                         </div>
                       <% end %>
