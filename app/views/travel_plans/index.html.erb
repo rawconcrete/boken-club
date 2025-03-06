@@ -1,44 +1,147 @@
-<div style="max-width: 900px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
-  <h1 class="container text-white" style="font-size: 34px; font-weight: bold; text-white margin-bottom: 20px; ">My Travel Plans</h1>
-  <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-    <% @travel_plans.each do |plan| %>
-      <div style="background: #ffffff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); padding: 20px; width: calc(33.333% - 20px); min-width: 250px;
-                  transition: all 0.3s ease; border: 1px solid #e0e0e0; position: relative;">
-
-        <!-- X Button at the top right, with more space from the top -->
-        <div style="position: absolute; top: 5px; right: 4px;">
-          <%= button_to "x", travel_plan_path(plan), method: :delete,
-              style: "background: linear-gradient(135deg, #f1727f, #e53e5e); color: white; padding: 0px 5px; border-radius: 100px; font-size: 14px;
-                    border: none; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); transition: all 0.3s ease-in-out; cursor: pointer;",
-           data: { turbo_confirm: "Are you sure?" } %>
-        </div>
-
-        <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 12px; color: #333;"> <%= plan.title %></h2>
-        <p style="color: #555; margin-bottom: 15px; font-size: 16px;"><%= plan.content %></p>
-        <p style="margin-bottom: 15px;">
-          <strong>Status:</strong>
-          <span style="padding: 6px 12px; border-radius: 5px; font-size: 14px;
-                      <%= case plan.status
-                          when 'pending' then 'background: #fff3cd; color: #856404;'
-                          when 'completed' then 'background: #d4edda; color: #155724;'
-                          when 'cancelled' then 'background: #f8d7da; color: #721c24;'
-                          else 'background: #e2e3e5; color: #6c757d;'
-                      end %>">
-            <%= plan.status&.capitalize || 'Not Set' %>
-          </span>
-        </p>
-        <p style="margin-bottom: 15px; font-size: 14px;"><strong>Locations:</strong> <%= plan.locations.map(&:name).join(", ") %></p>
-        <p style="margin-bottom: 15px; font-size: 14px;"><strong>Adventures:</strong> <%= plan.adventures.map(&:name).join(", ") %></p>
-
-        <div style="display: flex; justify-content: center; gap: 40px; margin-top: 20px;">
-          <%= link_to "Details", travel_plan_path(plan),
-              style: "background: linear-gradient(135deg, #69a6e9, #4285f4); color: white; padding: 18px 16px; border-radius: 6px; font-size: 14px; text-decoration: none;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); transition: all 0.3s ease-in-out; cursor: pointer;" %>
-          <%= link_to "Edit", edit_travel_plan_path(plan),
-              style: "background: linear-gradient(135deg, #7aec71, #3cb371); color: white; padding: 18px 25px; border-radius: 6px; font-size: 14px; text-decoration: none;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); transition: all 0.3s ease-in-out; cursor: pointer;" %>
-        </div>
-      </div>
+<%# app/views/travel_plans/index.html.erb %>
+<div class="container my-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="text-white display-5 fw-bold">My Travel Plans</h1>
+    <%= link_to new_travel_plan_path, class: "btn btn-primary" do %>
+      <i class="fas fa-plus me-2"></i>Create New Plan
     <% end %>
   </div>
+  <% if @travel_plans.empty? %>
+    <div class="card bg-light bg-opacity-75 text-center p-5 rounded-4 shadow-sm">
+      <div class="py-4">
+        <i class="fas fa-map-marked-alt fa-4x text-muted mb-3"></i>
+        <h3>No travel plans yet</h3>
+        <p class="text-muted mb-4">Start planning your next adventure by creating a new travel plan.</p>
+        <%= link_to new_travel_plan_path, class: "btn btn-lg btn-primary px-4" do %>
+          <i class="fas fa-plus me-2"></i>Create Your First Plan
+        <% end %>
+      </div>
+    </div>
+  <% else %>
+    <div class="row g-4">
+      <% @travel_plans.each do |plan| %>
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 border-0 rounded-4 shadow-sm hover-card overflow-hidden">
+            <div class="card-status-bar
+              <%= case plan.status
+                  when 'pending' then 'bg-warning'
+                  when 'completed' then 'bg-success'
+                  when 'cancelled' then 'bg-danger'
+                  else 'bg-secondary'
+                  end %>">
+            </div>
+            <div class="card-body p-4">
+              <div class="d-flex justify-content-between align-items-start">
+                <h5 class="card-title fw-bold text-truncate mb-2"><%= plan.title %></h5>
+                <div class="dropdown">
+                  <button class="btn btn-sm btn-link text-muted" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <%= link_to edit_travel_plan_path(plan), class: "dropdown-item" do %>
+                        <i class="fas fa-edit me-2 text-primary"></i>Edit
+                      <% end %>
+                    </li>
+                    <li>
+                      <%= link_to print_travel_plan_path(plan), class: "dropdown-item" do %>
+                        <i class="fas fa-print me-2 text-secondary"></i>Print
+                      <% end %>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                      <%= button_to travel_plan_path(plan), method: :delete,
+                          class: "dropdown-item text-danger",
+                          form: { data: { turbo_confirm: "Are you sure you want to delete this travel plan?" } } do %>
+                        <i class="fas fa-trash-alt me-2"></i>Delete
+                      <% end %>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="mb-3">
+                <span class="badge
+                  <%= case plan.status
+                      when 'pending' then 'bg-warning'
+                      when 'completed' then 'bg-success'
+                      when 'cancelled' then 'bg-danger'
+                      else 'bg-secondary'
+                      end %>">
+                  <%= plan.status&.capitalize || 'Not Set' %>
+                </span>
+                <% if plan.start_date.present? %>
+                  <span class="badge bg-light text-dark">
+                    <i class="far fa-calendar-alt me-1"></i>
+                    <%= plan.start_date.strftime("%b %d") %>
+                    <% if plan.end_date.present? && plan.end_date != plan.start_date %>
+                      - <%= plan.end_date.strftime("%b %d, %Y") %>
+                    <% else %>
+                      <%= plan.start_date.strftime(", %Y") %>
+                    <% end %>
+                  </span>
+                <% end %>
+              </div>
+              <p class="card-text text-muted mb-3"><%= truncate(plan.content, length: 120) %></p>
+              <div class="travel-details mb-4">
+                <% if plan.locations.any? %>
+                  <div class="location-chips mb-2">
+                    <small class="text-uppercase text-muted fw-bold d-block mb-1">Locations</small>
+                    <div class="d-flex flex-wrap gap-1">
+                      <% plan.locations.first(3).each do |location| %>
+                        <span class="badge bg-primary bg-opacity-10 text-primary">
+                          <i class="fas fa-map-marker-alt me-1"></i>
+                          <%= location.name %>
+                        </span>
+                      <% end %>
+                      <% if plan.locations.count > 3 %>
+                        <span class="badge bg-light text-muted">+<%= plan.locations.count - 3 %> more</span>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+                <% if plan.adventures.any? %>
+                  <div class="adventure-chips">
+                    <small class="text-uppercase text-muted fw-bold d-block mb-1">Adventures</small>
+                    <div class="d-flex flex-wrap gap-1">
+                      <% plan.adventures.first(3).each do |adventure| %>
+                        <span class="badge bg-success bg-opacity-10 text-success">
+                          <i class="fas fa-hiking me-1"></i>
+                          <%= adventure.name %>
+                        </span>
+                      <% end %>
+                      <% if plan.adventures.count > 3 %>
+                        <span class="badge bg-light text-muted">+<%= plan.adventures.count - 3 %> more</span>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+              <%= link_to travel_plan_path(plan), class: "btn btn-primary w-100" do %>
+                <i class="fas fa-eye me-2"></i>View Details
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
 </div>
+<style>
+  .hover-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .card-status-bar {
+    height: 5px;
+    width: 100%;
+  }
+
+  .travel-details {
+    font-size: 0.85rem;
+  }
+</style>
