@@ -1,9 +1,12 @@
 // app/javascript/controllers/navbar_controller.js
 import { Controller } from "@hotwired/stimulus"
-import { Dropdown } from "bootstrap"
+import * as bootstrap from "bootstrap"
 
 export default class extends Controller {
   connect() {
-    this.dropdown = new Dropdown(this.element.querySelector('.dropdown-toggle'))
+    const dropdownEl = this.element.querySelector('.dropdown-toggle');
+    if (dropdownEl) {
+      this.dropdown = new bootstrap.Dropdown(dropdownEl);
+    }
   }
 }
