@@ -4,17 +4,19 @@
   <div class="adventure-tags mb-3">
     <%= adventure_tags(@adventure) %>
   </div>
-  <div class="row mt-4">
+
+  <div class="row mt-4 align-items-start">
     <div class="col-md-8">
       <div class="card">
         <div class="card-body">
-          <p class="mb-1 text-muted small">About</p>
-          <%# details start %>
+          <strong class="mb-1 text-muted small">About</strong>
           <p class="mb-3"><%= @adventure.details %></p>
+
           <% if @adventure.tips.present? %>
-            <p class="mb-1 text-muted small">Tips for Success</p>
+            <strong class="mb-1 text-muted small">Tips for Success</strong>
             <p class="mb-3"><%= @adventure.tips %></p>
           <% end %>
+
           <% if @adventure.warnings.present? %>
             <div class="alert alert-yellow alert-warning alert-dismissible fade show" role="alert">
               <i class="fas fa-exclamation-triangle me-2"></i>
@@ -22,40 +24,58 @@
               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
           <% end %>
-          <%# details end %>
+
           <% if @adventure.skills.present? %>
             <p><strong>Required Skills:</strong></p>
             <ul class="list-group mb-3">
               <% @adventure.skills.each do |skill| %>
-                <li class="list-group-item">
-                  <strong><%= skill.name %></strong>
-                  <% if skill.difficulty.present? %>
-                    <span class="badge bg-info ms-2"><%= skill.difficulty %> level</span>
-                  <% end %>
-                  <% if defined?(skill.safety_critical) && skill.safety_critical %>
-                    <span class="badge bg-warning text-dark ms-1">Safety Critical</span>
-                  <% end %>
-                  <p class="mb-0 small text-muted"><%= truncate(skill.details, length: 100) %></p>
-                  <%= link_to "Learn More", skill_path(skill), class: "btn btn-sm btn-outline-primary mt-1" %>
+                <li class="list-group-item d-flex flex-column position-relative p-3">
+                  <!-- Skill Name and Difficulty -->
+                  <div class="d-flex justify-content-between align-items-center">
+                    <strong class="fs-7"><%= skill.name %></strong>
+                    <% if skill.difficulty.present? %>
+                      <div class="position-absolute top-0 end-0 m-2 mt-2">
+                        <span class="badge bg-info"><%= skill.difficulty %> level</span>
+                        <% if defined?(skill.safety_critical) && skill.safety_critical %>
+                          <span class="badge bg-warning text-dark">Safety Critical</span>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+
+                  <!-- Skill Description -->
+                  <p class="mb-1 text-muted text-center small">
+                    <%= truncate(skill.details, length: 100) %>
+                  </p>
+
+                  <!-- Learn More Button -->
+                  <%= link_to "Learn More", skill_path(skill), class: "btn btn-sm btn-outline-primary mt-2" %>
                 </li>
               <% end %>
             </ul>
           <% end %>
+
+          <!-- Map Section -->
           <div data-controller="map"
-          data-map-api-key-value="<%= ENV['MAPBOX_API_KEY'] %>"
-          data-map-markers-value="<%= @markers.to_json %>">
+            data-map-api-key-value="<%= ENV['MAPBOX_API_KEY'] %>"
+            data-map-markers-value="<%= @markers.to_json %>">
           </div>
+
+          <!-- Action Buttons -->
           <%= link_to "Plan This Adventure", new_travel_plan_path(adventure_id: @adventure.id),
               class: "btn btn-primary mt-3",
               data: { turbo_frame: "_top" } %>
-          <%= link_to "Back", :back,
-              class: "btn btn-secondary mt-3",
+
+          <%= link_to "<i class='fas fa-arrow-left'></i>".html_safe, :back,
+              class: "btn btn-secondary mt-3 ms-3",
               data: { turbo_frame: "_top" } %>
         </div>
       </div>
     </div>
+
+    <!-- Right Column (Available Locations) -->
     <div class="col-md-4">
-      <div class="card">
+      <div class="card" style="max-height: 500px; overflow-y: auto;">
         <div class="card-body">
           <h5>Available Locations</h5>
           <% @adventure.locations.each do |location| %>
