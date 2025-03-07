@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   end
 
   resources :travel_plans do
+    resources :warnings, only: [:destroy]
     collection do
       get :get_recommended_equipment
       get :get_recommended_skills
