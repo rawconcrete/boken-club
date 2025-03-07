@@ -31,7 +31,7 @@
                 <td>
                   <div class="btn-group btn-group-sm">
                     <%= link_to "Edit", edit_admin_skill_path(skill), class: "btn btn-primary" %>
-                    <%= button_to "Delete", admin_skill_path(skill), method: :delete, class: "btn btn-danger",
+                    <%= button_to "Delete", admin_skill_path(skill), method: :delete, class: "btn btn-danger delete-button",
                         data: { turbo_confirm: "Are you sure? This will remove all associations with adventures and locations." } %>
                   </div>
                 </td>

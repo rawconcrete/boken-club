@@ -12,8 +12,26 @@
   background: linear-gradient(to right, #24c6e6, #515ae3);
 }
 
+// Palette
+$green: #a2ccb6;
+$darker-green: #7c9c8c;
+$light-peach: #ffecd9;
+$peach: #ee786e;
+$sand: #fceeb5;
+$white: #fff;
+
 .btn-secondary {
-  background: linear-gradient(to right, #e32727, #ed6464);
+  background: linear-gradient(to right, $darker-green 0%, $green 100%);
+  border: none;
+  border-radius: 25px;
+  padding: 10px 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-print {
+  background: #809c8d;
+  color:white;
   border: none;
   border-radius: 25px;
   padding: 10px 20px;
@@ -23,5 +41,10 @@
 
 .btn-secondary:hover {
   transform: scale(1.1);
-  background: linear-gradient(to right, #ed6464, #e32727);
+  // background: linear-gradient(to right, #ed6464, #e32727);
+}
+
+.delete-button {
+  border-radius: 50%;
+  color:white;
 }

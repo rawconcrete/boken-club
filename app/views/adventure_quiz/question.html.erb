@@ -1,0 +1,36 @@
+<%# app/views/adventure_quiz/question.html.erb %>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card mt-5">
+        <div class="card-header bg-primary text-white">
+          <h2 class="mb-0">Adventure Quiz</h2>
+        </div>
+        <div class="card-body">
+          <div class="progress mb-4">
+            <div class="progress-bar bg-success" role="progressbar"
+                 style="width: <%= (@session[:current_question].to_f / @questions.length * 100).to_i %>%"
+                 aria-valuenow="<%= (@session[:current_question].to_f / @questions.length * 100).to_i %>"
+                 aria-valuemin="0"
+                 aria-valuemax="100">
+              Question <%= @session[:current_question] + 1 %> of <%= @questions.length %>
+            </div>
+          </div>
+          <h3 class="mb-4"><%= @question[:question] %></h3>
+          <%= form_with url: adventure_quiz_answer_path, method: :post, class: "d-grid gap-3" do |f| %>
+            <% @question[:options].each do |option| %>
+              <button type="submit" name="option" value="<%= option[:value] %>" class="btn btn-outline-primary text-start p-3">
+                <div class="d-flex align-items-center">
+                  <div class="ms-3">
+                    <strong><%= option[:text].split(' - ').first %></strong>
+                    <p class="mb-0 text-muted"><%= option[:text].split(' - ').last %></p>
+                  </div>
+                </div>
+              </button>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
