@@ -1,4 +1,14 @@
 <%# app/views/quizzes/index.html.erb %>
+<%# Move the Adventure Quiz to the beginning of the quizzes array %>
+<%
+  adventure_quiz = @quizzes.find { |q| q.title == "Find Your Perfect Adventure" }
+  if adventure_quiz
+    # Remove from current position
+    @quizzes = @quizzes.reject { |q| q == adventure_quiz }
+    # Add to beginning
+    @quizzes.unshift(adventure_quiz)
+  end
+%>
 <div class="container">
   <div class="row mb-4">
     <div class="col">

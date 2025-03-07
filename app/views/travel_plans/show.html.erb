@@ -19,13 +19,13 @@
     </div>
     <div class="col-md-4 text-md-end">
       <div class="mb-2">
-        <%= link_to print_travel_plan_path(@travel_plan), class: "btn btn-sm btn-secondary me-1" do %>
+        <%= link_to print_travel_plan_path(@travel_plan), class: "btn btn-sm btn-print me-1" do %>
           <i class="fas fa-print me-1"></i>Print
         <% end %>
         <%= link_to edit_travel_plan_path(@travel_plan), class: "btn btn-sm btn-primary me-1" do %>
           <i class="fas fa-edit me-1"></i>Edit
         <% end %>
-        <%= button_to travel_plan_path(@travel_plan), method: :delete, class: "btn btn-sm btn-danger",
+        <%= button_to travel_plan_path(@travel_plan), method: :delete, class: "btn btn-sm btn-danger delete-button",
             form: { data: { turbo_confirm: "Are you sure you want to delete this travel plan?" }, style: "display:inline;" } do %>
           <i class="fas fa-trash-alt"></i>
         <% end %>
@@ -201,27 +201,31 @@
           <% if @travel_plan.skills.any? %>
             <% @travel_plan.skills.group_by(&:category).each do |category, category_skills| %>
               <h6 class="text-capitalize mb-2"><%= category || 'Other' %></h6>
-              <div class="list-group mb-3">
+              <ul class="list-group mb-3">
                 <% category_skills.each do |skill| %>
-                  <div class="list-group-item <%= skill.safety_critical ? 'border-warning' : '' %>">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
+                  <%# old start %>
+                  <li class="list-group-item d-flex flex-column position-relative p-3 <%= skill.safety_critical ? 'border-warning' : '' %>">
+                    <div class="d-flex justify-content-between align-items-center">
                       <strong>
                         <%= skill.name %>
-                        <% if skill.safety_critical %>
-                          <span class="badge bg-warning text-dark ms-1">Safety Critical</span>
-                        <% end %>
                       </strong>
+                    </div>
+                    <div class="mb-3">
+                      <% if skill.safety_critical %>
+                        <span class="badge bg-warning text-dark">Safety Critical</span>
+                      <% end %>
                       <span class="badge bg-<%= skill.difficulty == 'advanced' ? 'danger' : (skill.difficulty == 'intermediate' ? 'primary' : 'success') %>">
                         <%= skill.difficulty&.capitalize || 'Beginner' %>
                       </span>
                     </div>
-                    <p class="small text-muted mb-1"><%= truncate(skill.details, length: 100) %></p>
+                    <p class="small text-muted mb-1 text-center"><%= truncate(skill.details, length: 100) %></p>
                     <%= link_to skill_path(skill), class: "btn btn-sm btn-outline-primary no-print", target: "_blank", data: { turbo_frame: "_top" } do %>
                       <i class="fas fa-book-open me-1"></i>Learn More
                     <% end %>
-                  </div>
+                  </li>
+                  <%# old %>
                 <% end %>
-              </div>
+              </ul>
             <% end %>
           <% else %>
             <div class="alert alert-info">
@@ -246,24 +250,24 @@
             <div class="list-group">
               <% warnings.each_with_index do |warning, index| %>
                 <div class="list-group-item list-group-item-warning" id="warning-item-<%= index %>">
-                  <div class="d-flex justify-content-between align-items-start">
+                  <div class="d-flex justify-content-between w-100">
                     <div class="d-flex">
                       <i class="fas fa-exclamation-circle text-danger me-2 mt-1"></i>
                       <div><%= warning %></div>
                     </div>
-                    <button type="button"
-                            class="btn btn-sm btn-outline-danger me-2"
-                            onclick="document.getElementById('warning-item-<%= index %>').style.display='none';">
-                      <i class="fas fa-trash-alt me-1"></i> Delete Warning
-                    </button>
-                  </div>
+                    <%= button_to travel_plan_warning_path(@travel_plan, index), method: :delete,
+    form: { data: { turbo_confirm: "Are you sure you want to delete this warning?" }, style: "display:inline; border: none; background: none; padding: 0 0 0 8px;" } do %>
+                      <i class="fas fa-trash-alt"></i>
+                    <% end %>
+                  </button>
                 </div>
-              <% end %>
-            </div>
+              </div>
+            <% end %>
           </div>
         </div>
-      <% end %>
-    </div>
+      </div>
+    <% end %>
   </div>
+</div>
 </div>
 <%= javascript_import_module_tag "travel_plans_show" %>

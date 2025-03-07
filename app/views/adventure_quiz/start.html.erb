@@ -1,0 +1,19 @@
+<%# app/views/adventure_quiz/start.html.erb %>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card mt-5">
+        <div class="card-header bg-primary text-white">
+          <h2 class="mb-0">Find Your Next Adventure</h2>
+        </div>
+        <div class="card-body">
+          <p class="lead">Discover the perfect outdoor adventure for you based on your preferences, experience level, and interests.</p>
+          <p>This short quiz will help us recommend an adventure that matches your style. Ready to find your next adventure?</p>
+          <div class="d-grid gap-2">
+            <%= link_to "Start Quiz", adventure_quiz_question_path, class: "btn btn-primary btn-lg" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -166,11 +166,175 @@ class QuizzesController < ApplicationController
   def result
     @quiz_attempt = QuizAttempt.find(params[:id])
     @quiz = @quiz_attempt.quiz
+
+    # If this is the adventure finder quiz, redirect to the recommendation page
+    if @quiz.title == "Find Your Perfect Adventure"
+      redirect_to adventure_recommendation_path(@quiz_attempt) and return
+    end
+
+    # For standard quizzes, proceed with the normal result display
     @score = @quiz_attempt.score
     @quiz_answers = @quiz_attempt.quiz_answers.includes(:question, :answer)
   end
 
+
+
   private
+
+  def adventure_recommendation
+    @quiz_attempt = QuizAttempt.find(params[:id])
+    @quiz = @quiz_attempt.quiz
+
+    if @quiz.title != "Find Your Perfect Adventure"
+      redirect_to quiz_result_path(@quiz_attempt)
+      return
+    end
+
+    # Extract answers from the quiz attempt
+    @answers = []
+    @quiz_attempt.quiz_answers.includes(:question, :answer).each do |qa|
+      @answers << qa.answer.content.split(" - ").first.downcase
+    end
+
+    # Calculate the recommended adventure
+    @recommended_adventure = calculate_adventure_recommendation(@answers)
+  end
+
+
+  def calculate_adventure_recommendation(answers)
+    # This is a simplified recommendation algorithm
+    # In a real implementation, you would likely use more sophisticated matching
+
+    # Initialize scores for different adventure types
+    scores = {
+      hiking: 0,
+      climbing: 0,
+      camping: 0,
+      water_activities: 0,
+      cultural_tours: 0,
+      winter_sports: 0
+    }
+
+    # Activity level (first question)
+    case answers[0]
+    when "active"
+      scores[:hiking] += 3
+      scores[:climbing] += 4
+      scores[:winter_sports] += 3
+    when "moderate"
+      scores[:hiking] += 4
+      scores[:camping] += 3
+      scores[:water_activities] += 3
+      scores[:cultural_tours] += 2
+    when "relaxed"
+      scores[:camping] += 4
+      scores[:cultural_tours] += 4
+      scores[:water_activities] += 2
+    end
+
+    # Environment (second question)
+    case answers[1]
+    when "mountains"
+      scores[:hiking] += 4
+      scores[:climbing] += 4
+      scores[:winter_sports] += 3
+    when "forests"
+      scores[:hiking] += 3
+      scores[:camping] += 4
+    when "water"
+      scores[:water_activities] += 5
+      scores[:camping] += 2
+    when "cultural"
+      scores[:cultural_tours] += 5
+      scores[:hiking] += 1
+    end
+
+    # Experience level (third question)
+    case answers[2]
+    when "beginner"
+      scores[:hiking] += 3
+      scores[:camping] += 3
+      scores[:cultural_tours] += 4
+      scores[:water_activities] -= 1
+      scores[:climbing] -= 2
+      scores[:winter_sports] -= 1
+    when "intermediate"
+      scores[:hiking] += 3
+      scores[:camping] += 3
+      scores[:water_activities] += 3
+      scores[:climbing] += 2
+      scores[:winter_sports] += 2
+    when "advanced"
+      scores[:climbing] += 4
+      scores[:winter_sports] += 3
+      scores[:hiking] += 2
+      scores[:water_activities] += 2
+    end
+
+    # Duration (fourth question)
+    case answers[3]
+    when "day"
+      scores[:hiking] += 2
+      scores[:cultural_tours] += 3
+      scores[:climbing] += 1
+      scores[:camping] -= 3
+    when "full"
+      scores[:hiking] += 3
+      scores[:climbing] += 3
+      scores[:water_activities] += 3
+      scores[:cultural_tours] += 2
+    when "multi"
+      scores[:camping] += 5
+      scores[:hiking] += 3
+      scores[:winter_sports] += 2
+    end
+
+    # Season (fifth question)
+    case answers[4]
+    when "winter"
+      scores[:winter_sports] += 5
+      scores[:hiking] -= 1
+      scores[:water_activities] -= 3
+    when "summer"
+      scores[:water_activities] += 4
+      scores[:camping] += 3
+      scores[:hiking] += 2
+    when "autumn"
+      scores[:hiking] += 4
+      scores[:cultural_tours] += 3
+      scores[:camping] += 2
+    when "spring"
+      scores[:hiking] += 3
+      scores[:cultural_tours] += 3
+      scores[:camping] += 2
+    end
+
+    # Find the highest scoring activity type
+    top_activity = scores.max_by { |k, v| v }[0]
+
+    # Map activity type to specific adventures from the database
+    adventures = Adventure.all
+
+    case top_activity
+    when :hiking
+      adventure = adventures.find { |a| a.name.downcase.include?("hik") || a.name.downcase.include?("trek") }
+    when :climbing
+      adventure = adventures.find { |a| a.name.downcase.include?("climb") || a.name.downcase.include?("boulder") }
+    when :camping
+      adventure = adventures.find { |a| a.name.downcase.include?("camp") }
+    when :water_activities
+      adventure = adventures.find { |a| a.name.downcase.include?("kayak") || a.name.downcase.include?("raft") || a.name.downcase.include?("lake") }
+    when :cultural_tours
+      adventure = adventures.find { |a| a.name.downcase.include?("castle") || a.name.downcase.include?("tour") || a.name.downcase.include?("shrine") }
+    when :winter_sports
+      adventure = adventures.find { |a| a.name.downcase.include?("ski") || a.name.downcase.include?("snow") }
+    end
+
+    # Fallback if no specific adventure found
+    adventure ||= Adventure.first
+
+    adventure
+  end
 
   def set_quiz
     @quiz = Quiz.find(params[:id])

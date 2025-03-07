@@ -158,7 +158,7 @@ export default class extends Controller {
       this.addAdventureTag(adventure);
     } catch (error) {
       console.error('Error fetching adventure:', error);
-      this.showToast(`Error fetching adventure: ${error.message}`, 'danger');
+      // this.showToast(`Error fetching adventure: ${error.message}`, 'danger');
     }
   }
 

@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   end
 
   resources :travel_plans do
+    resources :warnings, only: [:destroy]
     collection do
       get :get_recommended_equipment
       get :get_recommended_skills
@@ -78,5 +79,11 @@ Rails.application.routes.draw do
       get :search
     end
   end
+
+  get '/adventure-quiz/start', to: 'adventure_quiz#start', as: :adventure_quiz_start
+  get '/adventure-quiz/question', to: 'adventure_quiz#question', as: :adventure_quiz_question
+  post '/adventure-quiz/answer', to: 'adventure_quiz#answer', as: :adventure_quiz_answer
+  get '/adventure-quiz/result', to: 'adventure_quiz#result', as: :adventure_quiz_result
+  get '/quiz_attempts/:id/adventure_recommendation', to: 'quizzes#adventure_recommendation', as: :adventure_recommendation
 
 end
