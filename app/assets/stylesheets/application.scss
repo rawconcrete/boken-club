@@ -915,3 +915,40 @@ body .navbar-lewagon .dropdown-menu .dropdown-item:hover,
   transform: translateX(5px);
 }
 // end add white hover on navbar
+// production specific
+/* Production-specific navbar hover effects */
+.production .navbar-nav .nav-link:hover,
+html.production .navbar-lewagon .navbar-nav .nav-link:hover,
+.production .navbar-lewagon .navbar-nav .nav-link:hover,
+.production .navbar .navbar-nav .nav-link:hover {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.4) !important;
+}
+
+.production .navbar-nav .nav-link:focus,
+html.production .navbar-lewagon .navbar-nav .nav-link:focus,
+.production .navbar-lewagon .navbar-nav .nav-link:focus,
+.production .navbar .navbar-nav .nav-link:focus {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+.production .navbar-lewagon .dropdown-menu .dropdown-item:hover,
+.production .navbar .dropdown-menu .dropdown-item:hover {
+  background-color: rgba(0, 123, 255, 0.1) !important;
+  transform: translateX(5px) !important;
+}
+
+.production .navbar-lewagon .login-btn:hover,
+.production .navbar-nav .login-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+
+.production .navbar-lewagon .avatar:hover,
+.production .navbar .avatar:hover {
+  transform: scale(1.1) !important;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
+}
+// production specific end
