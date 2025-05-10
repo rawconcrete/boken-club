@@ -839,21 +839,27 @@ body:not(.home) {
 
 // add white hover on navbar rather
 /* Navbar hover effects */
-.navbar-nav .nav-link {
+/* More specific navbar hover selectors */
+body .navbar-lewagon .navbar-nav .nav-item .nav-link,
+.navbar-lewagon .navbar-nav .nav-link {
   position: relative;
-  padding: 8px 16px;
   color: rgba(255, 255, 255, 0.8);
   transition: all 0.3s ease;
+  opacity: 0.9;
 }
 
-.navbar-nav .nav-link:hover,
-.navbar-nav .nav-link:focus {
-  color: #ffffff;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+body .navbar-lewagon .navbar-nav .nav-item .nav-link:hover,
+body .navbar-lewagon .navbar-nav .nav-item .nav-link:focus,
+.navbar-lewagon .navbar-nav .nav-link:hover,
+.navbar-lewagon .navbar-nav .nav-link:focus {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.4) !important;
 }
 
-/* Animated underline effect on hover */
-.navbar-nav .nav-link::after {
+/* Animated underline with higher specificity */
+body .navbar-lewagon .navbar-nav .nav-item .nav-link::after,
+.navbar-lewagon .navbar-nav .nav-link::after {
   content: '';
   position: absolute;
   width: 0;
@@ -866,39 +872,45 @@ body:not(.home) {
   opacity: 0;
 }
 
-.navbar-nav .nav-link:hover::after {
+body .navbar-lewagon .navbar-nav .nav-item .nav-link:hover::after,
+.navbar-lewagon .navbar-nav .nav-link:hover::after {
   width: 70%;
   opacity: 1;
 }
 
-/* Avatar hover effect */
-.navbar-nav .avatar {
+/* Avatar hover with higher specificity */
+body .navbar-lewagon .navbar-nav .avatar,
+.navbar-lewagon .avatar {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.navbar-nav .avatar:hover {
+body .navbar-lewagon .navbar-nav .avatar:hover,
+.navbar-lewagon .avatar:hover {
   transform: scale(1.1);
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
-/* Login button hover */
-.navbar-nav .login-btn {
+/* Login button hover with higher specificity */
+body .navbar-lewagon .navbar-nav .login-btn,
+.navbar-lewagon .login-btn {
   border-radius: 4px;
-  padding: 6px 12px;
   transition: all 0.3s ease;
 }
 
-.navbar-nav .login-btn:hover {
+body .navbar-lewagon .navbar-nav .login-btn:hover,
+.navbar-lewagon .login-btn:hover {
   background-color: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
-/* Dropdown menu items hover */
-.dropdown-menu .dropdown-item {
+/* Dropdown menu items hover with higher specificity */
+body .navbar-lewagon .dropdown-menu .dropdown-item,
+.navbar-lewagon .dropdown-menu .dropdown-item {
   transition: all 0.2s ease;
 }
 
-.dropdown-menu .dropdown-item:hover {
+body .navbar-lewagon .dropdown-menu .dropdown-item:hover,
+.navbar-lewagon .dropdown-menu .dropdown-item:hover {
   background-color: rgba(0, 123, 255, 0.1);
   transform: translateX(5px);
 }
