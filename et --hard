@@ -1,0 +1,103 @@
+[1mdiff --git a/.dockerignore b/.dockerignore[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/.gitattributes b/.gitattributes[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/.gitignore b/.gitignore[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/.rubocop.yml b/.rubocop.yml[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/.ruby-version b/.ruby-version[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/.vscode/settings.json b/.vscode/settings.json[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/Dockerfile b/Dockerfile[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/Gemfile b/Gemfile[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/Gemfile.lock b/Gemfile.lock[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/README.md b/README.md[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/Rakefile b/Rakefile[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/config/manifest.js b/app/assets/config/manifest.js[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/.keep b/app/assets/images/.keep[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/Unknown.png b/app/assets/images/Unknown.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/camping.png b/app/assets/images/camping.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/castletouring.png b/app/assets/images/castletouring.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/caving.png b/app/assets/images/caving.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/cycling.png b/app/assets/images/cycling.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/diving.png b/app/assets/images/diving.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/fishing.png b/app/assets/images/fishing.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/hiking.png b/app/assets/images/hiking.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/kayaking.png b/app/assets/images/kayaking.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/logo00.png b/app/assets/images/logo00.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/mountaineering.png b/app/assets/images/mountaineering.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/paragliding.png b/app/assets/images/paragliding.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/placeholder.jpg b/app/assets/images/placeholder.jpg[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/rafting.png b/app/assets/images/rafting.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/rock-climbing.png b/app/assets/images/rock-climbing.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/skiingandsnowboarding.png b/app/assets/images/skiingandsnowboarding.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/snowshowing.png b/app/assets/images/snowshowing.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/stargazing.png b/app/assets/images/stargazing.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/trail_running.png b/app/assets/images/trail_running.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/trekking.png b/app/assets/images/trekking.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git a/app/assets/images/wildlifewatching.png b/app/assets/images/wildlifewatching.png[m
+[1mold mode 100644[m
+[1mnew mode 100755[m
+[1mdiff --git

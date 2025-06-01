@@ -52,7 +52,7 @@ nav a::after {
   left: 0;
   width: 100%;
   height: 2px;
-  background-color: var(--vibrant-yellow);
+  background-color: #ffffff;
   transform: scaleX(0);
   transform-origin: bottom right;
   transition: transform 0.3s ease-out;
@@ -65,7 +65,7 @@ nav a:hover::after {
 
 /* Cambio de color y movimiento de los enlaces al pasar el cursor */
 nav a:hover {
-  color: var(--vibrant-yellow);
+  color: #ffffff;
   transform: translateY(-5px);
   transform: rotate(5deg);
 }
