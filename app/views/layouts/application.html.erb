@@ -1,6 +1,5 @@
-<%# app/views/layouts/application.html.erb %>
 <!DOCTYPE html>
-<html>
+<html class="<%= Rails.env.production? ? 'production' : '' %>">
   <head>
     <title>Boken Club</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -12,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <%= yield :head %>
   </head>
-  <body class="<%= controller_name == 'pages' && action_name == 'home' ? 'home' : '' %>">
+  <body class="<%= controller_name == 'pages' && action_name == 'home' ? 'home' : '' %> <%= Rails.env.production? ? 'production' : '' %>">
     <%= render "shared/navbar" %>
     <%= render "shared/improved_alerts" %>
     <%= yield %>
