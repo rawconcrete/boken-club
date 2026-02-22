@@ -14,8 +14,11 @@ window.toastManager = {
     if (!toastContainer) {
       toastContainer = document.createElement('div');
       toastContainer.id = 'toast-container';
-      toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
+      toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
       toastContainer.style.zIndex = '1080';
+      toastContainer.style.display = 'flex';
+      toastContainer.style.flexDirection = 'column';
+      toastContainer.style.gap = '10px';
       document.body.appendChild(toastContainer);
     }
 
